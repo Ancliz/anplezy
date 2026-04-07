@@ -212,6 +212,21 @@ class AppDatabase extends _$AppDatabase {
 }
 
 LazyDatabase _openConnection() {
+  Future<Directory> getDesktopDocumentsDirectory() async {
+    try {
+      return await getApplicationDocumentsDirectory();
+    } catch (_) {
+      final home = Platform.environment['HOME'];
+      if (home != null && home.isNotEmpty) {
+        final fallbackDir = Directory(p.join(home, 'Documents'));
+        if (await fallbackDir.exists()) {
+          return fallbackDir;
+        }
+      }
+      return await getApplicationSupportDirectory();
+    }
+  }
+
   return LazyDatabase(() async {
     final dbFolder = (Platform.isAndroid || Platform.isIOS)
         ? await getApplicationDocumentsDirectory()
@@ -226,7 +241,7 @@ LazyDatabase _openConnection() {
 
     // Migrate from old location on desktop (was in Documents subfolder)
     if (!Platform.isAndroid && !Platform.isIOS && !await file.exists()) {
-      final oldFolder = await getApplicationDocumentsDirectory();
+      final oldFolder = await getDesktopDocumentsDirectory();
       final oldFile = File(p.join(oldFolder.path, 'plezy_downloads.db'));
       if (await oldFile.exists()) {
         await oldFile.rename(file.path);

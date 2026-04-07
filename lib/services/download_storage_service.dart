@@ -500,11 +500,11 @@ class DownloadStorageService {
   // SAF (Storage Access Framework) SUPPORT FOR ANDROID
   // ============================================================
 
-  /// Get temporary cache directory for initial downloads
-  /// Files are downloaded here first, then copied to SAF if using SAF mode
+  /// Get temporary cache directory for initial downloads.
+  /// Files are downloaded here first, then copied to SAF if using SAF mode.
   Future<Directory> getCacheDownloadDirectory() async {
-    final cacheDir = await getApplicationDocumentsDirectory();
-    return _ensureDirectoryExists(Directory(path.join(cacheDir.path, '.download_cache')));
+    final cacheDir = await getTemporaryDirectory();
+    return _ensureDirectoryExists(Directory(path.join(cacheDir.path, 'plezy_download_cache')));
   }
 
   /// Get temporary file path for downloading (before copying to SAF)
