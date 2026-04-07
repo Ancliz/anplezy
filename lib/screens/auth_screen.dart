@@ -19,6 +19,7 @@ import '../utils/platform_detector.dart';
 import '../focus/focusable_button.dart';
 import '../utils/navigation_transitions.dart';
 import 'main_screen.dart';
+import 'guest_setup_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -464,6 +465,23 @@ class _AuthScreenState extends State<AuthScreen> {
             textAlign: TextAlign.center,
           ),
         ],
+        const SizedBox(height: 24),
+        // Guest mode link
+        Center(
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(context, fadeRoute(const GuestSetupScreen()));
+            },
+            child: Text(
+              'Continue without Plex Login',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 12,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
