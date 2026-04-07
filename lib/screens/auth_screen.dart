@@ -11,6 +11,7 @@ import '../services/server_connection_orchestrator.dart';
 import '../providers/multi_server_provider.dart';
 import '../providers/libraries_provider.dart';
 import '../providers/user_profile_provider.dart';
+import '../providers/download_provider.dart';
 import '../services/offline_watch_sync_service.dart';
 import '../i18n/strings.g.dart';
 import '../theme/mono_tokens.dart';
@@ -309,6 +310,55 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  Future<void> _handleContinueWithoutPlex() async {
+    try {
+      // Capture providers before any async operations
+      final multiServerProvider = context.read<MultiServerProvider>();
+      final librariesProvider = context.read<LibrariesProvider>();
+      final syncService = context.read<OfflineWatchSyncService>();
+      final downloadProvider = context.read<DownloadProvider>();
+
+      final storage = await StorageService.getInstance();
+      final registry = ServerRegistry(storage);
+      final servers = await registry.getServers();
+
+      if (servers.isNotEmpty) {
+        // Try to connect to existing servers offline
+        final result = await ServerConnectionOrchestrator.connectAndInitialize(
+          servers: servers,
+          multiServerProvider: multiServerProvider,
+          librariesProvider: librariesProvider,
+          syncService: syncService,
+          clientIdentifier: _authService.clientIdentifier,
+        );
+
+        if (result.hasConnections && result.firstClient != null) {
+          if (mounted) {
+            Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
+          }
+          return;
+        } else {
+          // Initialize download provider for offline mode
+          await downloadProvider.ensureInitialized();
+          if (mounted) {
+            Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
+          }
+          return;
+        }
+      }
+
+      // No servers or failed to connect, go to guest setup
+      if (mounted) {
+        Navigator.pushReplacement(context, fadeRoute(const GuestSetupScreen()));
+      }
+    } catch (e) {
+      // Fallback to guest setup
+      if (mounted) {
+        Navigator.pushReplacement(context, fadeRoute(const GuestSetupScreen()));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Use two-column layout on desktop, single column on mobile
@@ -469,9 +519,7 @@ class _AuthScreenState extends State<AuthScreen> {
         // Guest mode link
         Center(
           child: GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(context, fadeRoute(const GuestSetupScreen()));
-            },
+            onTap: _handleContinueWithoutPlex,
             child: Text(
               'Continue without Plex Login',
               style: TextStyle(

@@ -24,7 +24,19 @@ class ServerRegistry {
       }
 
       final List<dynamic> serversList = jsonDecode(serversJson);
-      return serversList.map((json) => PlexServer.fromJson(json as Map<String, dynamic>)).toList();
+      final validServers = <PlexServer>[];
+      
+      for (final json in serversList) {
+        try {
+          final server = PlexServer.fromJson(json as Map<String, dynamic>);
+          validServers.add(server);
+        } catch (e) {
+          appLogger.w('Skipping invalid server data in storage', error: e);
+          // Continue with other servers instead of failing completely
+        }
+      }
+      
+      return validServers;
     } catch (e, stackTrace) {
       appLogger.e('Failed to load servers from storage', error: e, stackTrace: stackTrace);
       return [];
@@ -53,6 +65,8 @@ class ServerRegistry {
     }
   }
 
+  static const String _localServerPrefix = 'manual_';
+
   /// Add or update a single server
   Future<void> upsertServer(PlexServer server) async {
     final servers = await getServers();
@@ -69,13 +83,51 @@ class ServerRegistry {
     await saveServers(servers);
   }
 
-  /// Remove a server
+  /// Remove a server and any associated stored endpoints/order entries.
   Future<void> removeServer(String serverId) async {
     final servers = await getServers();
     servers.removeWhere((s) => s.clientIdentifier == serverId);
     await saveServers(servers);
+    await _storage.clearServerEndpoint(serverId);
+
+    final order = _storage.getServerOrder();
+    if (order != null && order.isNotEmpty) {
+      final updatedOrder = order.where((id) => id != serverId).toList();
+      if (updatedOrder.isEmpty) {
+        await _storage.clearServerOrder();
+      } else {
+        await _storage.saveServerOrder(updatedOrder);
+      }
+    }
 
     appLogger.i('Removed server: $serverId');
+  }
+
+  /// Keep only manually added local servers and remove all Plex account servers.
+  Future<void> keepOnlyLocalServers() async {
+    final servers = await getServers();
+    final localServers = servers.where((s) => s.clientIdentifier.startsWith(_localServerPrefix)).toList();
+
+    final removedServerIds = servers
+        .where((s) => !s.clientIdentifier.startsWith(_localServerPrefix))
+        .map((s) => s.clientIdentifier)
+        .toList();
+
+    for (final serverId in removedServerIds) {
+      await _storage.clearServerEndpoint(serverId);
+    }
+
+    await saveServers(localServers);
+
+    final order = _storage.getServerOrder();
+    if (order != null) {
+      final updatedOrder = order.where((id) => localServers.any((s) => s.clientIdentifier == id)).toList();
+      if (updatedOrder.isEmpty) {
+        await _storage.clearServerOrder();
+      } else {
+        await _storage.saveServerOrder(updatedOrder);
+      }
+    }
   }
 
   /// Clear all servers

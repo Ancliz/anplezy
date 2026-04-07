@@ -123,9 +123,9 @@ class StorageService extends BaseSharedPreferencesService {
     return prefs.getString(_keyClientId);
   }
 
-  // Clear all credentials
+  // Clear all credentials but preserve configured servers.
   Future<void> clearCredentials() async {
-    await Future.wait([..._credentialKeys.map((k) => prefs.remove(k)), clearMultiServerData()]);
+    await Future.wait(_credentialKeys.map((k) => prefs.remove(k)));
     LogRedactionManager.clearTrackedValues();
   }
 

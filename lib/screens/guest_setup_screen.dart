@@ -135,7 +135,7 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
 
       final storage = await StorageService.getInstance();
       final registry = ServerRegistry(storage);
-      await registry.saveServers([server]);
+      await registry.upsertServer(server);
 
       if (!mounted) return;
 
@@ -176,7 +176,7 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
         : 'Connection failed. Please check your server address and try again.';
       setState(() {
         _isConnecting = false;
-        _errorMessage = errorMsg.length > 200 ? errorMsg.substring(0, 200) + '...' : errorMsg;
+        _errorMessage = errorMsg.length > 200 ? '${errorMsg.substring(0, 200)}...' : errorMsg;
       });
     }
   }

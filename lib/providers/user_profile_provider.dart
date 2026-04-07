@@ -4,6 +4,7 @@ import '../models/plex_home.dart';
 import '../models/plex_home_user.dart';
 import '../models/plex_user_profile.dart';
 import '../services/plex_auth_service.dart';
+import '../services/server_registry.dart';
 import '../services/storage_service.dart';
 import '../utils/app_logger.dart';
 import '../screens/profile/pin_entry_dialog.dart';
@@ -353,6 +354,9 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       await _storageService!.clearUserData();
+
+      final registry = ServerRegistry(_storageService!);
+      await registry.keepOnlyLocalServers();
 
       // Clear user-specific provider state and reset initialization so
       // the next sign-in performs a full bootstrap.
