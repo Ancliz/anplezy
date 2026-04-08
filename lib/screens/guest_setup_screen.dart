@@ -5,9 +5,9 @@ import '../services/plex_auth_service.dart';
 import '../services/manual_server_utils.dart';
 import '../providers/multi_server_provider.dart';
 import '../i18n/strings.g.dart';
-import '../theme/mono_tokens.dart';
 import '../utils/app_logger.dart';
 import '../utils/navigation_transitions.dart';
+import '../widgets/add_server_form.dart';
 import 'main_screen.dart'; 
 
 class GuestSetupScreen extends StatefulWidget {
@@ -166,26 +166,17 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                _buildForm(),
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(tokens(context).radiusMd),
-                    ),
-                    child: Text(
-                      _errorMessage!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
+                AddServerForm(
+                  urlController: _serverUrlController,
+                  nameController: _serverNameController,
+                  tokenController: _serverTokenController,
+                  onSubmit: _connectToManualServer,
+                  onCancel: _goBack,
+                  isConnecting: _isConnecting,
+                  errorMessage: _errorMessage,
+                  submitButtonLabel: 'Connect to Server',
+                  showCancelButton: true,
+                ),
               ],
             ),
           ),
@@ -194,82 +185,5 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
       ),
     );
   }
-
-  Widget _buildForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Server URL field (required)
-        TextField(
-          controller: _serverUrlController,
-          enabled: !_isConnecting,
-          decoration: InputDecoration(
-            labelText: 'Server Address *',
-            hintText: '192.168.1.100:32400 or example.local',
-            border: const OutlineInputBorder(),
-            helperText: 'IP address or hostname with optional port',
-          ),
-          keyboardType: TextInputType.url,
-          textInputAction: TextInputAction.next,
-        ),
-        const SizedBox(height: 16),
-        // Server name field (optional)
-        TextField(
-          controller: _serverNameController,
-          enabled: !_isConnecting,
-          decoration: InputDecoration(
-            labelText: 'Server Name',
-            hintText: 'My Plex Server',
-            border: const OutlineInputBorder(),
-            helperText: 'Leave blank for automatic naming',
-          ),
-          textInputAction: TextInputAction.next,
-        ),
-        const SizedBox(height: 16),
-        // Server token field (optional)
-        TextField(
-          controller: _serverTokenController,
-          enabled: !_isConnecting,
-          decoration: InputDecoration(
-            labelText: 'Access Token (Optional)',
-            hintText: 'Leave blank for guest access',
-            border: const OutlineInputBorder(),
-            helperText: 'Required for full library access',
-          ),
-          obscureText: true,
-          textInputAction: TextInputAction.done,
-          onSubmitted: _isConnecting ? null : (_) => _connectToManualServer(),
-        ),
-        const SizedBox(height: 24),
-        // Connect button
-        ElevatedButton(
-          onPressed: _isConnecting ? null : _connectToManualServer,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: _isConnecting
-              ? SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                )
-              : const Text('Connect to Server'),
-        ),
-        const SizedBox(height: 12),
-        // Cancel button
-        OutlinedButton(
-          onPressed: _isConnecting ? null : _goBack,
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: const Text('Cancel'),
-        ),
-      ],
-    );
-  }
+  
 }
