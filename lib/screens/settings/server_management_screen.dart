@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../services/plex_auth_service.dart';
 import '../../services/storage_service.dart';
 import '../../services/server_registry.dart';
-import '../../services/manual_server_utils.dart';
+import '../../utils/manual_server_utils.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/dialogs.dart';

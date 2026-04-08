@@ -8,7 +8,7 @@ import '../services/server_connection_orchestrator.dart';
 import '../providers/multi_server_provider.dart';
 import '../providers/libraries_provider.dart';
 import '../services/offline_watch_sync_service.dart';
-import '../utils/app_logger.dart';
+import 'app_logger.dart';
 
 const int plexDefaultPort = 32400;
 

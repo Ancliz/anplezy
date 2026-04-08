@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/plex_auth_service.dart';
-import '../services/manual_server_utils.dart';
+import '../utils/manual_server_utils.dart';
 import '../providers/multi_server_provider.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
@@ -185,5 +185,5 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
       ),
     );
   }
-  
+
 }
