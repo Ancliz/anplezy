@@ -30,6 +30,7 @@ import 'appearance_settings_screen.dart';
 import 'keyboard_shortcuts_screen.dart';
 import 'logs_screen.dart';
 import 'playback_settings_screen.dart';
+import 'server_management_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -57,6 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
   static const _kCheckForUpdates = 'check_for_updates';
   static const _kAbout = 'about';
   static const _kWatchTogetherRelay = 'watch_together_relay';
+  static const _kServerManagement = 'server_management';
 
   KeyboardShortcutsService? _keyboardService;
   late final bool _keyboardShortcutsSupported = KeyboardShortcutsService.isPlatformSupported();
@@ -148,6 +150,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
                 // --- Playback (navigation tile) ---
                 _buildPlaybackTile(),
 
+                // --- Server Management (navigation tile) ---
+                _buildServerManagementTile(),
+
                 // --- Downloads (inline) ---
                 _buildDownloadsSection(),
 
@@ -211,6 +216,19 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
       trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaybackSettingsScreen()));
+      },
+    );
+  }
+
+  Widget _buildServerManagementTile() {
+    return ListTile(
+      focusNode: _focusTracker.get(_kServerManagement),
+      leading: const AppIcon(Symbols.storage_rounded, fill: 1),
+      title: const Text('Manage Servers'),
+      subtitle: const Text('Add or remove manual servers'),
+      trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ServerManagementScreen()));
       },
     );
   }

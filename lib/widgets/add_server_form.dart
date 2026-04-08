@@ -4,7 +4,6 @@ import '../theme/mono_tokens.dart';
 import 'app_icon.dart';
 
 /// Reusable form widget for adding a manual server
-/// Used in both guest setup and server management screens
 class AddServerForm extends StatelessWidget {
   final TextEditingController urlController;
   final TextEditingController nameController;
