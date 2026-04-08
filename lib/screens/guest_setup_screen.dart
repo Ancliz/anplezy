@@ -2,12 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/plex_auth_service.dart';
-import '../services/storage_service.dart';
-import '../services/server_registry.dart';
-import '../services/server_connection_orchestrator.dart';
+import '../services/manual_server_utils.dart';
 import '../providers/multi_server_provider.dart';
-import '../providers/libraries_provider.dart';
-import '../services/offline_watch_sync_service.dart';
 import '../i18n/strings.g.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/app_logger.dart';
@@ -49,34 +45,6 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
     super.dispose();
   }
 
-  /// Parse server URL into protocol, address, and port
-  /// Returns null if URL is invalid
-  ({String protocol, String address, int port})? _parseServerUrl(String url) {
-    try {
-      // Ensure URL has a protocol
-      String normalizedUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        // Try HTTP first as default for manual entry
-        normalizedUrl = 'http://$url';
-      }
-
-      final uri = Uri.parse(normalizedUrl);
-      
-      if (uri.host.isEmpty) {
-        return null;
-      }
-
-      final protocol = uri.scheme;
-      final address = uri.host;
-      final port = uri.port > 0 ? uri.port : (protocol == 'https' ? 443 : 80);
-
-      return (protocol: protocol, address: address, port: port);
-    } catch (error) {
-      appLogger.w('Failed to parse server URL', error: error);
-      return null;
-    }
-  }
-
   /// Connect to the manual server and save it
   Future<void> _connectToManualServer() async {
     if (!mounted) return;
@@ -85,105 +53,63 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
     final displayName = _serverNameController.text.trim();
     final token = _serverTokenController.text.trim();
 
-    if (url.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter a server URL';
-      });
-      return;
-    }
-
-    final parsed = _parseServerUrl(url);
-    if (parsed == null) {
-      setState(() {
-        _errorMessage = 'Invalid server URL format';
-      });
-      return;
-    }
-
     setState(() {
       _isConnecting = true;
       _errorMessage = null;
     });
 
     try {
-      // Build the connection URI from parsed URL
-      final connectionUri = '${parsed.protocol}://${parsed.address}:${parsed.port}';
-
-      // Create PlexConnection
-      final connection = PlexConnection(
-        protocol: parsed.protocol,
-        address: parsed.address,
-        port: parsed.port,
-        uri: connectionUri,
-        local: true, // Assume local for manual entry
-        relay: false,
-        ipv6: parsed.address.contains(':'),
+      final (success, error, serverName) = await ManualServerUtils.addManualServer(
+        context: context,
+        url: url,
+        displayName: displayName,
+        token: token,
+        authService: _authService,
+        shouldCancelConnection: _shouldCancelConnection,
       );
-
-      // Create PlexServer with optional token (can be empty for guest mode)
-      final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
-      final generatedId = _generateServerId();
-      
-      final server = PlexServer(
-        name: serverName,
-        clientIdentifier: generatedId,
-        accessToken: token.isNotEmpty ? token : '',
-        connections: [connection],
-        owned: false,
-        presence: false,
-      );
-
-      final storage = await StorageService.getInstance();
-      final registry = ServerRegistry(storage);
-      await registry.upsertServer(server);
 
       if (!mounted) return;
 
-      final result = await ServerConnectionOrchestrator.connectAndInitialize(
-        servers: [server],
-        multiServerProvider: context.read<MultiServerProvider>(),
-        librariesProvider: context.read<LibrariesProvider>(),
-        syncService: context.read<OfflineWatchSyncService>(),
-        clientIdentifier: _authService.clientIdentifier,
-      );
-
       if (_shouldCancelConnection) {
-        if (!mounted) return;
         setState(() => _isConnecting = false);
         Navigator.of(context).maybePop();
         return;
       }
 
-      if (!result.hasConnections || result.firstClient == null) {
-        if (!mounted) return;
+      if (!success) {
         setState(() {
           _isConnecting = false;
-          _errorMessage = t.serverSelection.allServerConnectionsFailed;
+          _errorMessage = error ?? t.serverSelection.allServerConnectionsFailed;
         });
         return;
       }
 
       if (!mounted) return;
       // Skip UserProfileProvider initialization for guest mode (no Plex token)
-      // Navigate to main screen directly
-      Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
+      // Navigate to main screen directly with the first connected client
+      final multiServerProvider = context.read<MultiServerProvider>();
+      final firstServerId = multiServerProvider.onlineServerIds.firstOrNull;
+      
+      if (firstServerId != null) {
+        final client = multiServerProvider.getClientForServer(firstServerId);
+        if (client != null) {
+          Navigator.pushReplacement(context, fadeRoute(MainScreen(client: client)));
+          return;
+        }
+      }
+
+      setState(() {
+        _isConnecting = false;
+        _errorMessage = 'Failed to initialize connection';
+      });
     } catch (error) {
       appLogger.e('Failed to connect to manual server', error: error);
       if (!mounted) return;
-      // Safely extract error message
-      final errorMsg = error is Exception 
-        ? error.toString().replaceAll('Exception: ', '').replaceAll('FormatException: ', '')
-        : 'Connection failed. Please check your server address and try again.';
       setState(() {
         _isConnecting = false;
-        _errorMessage = errorMsg.length > 200 ? '${errorMsg.substring(0, 200)}...' : errorMsg;
+        _errorMessage = 'Connection failed. Please check your server address and try again.';
       });
     }
-  }
-
-  /// Generate a unique server ID for manual servers
-  String _generateServerId() {
-    return 'manual_${DateTime.now().millisecondsSinceEpoch}';
   }
 
   void _goBack() {
