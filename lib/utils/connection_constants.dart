@@ -22,4 +22,7 @@ class ConnectionTimeouts {
 
   /// Dio receive timeout for plex.tv / clients.plex.tv API responses.
   static const plexTvReceive = Duration(seconds: 10);
+
+  /// Timeout for initializing offline mode before falling back.
+  static const offlineRetry = Duration(seconds: 10);
 }

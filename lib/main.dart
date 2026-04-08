@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
+import 'screens/settings/server_management_screen.dart';
 import 'services/storage_service.dart';
 import 'services/macos_window_service.dart';
 import 'services/fullscreen_state_manager.dart';
@@ -46,6 +47,7 @@ import 'services/plex_api_cache.dart';
 import 'database/app_database.dart';
 import 'utils/app_logger.dart';
 import 'utils/orientation_helper.dart';
+import 'utils/offline_mode_utils.dart';
 import 'i18n/strings.g.dart';
 import 'focus/input_mode_tracker.dart';
 import 'focus/key_event_utils.dart';
@@ -528,6 +530,13 @@ class SetupScreen extends StatefulWidget {
   State<SetupScreen> createState() => _SetupScreenState();
 }
 
+enum StartupFailure {
+  offlineInit,
+  noServerConnections,
+  connectionTimeout,
+  connectionFailed,
+}
+
 class _SetupScreenState extends State<SetupScreen> {
   String _statusMessage = '';
 
@@ -544,11 +553,105 @@ class _SetupScreenState extends State<SetupScreen> {
     if (mounted) setState(() => _statusMessage = message);
   }
 
+  void _navigateToAuthScreen() {
+    Navigator.pushReplacement(context, fadeRoute(const AuthScreen()));
+  }
+
+  void _openServerManagement(NavigatorState navigator, ScaffoldMessengerState messengerState) {
+    messengerState.hideCurrentSnackBar();
+    navigator.push(
+      MaterialPageRoute(builder: (context) => const ServerManagementScreen()),
+    );
+  }
+
+  ({String plex, String guest}) _messagesForFailure(StartupFailure failure) {
+    switch (failure) {
+      case StartupFailure.offlineInit:
+        return (
+          plex: t.serverSelection.offlineInitPlex,
+          guest: t.serverSelection.offlineInitGuest
+        );
+      case StartupFailure.noServerConnections:
+      case StartupFailure.connectionTimeout:
+        return (
+          plex: t.serverSelection.allServerConnectionsFailed,
+          guest: t.serverSelection.connectionFailedGuest
+        );
+      case StartupFailure.connectionFailed:
+        return (
+          plex: t.serverSelection.connectionFailedPlex,
+          guest: t.serverSelection.connectionFailedGuest
+        );
+    }
+  }
+
+  void _returnToAuthWithFailure({ required bool hasPlexToken, required StartupFailure failure }) {
+    if (!mounted) return;
+
+    final messages = _messagesForFailure(failure);
+    final colorScheme = Theme.of(context).colorScheme;
+    final message = hasPlexToken ? messages.plex : messages.guest;
+    final duration = hasPlexToken ? const Duration(seconds: 5) : const Duration(days: 1);
+    final navigator = Navigator.of(context);
+    final messengerState = rootScaffoldMessengerKey.currentState;
+
+    navigator.pushReplacement(fadeRoute(const AuthScreen()));
+
+    if (messengerState == null) return;
+
+    messengerState.removeCurrentSnackBar();
+    messengerState.showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: colorScheme.onError),
+        ),
+        backgroundColor: colorScheme.error,
+        duration: duration,
+        action: hasPlexToken
+            ? null
+            : SnackBarAction(
+                label: 'Configure',
+                textColor: colorScheme.onError,
+                disabledTextColor: colorScheme.onError,
+                onPressed: () => _openServerManagement(navigator, messengerState),
+              ),
+      ),
+    );
+  }
+
+  Future<void> _enterOfflineModeOrReturnToAuth({
+    required DownloadProvider downloadProvider,
+    required bool hasPlexToken,
+    required StartupFailure failure,
+  }) async {
+    _setStatus(t.common.startingOfflineMode);
+    final offlineReady = await OfflineModeUtils.initialize(
+      downloadProvider,
+      logContext: 'startup',
+    );
+
+    if (!mounted) return;
+
+    if (!offlineReady) {
+      _returnToAuthWithFailure(
+        hasPlexToken: hasPlexToken,
+        failure: failure,
+      );
+      return;
+    }
+
+    Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
+  }
+
   Future<void> _loadSavedCredentials() async {
     _setStatus(t.common.checkingNetwork);
 
     final storage = await StorageService.getInstance();
     final registry = ServerRegistry(storage);
+
+    // Check if we have Plex credentials (for snackbar behavior on failures)
+    final hasPlexToken = storage.getPlexToken() != null;
 
     // Check network connectivity early to fast-path airplane mode.
     // Timeout guards against connectivity_plus hanging on some Android TV devices after force-close.
@@ -577,7 +680,7 @@ class _SetupScreenState extends State<SetupScreen> {
       if (refreshResult == ServerRefreshResult.authError) {
         await storage.clearCredentials();
         if (mounted) {
-          Navigator.pushReplacement(context, fadeRoute(const AuthScreen()));
+          _navigateToAuthScreen();
         }
         return;
       }
@@ -590,7 +693,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
     if (servers.isEmpty) {
       if (mounted) {
-        Navigator.pushReplacement(context, fadeRoute(const AuthScreen()));
+        _navigateToAuthScreen();
       }
       return;
     }
@@ -599,10 +702,11 @@ class _SetupScreenState extends State<SetupScreen> {
 
     // No network — skip connection attempts and go straight to offline mode
     if (!hasNetwork) {
-      _setStatus(t.common.startingOfflineMode);
-      await context.read<DownloadProvider>().ensureInitialized();
-      if (!mounted) return;
-      Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
+      await _enterOfflineModeOrReturnToAuth(
+        downloadProvider: context.read<DownloadProvider>(),
+        hasPlexToken: hasPlexToken,
+        failure: StartupFailure.offlineInit,
+      );
       return;
     }
 
@@ -635,6 +739,9 @@ class _SetupScreenState extends State<SetupScreen> {
             });
           }
         },
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => throw TimeoutException('Server connection timed out'),
       );
 
       if (!mounted) return;
@@ -648,20 +755,26 @@ class _SetupScreenState extends State<SetupScreen> {
 
         Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
       } else {
-        _setStatus(t.common.startingOfflineMode);
-        await context.read<DownloadProvider>().ensureInitialized();
-        if (!mounted) return;
-        Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
+        await _enterOfflineModeOrReturnToAuth(
+          downloadProvider: context.read<DownloadProvider>(),
+          hasPlexToken: hasPlexToken,
+          failure: StartupFailure.noServerConnections,
+        );
       }
+    } on TimeoutException {
+      appLogger.w('Server connection timed out during startup');
+      await _enterOfflineModeOrReturnToAuth(
+        downloadProvider: context.read<DownloadProvider>(),
+        hasPlexToken: hasPlexToken,
+        failure: StartupFailure.connectionTimeout,
+      );
     } catch (e, stackTrace) {
       appLogger.e('Error during multi-server connection', error: e, stackTrace: stackTrace);
 
-      if (mounted) {
-        _setStatus(t.common.startingOfflineMode);
-        await context.read<DownloadProvider>().ensureInitialized();
-        if (!mounted) return;
-        Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
-      }
+      _returnToAuthWithFailure(
+        hasPlexToken: hasPlexToken,
+        failure: StartupFailure.connectionFailed,
+      );
     }
   }
 

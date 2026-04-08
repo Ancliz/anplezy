@@ -1711,6 +1711,18 @@ class TranslationsServerSelectionEn {
 
 	/// en: 'Failed to load servers: ${error}'
 	String failedToLoadServers({required Object error}) => 'Failed to load servers: ${error}';
+
+	/// en: 'Could not initialize offline mode. Please try signing in again.'
+	String get offlineInitPlex => 'Could not initialize offline mode. Please try signing in again.';
+
+	/// en: 'Could not initialize offline mode. Please ensure your servers are configured correctly.'
+	String get offlineInitGuest => 'Could not initialize offline mode. Please ensure your servers are configured correctly.';
+
+	/// en: 'Could not connect to any servers. Please ensure they are configured correctly.'
+	String get connectionFailedGuest => 'Could not connect to any servers. Please ensure they are configured correctly.';
+
+	/// en: 'Server connection failed. Please try signing in again.'
+	String get connectionFailedPlex => 'Server connection failed. Please try signing in again.';
 }
 
 // Path: hubDetail
@@ -3564,10 +3576,14 @@ extension on Translations {
 			'serverSelection.allServerConnectionsFailed' => 'Failed to connect to any servers. Please check your network and try again.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No servers found for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Failed to load servers: ${error}',
-			'hubDetail.title' => 'Title',
-			'hubDetail.releaseYear' => 'Release Year',
+			'serverSelection.offlineInitPlex' => 'Could not initialize offline mode. Please try signing in again.',
+			'serverSelection.offlineInitGuest' => 'Could not initialize offline mode. Please ensure your servers are configured correctly.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Could not connect to any servers. Please ensure they are configured correctly.',
+			'serverSelection.connectionFailedPlex' => 'Server connection failed. Please try signing in again.',
+			'hubDetail.title' => 'Title',
+			'hubDetail.releaseYear' => 'Release Year',
 			'hubDetail.dateAdded' => 'Date Added',
 			'hubDetail.rating' => 'Rating',
 			'hubDetail.noItemsFound' => 'No items found',

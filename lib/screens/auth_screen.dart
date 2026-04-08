@@ -16,11 +16,16 @@ import '../services/offline_watch_sync_service.dart';
 import '../i18n/strings.g.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/app_logger.dart';
+import '../utils/offline_mode_utils.dart';
 import '../utils/platform_detector.dart';
+import '../utils/snackbar_helper.dart';
 import '../focus/focusable_button.dart';
+import '../utils/connection_constants.dart';
 import '../utils/navigation_transitions.dart';
+import '../screens/settings/server_management_screen.dart';
 import 'main_screen.dart';
 import 'guest_setup_screen.dart';
+
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -31,6 +36,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool _isAuthenticating = false;
+  bool _isGuestConnectionLoading = false;
   String? _errorMessage;
   late PlexAuthService _authService;
   bool _shouldCancelPolling = false;
@@ -56,7 +62,66 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  /// Connect to all available servers and navigate to main screen
+  void _setAuthError(String message) {
+    if (!mounted) return;
+    setState(() {
+      _isAuthenticating = false;
+      _isGuestConnectionLoading = false;
+      _errorMessage = message;
+    });
+  }
+
+  void _showGuestConfigurationSnackBar(String message, NavigatorState navigator) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final messengerState = rootScaffoldMessengerKey.currentState;
+    if (messengerState == null) return;
+
+    messengerState.removeCurrentSnackBar();
+    messengerState.showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: colorScheme.onError),
+        ),
+        backgroundColor: colorScheme.error,
+        duration: const Duration(days: 1),
+        action: SnackBarAction(
+          label: 'Configure',
+          textColor: colorScheme.onError,
+          disabledTextColor: colorScheme.onError,
+          onPressed: () {
+            messengerState.hideCurrentSnackBar();
+            navigator.push(
+              MaterialPageRoute(builder: (context) => const ServerManagementScreen()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _enterGuestOfflineMode(DownloadProvider downloadProvider) async {
+    final offlineReady = await OfflineModeUtils.initialize(
+      downloadProvider,
+      logContext: 'guest mode',
+    );
+    if (!mounted) return false;
+
+    if (!offlineReady) {
+      final navigator = Navigator.of(context);
+      navigator.pushReplacement(fadeRoute(const AuthScreen()));
+      _showGuestConfigurationSnackBar(
+        'Failed to initialize servers. Make sure they are configured correctly.',
+        navigator,
+      );
+      return false;
+    }
+
+    Navigator.of(context).pushReplacement(fadeRoute(const MainScreen(isOfflineMode: true)));
+    return true;
+  }
+
+  /// Connect to all available servers and navigate to main screen (Plex login mode)
   Future<void> _connectToAllServersAndNavigate(String plexToken) async {
     if (!mounted) return;
 
@@ -76,11 +141,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       if (servers.isEmpty) {
         await storage.clearCredentials();
-        if (!mounted) return;
-        setState(() {
-          _isAuthenticating = false;
-          _errorMessage = t.serverSelection.noServersFoundForAccount(username: username, email: email);
-        });
+        _setAuthError(t.serverSelection.noServersFoundForAccount(username: username, email: email));
         return;
       }
 
@@ -94,41 +155,58 @@ class _AuthScreenState extends State<AuthScreen> {
       // The home users API (clients.plex.tv) is independent of server connections.
       final profileFuture = context.read<UserProfileProvider>().initialize();
 
-      final result = await ServerConnectionOrchestrator.connectAndInitialize(
-        servers: servers,
-        multiServerProvider: context.read<MultiServerProvider>(),
-        librariesProvider: context.read<LibrariesProvider>(),
-        syncService: context.read<OfflineWatchSyncService>(),
-        clientIdentifier: _authService.clientIdentifier,
-      );
+      try {
+        final result = await ServerConnectionOrchestrator.connectAndInitialize(
+          servers: servers,
+          multiServerProvider: context.read<MultiServerProvider>(),
+          librariesProvider: context.read<LibrariesProvider>(),
+          syncService: context.read<OfflineWatchSyncService>(),
+          clientIdentifier: _authService.clientIdentifier,
+        ).timeout(
+          ConnectionTimeouts.offlineRetry,
+          onTimeout: () => throw TimeoutException('Server connection timed out'),
+        );
 
-      if (!result.hasConnections || result.firstClient == null) {
+        if (!result.hasConnections || result.firstClient == null) {
+          _setAuthError(t.serverSelection.allServerConnectionsFailed);
+          return;
+        }
+
+        // Wait for profile init to finish before navigating so MainScreen
+        // has home user data available immediately.
+        await profileFuture;
+
         if (!mounted) return;
-        setState(() {
-          _isAuthenticating = false;
-          _errorMessage = t.serverSelection.allServerConnectionsFailed;
-        });
-        return;
+        Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
+      } on TimeoutException {
+        appLogger.w('Server connection timed out during Plex login');
+        if (!mounted) return;
+        _setAuthError(t.serverSelection.allServerConnectionsFailed);
+        // Show non-persistent red snackbar
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.removeCurrentSnackBar();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              'Server connection timed out. Please try again.',
+              style: TextStyle(color: Theme.of(context).colorScheme.onError),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 5),
+          ),
+        );
       }
-
-      // Wait for profile init to finish before navigating so MainScreen
-      // has home user data available immediately.
-      await profileFuture;
-
-      if (!mounted) return;
-      Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
-    } catch (e) {
-      appLogger.e('Failed to connect to servers', error: e);
-      setState(() {
-        _isAuthenticating = false;
-        _errorMessage = t.serverSelection.failedToLoadServers(error: e);
-      });
+    } catch (error) {
+      appLogger.e('Failed to connect to servers', error: error);
+      _setAuthError(t.serverSelection.failedToLoadServers(error: error));
     }
   }
 
   Future<void> _startAuthentication() async {
+    rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
     setState(() {
       _isAuthenticating = true;
+      _isGuestConnectionLoading = false;
       _errorMessage = null;
       _shouldCancelPolling = false;
       // preserve _useQrFlow as chosen prior to calling
@@ -180,10 +258,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       if (!mounted) return;
       if (token == null) {
-        setState(() {
-          _isAuthenticating = false;
-          _errorMessage = t.auth.authenticationTimeout;
-        });
+        _setAuthError(t.auth.authenticationTimeout);
         return;
       }
 
@@ -212,11 +287,7 @@ class _AuthScreenState extends State<AuthScreen> {
         await _connectToAllServersAndNavigate(token);
       }
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _isAuthenticating = false;
-        _errorMessage = t.errors.authenticationFailed(error: e);
-      });
+      _setAuthError(t.errors.authenticationFailed(error: e));
     }
   }
 
@@ -224,6 +295,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {
       _shouldCancelPolling = true;
       _isAuthenticating = false;
+      _isGuestConnectionLoading = false;
       _qrAuthUrl = null;
     });
     // Start new authentication after a brief delay to ensure cleanup
@@ -311,6 +383,17 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _handleContinueWithoutPlex() async {
+    rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
+    if (mounted) {
+      setState(() {
+        _isAuthenticating = true;
+        _isGuestConnectionLoading = true;
+        _useQrFlow = false;
+        _qrAuthUrl = null;
+        _errorMessage = null;
+      });
+    }
+
     try {
       // Capture providers before any async operations
       final multiServerProvider = context.read<MultiServerProvider>();
@@ -323,26 +406,37 @@ class _AuthScreenState extends State<AuthScreen> {
       final servers = await registry.getServers();
 
       if (servers.isNotEmpty) {
-        // Try to connect to existing servers offline
-        final result = await ServerConnectionOrchestrator.connectAndInitialize(
-          servers: servers,
-          multiServerProvider: multiServerProvider,
-          librariesProvider: librariesProvider,
-          syncService: syncService,
-          clientIdentifier: _authService.clientIdentifier,
-        );
+        try {
+          // Try to connect to existing servers offline with timeout
+          final result = await ServerConnectionOrchestrator.connectAndInitialize(
+            servers: servers,
+            multiServerProvider: multiServerProvider,
+            librariesProvider: librariesProvider,
+            syncService: syncService,
+            clientIdentifier: _authService.clientIdentifier,
+          ).timeout(
+            ConnectionTimeouts.offlineRetry,
+            onTimeout: () => throw TimeoutException('Server connection timed out'),
+          );
 
-        if (result.hasConnections && result.firstClient != null) {
-          if (mounted) {
-            Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
+          if (result.hasConnections && result.firstClient != null) {
+            if (mounted) {
+              Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
+            }
+            return;
+          } else {
+            await _enterGuestOfflineMode(downloadProvider);
+            return;
           }
-          return;
-        } else {
-          // Initialize download provider for offline mode
-          await downloadProvider.ensureInitialized();
-          if (mounted) {
-            Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
-          }
+        } on TimeoutException {
+          appLogger.w('Server connection timed out during guest mode');
+          if (!mounted) return;
+          final navigator = Navigator.of(context);
+          navigator.pushReplacement(fadeRoute(const AuthScreen()));
+          _showGuestConfigurationSnackBar(
+            'Server connection timed out. Make sure your servers are configured correctly.',
+            navigator,
+          );
           return;
         }
       }
@@ -615,17 +709,18 @@ class _AuthScreenState extends State<AuthScreen> {
 
   /// Builds the browser authentication waiting widget
   Widget _buildBrowserAuthWidget() {
+    final message = _isGuestConnectionLoading ? t.common.connectingToServers : t.auth.waitingForAuth;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         const Center(child: CircularProgressIndicator()),
         const SizedBox(height: 16),
         Text(
-          t.auth.waitingForAuth,
+          message,
           textAlign: TextAlign.center,
           style: const TextStyle(color: Colors.grey),
         ),
-        _buildRetryButton(),
+        if (!_isGuestConnectionLoading) _buildRetryButton(),
       ],
     );
   }
