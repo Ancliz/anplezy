@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:plezy/utils/logout_utils.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import '../widgets/server_activities_button.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -20,7 +21,6 @@ import '../models/plex_hub.dart';
 import '../providers/multi_server_provider.dart';
 import '../providers/hidden_libraries_provider.dart';
 import '../providers/libraries_provider.dart';
-import '../providers/playback_state_provider.dart';
 import 'profile/user_avatar_widget.dart';
 import '../widgets/hub_section.dart';
 import 'profile/profile_switch_screen.dart';
@@ -33,14 +33,12 @@ import '../mixins/item_updatable.dart';
 import '../mixins/watch_state_aware.dart';
 import '../utils/watch_state_notifier.dart';
 import '../utils/app_logger.dart';
-import '../utils/dialogs.dart';
 import '../utils/provider_extensions.dart';
 import '../utils/video_player_navigation.dart';
 import '../utils/layout_constants.dart';
 import '../utils/platform_detector.dart';
 import '../theme/mono_tokens.dart';
 import '../services/watch_next_service.dart';
-import 'auth_screen.dart';
 import 'libraries/state_messages.dart';
 import 'main_screen.dart';
 import '../watch_together/watch_together.dart';
@@ -782,33 +780,7 @@ class _DiscoverScreenState extends State<DiscoverScreen>
   }
 
   Future<void> _handleLogout() async {
-    final confirm = await showConfirmDialog(
-      context,
-      title: t.common.logout,
-      message: t.messages.logoutConfirm,
-      confirmText: t.common.logout,
-      isDestructive: true,
-    );
-
-    if (confirm && mounted) {
-      // Use comprehensive logout through UserProfileProvider
-      final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-      final multiServerProvider = context.read<MultiServerProvider>();
-      final hiddenLibrariesProvider = context.read<HiddenLibrariesProvider>();
-      final playbackStateProvider = context.read<PlaybackStateProvider>();
-
-      // Clear all user data and provider states
-      await userProfileProvider.logout();
-      multiServerProvider.clearAllConnections();
-      await hiddenLibrariesProvider.refresh();
-      playbackStateProvider.clearShuffle();
-
-      if (mounted) {
-        Navigator.of(
-          context,
-        ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const AuthScreen()), (route) => false);
-      }
-    }
+    await LogoutUtils.confirmAndLogout(context);
   }
 
   void _handleSwitchProfile(BuildContext context) {

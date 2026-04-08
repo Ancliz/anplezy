@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:plezy/utils/logout_utils.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ import '../../utils/snackbar_helper.dart';
 import '../../utils/platform_detector.dart';
 import '../../widgets/desktop_app_bar.dart';
 import '../../widgets/settings_section.dart';
+import '../../focus/focusable_button.dart';
 import 'about_screen.dart';
 import 'appearance_settings_screen.dart';
 import 'keyboard_shortcuts_screen.dart';
@@ -59,6 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
   static const _kAbout = 'about';
   static const _kWatchTogetherRelay = 'watch_together_relay';
   static const _kServerManagement = 'server_management';
+  static const _kLogout = 'logout';
 
   KeyboardShortcutsService? _keyboardService;
   late final bool _keyboardShortcutsSupported = KeyboardShortcutsService.isPlatformSupported();
@@ -167,21 +170,31 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
                 // --- Updates (conditional) ---
                 if (UpdateService.isUpdateCheckEnabled) ...[
                   _buildUpdateSection(),
-                  ],
-
-                // --- About ---
-                ListTile(
-                  focusNode: _focusTracker.get(_kAbout),
-                  leading: const AppIcon(Symbols.info_rounded, fill: 1),
-                  title: Text(t.settings.about),
-                  subtitle: Text(t.settings.aboutDescription),
-                  trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
-                  },
-                ),
-                const SizedBox(height: 24),
+                ],
               ]),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListTile(
+                    focusNode: _focusTracker.get(_kAbout),
+                    leading: const AppIcon(Symbols.info_rounded, fill: 1),
+                    title: Text(t.settings.about),
+                    subtitle: Text(t.settings.aboutDescription),
+                    trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
+                    },
+                  ),
+                  const Spacer(),
+
+                  _buildLogoutButton(),
+
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ],
         ),
@@ -306,8 +319,6 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
     );
   }
 
-
-
   Widget _buildAdvancedSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,6 +403,26 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
             },
           ),
       ],
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: FocusableButton(
+        focusNode: _focusTracker.get(_kLogout),
+        onPressed: () => LogoutUtils.logout(context),
+        child: FilledButton.icon(
+          onPressed: () => LogoutUtils.logout(context),
+          style: FilledButton.styleFrom(
+            backgroundColor: colorScheme.error,
+            foregroundColor: colorScheme.onError,
+          ),
+          icon: const AppIcon(Symbols.logout_rounded, fill: 1),
+          label: Text(t.common.logout),
+        ),
+      ),
     );
   }
 
