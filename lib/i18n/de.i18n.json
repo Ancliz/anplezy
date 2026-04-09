@@ -565,7 +565,13 @@
     "offlineInitPlex": "Offline-Modus konnte nicht initialisiert werden. Bitte versuchen Sie, sich erneut anzumelden.",
     "offlineInitGuest": "Offline-Modus konnte nicht initialisiert werden. Bitte stellen Sie sicher, dass Ihre Server korrekt konfiguriert sind.",
     "connectionFailedGuest": "Verbindung zu keinem Server möglich. Bitte stellen Sie sicher, dass diese korrekt konfiguriert sind.",
-    "connectionFailedPlex": "Serververbindung fehlgeschlagen. Bitte melden Sie sich erneut an."
+    "connectionFailedPlex": "Serververbindung fehlgeschlagen. Bitte melden Sie sich erneut an.",
+    "manualServerUrlRequired": "Bitte geben Sie eine Server-Adresse ein",
+    "manualServerUrlInvalid": "Ungültiges Server-Adressformat",
+    "manualServerDefaultName": "Lokaler Server",
+    "manualServerSaveFailed": "Server konnte nicht gespeichert werden.",
+    "manualServerConnectionFailed": "Verbindung zum Server fehlgeschlagen. Bitte überprüfen Sie die Adresse und versuchen Sie es erneut.",
+    "manualServerGenericFailure": "Verbindung fehlgeschlagen."
   },
   "hubDetail": {
     "title": "Titel",

@@ -763,6 +763,12 @@ class _TranslationsServerSelectionIt implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Impossibile inizializzare la modalità offline. Assicurati che i server siano configurati correttamente.';
 	@override String get connectionFailedGuest => 'Impossibile connettersi a nessun server. Assicurati che siano configurati correttamente.';
 	@override String get connectionFailedPlex => 'Connessione al server non riuscita. Riprova ad accedere.';
+	@override String get manualServerUrlRequired => 'Inserisci un indirizzo del server';
+	@override String get manualServerUrlInvalid => 'Formato dell\'indirizzo del server non valido';
+	@override String get manualServerDefaultName => 'Server locale';
+	@override String get manualServerSaveFailed => 'Impossibile salvare il server.';
+	@override String get manualServerConnectionFailed => 'Impossibile connettersi al server. Controlla l\'indirizzo e riprova.';
+	@override String get manualServerGenericFailure => 'Connessione non riuscita.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsIt {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Impossibile connettersi a nessun server. Assicurati che siano configurati correttamente.',
 			'serverSelection.connectionFailedPlex' => 'Connessione al server non riuscita. Riprova ad accedere.',
+			'serverSelection.manualServerUrlRequired' => 'Inserisci un indirizzo del server',
+			'serverSelection.manualServerUrlInvalid' => 'Formato dell\'indirizzo del server non valido',
+			'serverSelection.manualServerDefaultName' => 'Server locale',
+			'serverSelection.manualServerSaveFailed' => 'Impossibile salvare il server.',
+			'serverSelection.manualServerConnectionFailed' => 'Impossibile connettersi al server. Controlla l\'indirizzo e riprova.',
+			'serverSelection.manualServerGenericFailure' => 'Connessione non riuscita.',
 			'hubDetail.title' => 'Titolo',
 			'hubDetail.releaseYear' => 'Anno rilascio',
 			'hubDetail.dateAdded' => 'Data aggiunta',

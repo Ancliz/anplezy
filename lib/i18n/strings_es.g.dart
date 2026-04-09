@@ -763,6 +763,12 @@ class _TranslationsServerSelectionEs implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'No se pudo inicializar el modo sin conexión. Asegúrate de que tus servidores estén configurados correctamente.';
 	@override String get connectionFailedGuest => 'No se pudo conectar a ningún servidor. Asegúrate de que estén configurados correctamente.';
 	@override String get connectionFailedPlex => 'Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo.';
+	@override String get manualServerUrlRequired => 'Introduce una dirección del servidor';
+	@override String get manualServerUrlInvalid => 'Formato de dirección del servidor no válido';
+	@override String get manualServerDefaultName => 'Servidor local';
+	@override String get manualServerSaveFailed => 'No se pudo guardar el servidor.';
+	@override String get manualServerConnectionFailed => 'No se pudo conectar al servidor. Verifica la dirección e inténtalo de nuevo.';
+	@override String get manualServerGenericFailure => 'Error de conexión.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsEs {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'No se pudo conectar a ningún servidor. Asegúrate de que estén configurados correctamente.',
 			'serverSelection.connectionFailedPlex' => 'Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo.',
+			'serverSelection.manualServerUrlRequired' => 'Introduce una dirección del servidor',
+			'serverSelection.manualServerUrlInvalid' => 'Formato de dirección del servidor no válido',
+			'serverSelection.manualServerDefaultName' => 'Servidor local',
+			'serverSelection.manualServerSaveFailed' => 'No se pudo guardar el servidor.',
+			'serverSelection.manualServerConnectionFailed' => 'No se pudo conectar al servidor. Verifica la dirección e inténtalo de nuevo.',
+			'serverSelection.manualServerGenericFailure' => 'Error de conexión.',
 			'hubDetail.title' => 'Título',
 			'hubDetail.releaseYear' => 'Año de lanzamiento',
 			'hubDetail.dateAdded' => 'Añadido el',

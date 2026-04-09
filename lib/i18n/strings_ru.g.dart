@@ -763,6 +763,12 @@ class _TranslationsServerSelectionRu implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Не удалось инициализировать офлайн-режим. Убедитесь, что серверы настроены правильно.';
 	@override String get connectionFailedGuest => 'Не удалось подключиться ни к одному серверу. Проверьте настройки.';
 	@override String get connectionFailedPlex => 'Не удалось подключиться к серверу. Попробуйте снова войти.';
+	@override String get manualServerUrlRequired => 'Введите адрес сервера';
+	@override String get manualServerUrlInvalid => 'Неверный формат адреса сервера';
+	@override String get manualServerDefaultName => 'Локальный сервер';
+	@override String get manualServerSaveFailed => 'Не удалось сохранить сервер.';
+	@override String get manualServerConnectionFailed => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.';
+	@override String get manualServerGenericFailure => 'Ошибка подключения.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsRu {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Не удалось подключиться ни к одному серверу. Проверьте настройки.',
 			'serverSelection.connectionFailedPlex' => 'Не удалось подключиться к серверу. Попробуйте снова войти.',
+			'serverSelection.manualServerUrlRequired' => 'Введите адрес сервера',
+			'serverSelection.manualServerUrlInvalid' => 'Неверный формат адреса сервера',
+			'serverSelection.manualServerDefaultName' => 'Локальный сервер',
+			'serverSelection.manualServerSaveFailed' => 'Не удалось сохранить сервер.',
+			'serverSelection.manualServerConnectionFailed' => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.',
+			'serverSelection.manualServerGenericFailure' => 'Ошибка подключения.',
 			'hubDetail.title' => 'Название',
 			'hubDetail.releaseYear' => 'Год выпуска',
 			'hubDetail.dateAdded' => 'Дата добавления',

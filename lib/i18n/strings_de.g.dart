@@ -763,6 +763,12 @@ class _TranslationsServerSelectionDe implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Offline-Modus konnte nicht initialisiert werden. Bitte stellen Sie sicher, dass Ihre Server korrekt konfiguriert sind.';
 	@override String get connectionFailedGuest => 'Verbindung zu keinem Server möglich. Bitte stellen Sie sicher, dass diese korrekt konfiguriert sind.';
 	@override String get connectionFailedPlex => 'Serververbindung fehlgeschlagen. Bitte melden Sie sich erneut an.';
+	@override String get manualServerUrlRequired => 'Bitte geben Sie eine Server-Adresse ein';
+	@override String get manualServerUrlInvalid => 'Ungültiges Server-Adressformat';
+	@override String get manualServerDefaultName => 'Lokaler Server';
+	@override String get manualServerSaveFailed => 'Server konnte nicht gespeichert werden.';
+	@override String get manualServerConnectionFailed => 'Verbindung zum Server fehlgeschlagen. Bitte überprüfen Sie die Adresse und versuchen Sie es erneut.';
+	@override String get manualServerGenericFailure => 'Verbindung fehlgeschlagen.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsDe {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Verbindung zu keinem Server möglich. Bitte stellen Sie sicher, dass diese korrekt konfiguriert sind.',
 			'serverSelection.connectionFailedPlex' => 'Serververbindung fehlgeschlagen. Bitte melden Sie sich erneut an.',
+			'serverSelection.manualServerUrlRequired' => 'Bitte geben Sie eine Server-Adresse ein',
+			'serverSelection.manualServerUrlInvalid' => 'Ungültiges Server-Adressformat',
+			'serverSelection.manualServerDefaultName' => 'Lokaler Server',
+			'serverSelection.manualServerSaveFailed' => 'Server konnte nicht gespeichert werden.',
+			'serverSelection.manualServerConnectionFailed' => 'Verbindung zum Server fehlgeschlagen. Bitte überprüfen Sie die Adresse und versuchen Sie es erneut.',
+			'serverSelection.manualServerGenericFailure' => 'Verbindung fehlgeschlagen.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Erscheinungsjahr',
 			'hubDetail.dateAdded' => 'Hinzugefügt am',

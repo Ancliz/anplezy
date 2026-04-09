@@ -565,7 +565,13 @@
     "offlineInitPlex": "Could not initialize offline mode. Please try signing in again.",
     "offlineInitGuest": "Could not initialize offline mode. Please ensure your servers are configured correctly.",
     "connectionFailedGuest": "Could not connect to any servers. Please ensure they are configured correctly.",
-    "connectionFailedPlex": "Server connection failed. Please try signing in again."
+    "connectionFailedPlex": "Server connection failed. Please try signing in again.",
+    "manualServerUrlRequired": "Please enter a server address",
+    "manualServerUrlInvalid": "Invalid server address format",
+    "manualServerDefaultName": "Local Server",
+    "manualServerSaveFailed": "Failed to save server.",
+    "manualServerConnectionFailed": "Could not connect to server. Please check the address and try again.",
+    "manualServerGenericFailure": "Connection failed."
 
   },
   "hubDetail": {

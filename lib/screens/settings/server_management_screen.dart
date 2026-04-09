@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/strings.g.dart';
 import '../../services/plex_auth_service.dart';
 import '../../services/storage_service.dart';
 import '../../services/server_registry.dart';
@@ -104,7 +105,7 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
       if (!success) {
         setState(() {
           _isConnecting = false;
-          _errorMessage = error ?? 'Could not connect to server. Please check the URL and try again.';
+          _errorMessage = error ?? t.serverSelection.manualServerConnectionFailed;
         });
         return;
       }
@@ -132,7 +133,7 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
       appLogger.e('Failed to add manual server', error: error);
       setState(() {
         _isConnecting = false;
-        _errorMessage = 'Connection failed. Please try again.';
+        _errorMessage = t.serverSelection.manualServerGenericFailure;
       });
     }
   }

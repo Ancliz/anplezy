@@ -565,7 +565,13 @@
     "offlineInitPlex": "Не удалось инициализировать офлайн-режим. Попробуйте снова войти.",
     "offlineInitGuest": "Не удалось инициализировать офлайн-режим. Убедитесь, что серверы настроены правильно.",
     "connectionFailedGuest": "Не удалось подключиться ни к одному серверу. Проверьте настройки.",
-    "connectionFailedPlex": "Не удалось подключиться к серверу. Попробуйте снова войти."
+    "connectionFailedPlex": "Не удалось подключиться к серверу. Попробуйте снова войти.",
+    "manualServerUrlRequired": "Введите адрес сервера",
+    "manualServerUrlInvalid": "Неверный формат адреса сервера",
+    "manualServerDefaultName": "Локальный сервер",
+    "manualServerSaveFailed": "Не удалось сохранить сервер.",
+    "manualServerConnectionFailed": "Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.",
+    "manualServerGenericFailure": "Ошибка подключения."
   },
   "hubDetail": {
     "title": "Название",

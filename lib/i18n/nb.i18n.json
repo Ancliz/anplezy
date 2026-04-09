@@ -565,7 +565,13 @@
     "offlineInitPlex": "Kunne ikke initialisere frakoblet modus. Prøv å logge inn igjen.",
     "offlineInitGuest": "Kunne ikke initialisere frakoblet modus. Sørg for at serverne er riktig konfigurert.",
     "connectionFailedGuest": "Kunne ikke koble til noen servere. Sørg for at de er riktig konfigurert.",
-    "connectionFailedPlex": "Servertilkobling mislyktes. Prøv å logge inn igjen."
+    "connectionFailedPlex": "Servertilkobling mislyktes. Prøv å logge inn igjen.",
+    "manualServerUrlRequired": "Vennligst skriv inn en serveradresse",
+    "manualServerUrlInvalid": "Ugyldig serveradresse-format",
+    "manualServerDefaultName": "Lokal server",
+    "manualServerSaveFailed": "Kunne ikke lagre serveren.",
+    "manualServerConnectionFailed": "Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.",
+    "manualServerGenericFailure": "Tilkobling mislyktes."
   },
   "hubDetail": {
     "title": "Tittel",

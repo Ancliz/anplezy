@@ -763,6 +763,12 @@ class _TranslationsServerSelectionFr implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier que vos serveurs sont correctement configurés.';
 	@override String get connectionFailedGuest => 'Impossible de se connecter à un serveur. Veuillez vérifier leur configuration.';
 	@override String get connectionFailedPlex => 'Échec de la connexion au serveur. Veuillez vous reconnecter.';
+	@override String get manualServerUrlRequired => 'Veuillez saisir une adresse du serveur';
+	@override String get manualServerUrlInvalid => 'Format d\'adresse du serveur invalide';
+	@override String get manualServerDefaultName => 'Serveur local';
+	@override String get manualServerSaveFailed => 'Impossible d\'enregistrer le serveur.';
+	@override String get manualServerConnectionFailed => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.';
+	@override String get manualServerGenericFailure => 'Échec de la connexion.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsFr {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Impossible de se connecter à un serveur. Veuillez vérifier leur configuration.',
 			'serverSelection.connectionFailedPlex' => 'Échec de la connexion au serveur. Veuillez vous reconnecter.',
+			'serverSelection.manualServerUrlRequired' => 'Veuillez saisir une adresse du serveur',
+			'serverSelection.manualServerUrlInvalid' => 'Format d\'adresse du serveur invalide',
+			'serverSelection.manualServerDefaultName' => 'Serveur local',
+			'serverSelection.manualServerSaveFailed' => 'Impossible d\'enregistrer le serveur.',
+			'serverSelection.manualServerConnectionFailed' => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.',
+			'serverSelection.manualServerGenericFailure' => 'Échec de la connexion.',
 			'hubDetail.title' => 'Titre',
 			'hubDetail.releaseYear' => 'Année de sortie',
 			'hubDetail.dateAdded' => 'Date d\'ajout',

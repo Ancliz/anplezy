@@ -565,7 +565,13 @@
     "offlineInitPlex": "无法初始化离线模式。请重新登录。",
     "offlineInitGuest": "无法初始化离线模式。请确保服务器配置正确。",
     "connectionFailedGuest": "无法连接到任何服务器。请确保配置正确。",
-    "connectionFailedPlex": "服务器连接失败。请重新登录。"
+    "connectionFailedPlex": "服务器连接失败。请重新登录。",
+    "manualServerUrlRequired": "请输入服务器地址",
+    "manualServerUrlInvalid": "无效的服务器地址格式",
+    "manualServerDefaultName": "本地服务器",
+    "manualServerSaveFailed": "无法保存服务器。",
+    "manualServerConnectionFailed": "无法连接到服务器。请检查地址并重试。",
+    "manualServerGenericFailure": "连接失败。"
   },
   "hubDetail": {
     "title": "标题",

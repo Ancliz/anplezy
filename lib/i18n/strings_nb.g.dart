@@ -763,6 +763,12 @@ class _TranslationsServerSelectionNb implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunne ikke initialisere frakoblet modus. Sørg for at serverne er riktig konfigurert.';
 	@override String get connectionFailedGuest => 'Kunne ikke koble til noen servere. Sørg for at de er riktig konfigurert.';
 	@override String get connectionFailedPlex => 'Servertilkobling mislyktes. Prøv å logge inn igjen.';
+	@override String get manualServerUrlRequired => 'Vennligst skriv inn en serveradresse';
+	@override String get manualServerUrlInvalid => 'Ugyldig serveradresse-format';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunne ikke lagre serveren.';
+	@override String get manualServerConnectionFailed => 'Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.';
+	@override String get manualServerGenericFailure => 'Tilkobling mislyktes.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsNb {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Kunne ikke koble til noen servere. Sørg for at de er riktig konfigurert.',
 			'serverSelection.connectionFailedPlex' => 'Servertilkobling mislyktes. Prøv å logge inn igjen.',
+			'serverSelection.manualServerUrlRequired' => 'Vennligst skriv inn en serveradresse',
+			'serverSelection.manualServerUrlInvalid' => 'Ugyldig serveradresse-format',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunne ikke lagre serveren.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.',
+			'serverSelection.manualServerGenericFailure' => 'Tilkobling mislyktes.',
 			'hubDetail.title' => 'Tittel',
 			'hubDetail.releaseYear' => 'Utgivelsesår',
 			'hubDetail.dateAdded' => 'Dato lagt til',

@@ -763,6 +763,12 @@ class _TranslationsServerSelectionSv implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunde inte initiera offlineläge. Se till att dina servrar är korrekt konfigurerade.';
 	@override String get connectionFailedGuest => 'Kunde inte ansluta till några servrar. Kontrollera konfigurationen.';
 	@override String get connectionFailedPlex => 'Serveranslutning misslyckades. Försök logga in igen.';
+	@override String get manualServerUrlRequired => 'Ange en serveradress';
+	@override String get manualServerUrlInvalid => 'Ogiltigt serveradressformat';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunde inte spara servern.';
+	@override String get manualServerConnectionFailed => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.';
+	@override String get manualServerGenericFailure => 'Anslutning misslyckades.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsSv {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Kunde inte ansluta till några servrar. Kontrollera konfigurationen.',
 			'serverSelection.connectionFailedPlex' => 'Serveranslutning misslyckades. Försök logga in igen.',
+			'serverSelection.manualServerUrlRequired' => 'Ange en serveradress',
+			'serverSelection.manualServerUrlInvalid' => 'Ogiltigt serveradressformat',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunde inte spara servern.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.',
+			'serverSelection.manualServerGenericFailure' => 'Anslutning misslyckades.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Utgivningsår',
 			'hubDetail.dateAdded' => 'Datum tillagd',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../i18n/strings.g.dart';
 import '../services/plex_auth_service.dart';
 import '../services/storage_service.dart';
 import '../services/server_registry.dart';
@@ -57,12 +58,12 @@ class ManualServerUtils {
     bool shouldCancelConnection = false,
   }) async {
     if (url.isEmpty) {
-      return (false, 'Please enter a server URL', '');
+      return (false, t.serverSelection.manualServerUrlRequired, '');
     }
 
     final parsed = parseServerUrl(url);
     if (parsed == null) {
-      return (false, 'Invalid server URL format', '');
+      return (false, t.serverSelection.manualServerUrlInvalid, '');
     }
 
     try {
@@ -82,7 +83,7 @@ class ManualServerUtils {
         ipv6: parsed.address.contains(':'),
       );
 
-      final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
+      final serverName = displayName.isNotEmpty ? displayName : t.serverSelection.manualServerDefaultName;
       final generatedId = generateServerId(serverName);
 
       final server = PlexServer(
@@ -94,12 +95,6 @@ class ManualServerUtils {
         presence: false,
       );
 
-      // Save to registry
-      final storage = await StorageService.getInstance();
-      final registry = ServerRegistry(storage);
-      await registry.upsertServer(server);
-
-      // Try to connect
       final result = await ServerConnectionOrchestrator.connectAndInitialize(
         servers: [server],
         multiServerProvider: multiServerProvider,
@@ -109,13 +104,33 @@ class ManualServerUtils {
       );
 
       if (shouldCancelConnection) {
+        // Connection attempts may have already registered temporary state
+        multiServerProvider.serverManager.removeServer(generatedId);
         return (false, 'Connection cancelled', serverName);
       }
 
       if (result.connectedCount > 0) {
-        return (true, null, serverName);
+        try {
+          final storage = await StorageService.getInstance();
+          final registry = ServerRegistry(storage);
+
+          // Persist the manual server after it has proved it can connect
+          await registry.upsertServer(server);
+          return (true, null, serverName);
+        } catch (error, stackTrace) {
+          appLogger.e(
+            'Failed to persist manual server after successful connection',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          // Roll back the live connection so add behaves atomically
+          multiServerProvider.serverManager.removeServer(generatedId);
+          return (false, t.serverSelection.manualServerSaveFailed, serverName);
+        }
       } else {
-        return (false, 'Could not connect to server. Please check the URL and try again.', serverName);
+        // Clean up any offline/failed entry the connection manager recorded
+        multiServerProvider.serverManager.removeServer(generatedId);
+        return (false, t.serverSelection.manualServerConnectionFailed, serverName);
       }
     } catch (e) {
       final errorMsg = e.toString();

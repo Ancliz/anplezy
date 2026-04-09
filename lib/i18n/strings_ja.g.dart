@@ -763,6 +763,12 @@ class _TranslationsServerSelectionJa implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'オフラインモードを初期化できませんでした。サーバーが正しく設定されていることを確認してください。';
 	@override String get connectionFailedGuest => 'どのサーバーにも接続できませんでした。設定を確認してください。';
 	@override String get connectionFailedPlex => 'サーバー接続に失敗しました。再度ログインしてください。';
+	@override String get manualServerUrlRequired => 'サーバーアドレスを入力してください';
+	@override String get manualServerUrlInvalid => '無効なサーバーアドレス形式です';
+	@override String get manualServerDefaultName => 'ローカルサーバー';
+	@override String get manualServerSaveFailed => 'サーバーを保存できませんでした。';
+	@override String get manualServerConnectionFailed => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。';
+	@override String get manualServerGenericFailure => '接続に失敗しました。';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsJa {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'どのサーバーにも接続できませんでした。設定を確認してください。',
 			'serverSelection.connectionFailedPlex' => 'サーバー接続に失敗しました。再度ログインしてください。',
+			'serverSelection.manualServerUrlRequired' => 'サーバーアドレスを入力してください',
+			'serverSelection.manualServerUrlInvalid' => '無効なサーバーアドレス形式です',
+			'serverSelection.manualServerDefaultName' => 'ローカルサーバー',
+			'serverSelection.manualServerSaveFailed' => 'サーバーを保存できませんでした。',
+			'serverSelection.manualServerConnectionFailed' => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。',
+			'serverSelection.manualServerGenericFailure' => '接続に失敗しました。',
 			'hubDetail.title' => 'タイトル',
 			'hubDetail.releaseYear' => '公開年',
 			'hubDetail.dateAdded' => '追加日',

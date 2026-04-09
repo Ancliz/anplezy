@@ -763,6 +763,12 @@ class _TranslationsServerSelectionPl implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Nie można zainicjować trybu offline. Upewnij się, że serwery są poprawnie skonfigurowane.';
 	@override String get connectionFailedGuest => 'Nie można połączyć się z żadnym serwerem. Upewnij się, że są poprawnie skonfigurowane.';
 	@override String get connectionFailedPlex => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.';
+	@override String get manualServerUrlRequired => 'Wprowadź adres serwera';
+	@override String get manualServerUrlInvalid => 'Nieprawidłowy format adresu serwera';
+	@override String get manualServerDefaultName => 'Serwer lokalny';
+	@override String get manualServerSaveFailed => 'Nie udało się zapisać serwera.';
+	@override String get manualServerConnectionFailed => 'Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.';
+	@override String get manualServerGenericFailure => 'Połączenie nie powiodło się.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsPl {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Nie można połączyć się z żadnym serwerem. Upewnij się, że są poprawnie skonfigurowane.',
 			'serverSelection.connectionFailedPlex' => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.',
+			'serverSelection.manualServerUrlRequired' => 'Wprowadź adres serwera',
+			'serverSelection.manualServerUrlInvalid' => 'Nieprawidłowy format adresu serwera',
+			'serverSelection.manualServerDefaultName' => 'Serwer lokalny',
+			'serverSelection.manualServerSaveFailed' => 'Nie udało się zapisać serwera.',
+			'serverSelection.manualServerConnectionFailed' => 'Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.',
+			'serverSelection.manualServerGenericFailure' => 'Połączenie nie powiodło się.',
 			'hubDetail.title' => 'Tytuł',
 			'hubDetail.releaseYear' => 'Rok premiery',
 			'hubDetail.dateAdded' => 'Data dodania',

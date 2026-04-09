@@ -763,6 +763,12 @@ class _TranslationsServerSelectionNl implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kan offline modus niet initialiseren. Zorg ervoor dat je servers correct zijn geconfigureerd.';
 	@override String get connectionFailedGuest => 'Kan geen verbinding maken met servers. Zorg ervoor dat ze correct zijn geconfigureerd.';
 	@override String get connectionFailedPlex => 'Serververbinding mislukt. Probeer opnieuw in te loggen.';
+	@override String get manualServerUrlRequired => 'Voer een serveradres in';
+	@override String get manualServerUrlInvalid => 'Ongeldig serveradresformaat';
+	@override String get manualServerDefaultName => 'Lokale server';
+	@override String get manualServerSaveFailed => 'Kon server niet opslaan.';
+	@override String get manualServerConnectionFailed => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.';
+	@override String get manualServerGenericFailure => 'Verbinding mislukt.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsNl {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Kan geen verbinding maken met servers. Zorg ervoor dat ze correct zijn geconfigureerd.',
 			'serverSelection.connectionFailedPlex' => 'Serververbinding mislukt. Probeer opnieuw in te loggen.',
+			'serverSelection.manualServerUrlRequired' => 'Voer een serveradres in',
+			'serverSelection.manualServerUrlInvalid' => 'Ongeldig serveradresformaat',
+			'serverSelection.manualServerDefaultName' => 'Lokale server',
+			'serverSelection.manualServerSaveFailed' => 'Kon server niet opslaan.',
+			'serverSelection.manualServerConnectionFailed' => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.',
+			'serverSelection.manualServerGenericFailure' => 'Verbinding mislukt.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Uitgavejaar',
 			'hubDetail.dateAdded' => 'Datum toegevoegd',

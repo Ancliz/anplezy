@@ -565,7 +565,13 @@
     "offlineInitPlex": "Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.",
     "offlineInitGuest": "Nie można zainicjować trybu offline. Upewnij się, że serwery są poprawnie skonfigurowane.",
     "connectionFailedGuest": "Nie można połączyć się z żadnym serwerem. Upewnij się, że są poprawnie skonfigurowane.",
-    "connectionFailedPlex": "Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie."
+    "connectionFailedPlex": "Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.",
+    "manualServerUrlRequired": "Wprowadź adres serwera",
+    "manualServerUrlInvalid": "Nieprawidłowy format adresu serwera",
+    "manualServerDefaultName": "Serwer lokalny",
+    "manualServerSaveFailed": "Nie udało się zapisać serwera.",
+    "manualServerConnectionFailed": "Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.",
+    "manualServerGenericFailure": "Połączenie nie powiodło się."
   },
   "hubDetail": {
     "title": "Tytuł",

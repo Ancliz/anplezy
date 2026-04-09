@@ -565,7 +565,13 @@
     "offlineInitPlex": "No se pudo inicializar el modo sin conexión. Inténtalo iniciando sesión de nuevo.",
     "offlineInitGuest": "No se pudo inicializar el modo sin conexión. Asegúrate de que tus servidores estén configurados correctamente.",
     "connectionFailedGuest": "No se pudo conectar a ningún servidor. Asegúrate de que estén configurados correctamente.",
-    "connectionFailedPlex": "Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo."
+    "connectionFailedPlex": "Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo.",
+    "manualServerUrlRequired": "Introduce una dirección del servidor",
+    "manualServerUrlInvalid": "Formato de dirección del servidor no válido",
+    "manualServerDefaultName": "Servidor local",
+    "manualServerSaveFailed": "No se pudo guardar el servidor.",
+    "manualServerConnectionFailed": "No se pudo conectar al servidor. Verifica la dirección e inténtalo de nuevo.",
+    "manualServerGenericFailure": "Error de conexión."
   },
   "hubDetail": {
     "title": "Título",

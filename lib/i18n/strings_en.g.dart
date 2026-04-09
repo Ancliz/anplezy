@@ -1723,6 +1723,24 @@ class TranslationsServerSelectionEn {
 
 	/// en: 'Server connection failed. Please try signing in again.'
 	String get connectionFailedPlex => 'Server connection failed. Please try signing in again.';
+
+	/// en: 'Please enter a server address'
+	String get manualServerUrlRequired => 'Please enter a server address';
+
+	/// en: 'Invalid server address format'
+	String get manualServerUrlInvalid => 'Invalid server address format';
+
+	/// en: 'Local Server'
+	String get manualServerDefaultName => 'Local Server';
+
+	/// en: 'Failed to save server.'
+	String get manualServerSaveFailed => 'Failed to save server.';
+
+	/// en: 'Could not connect to server. Please check the address and try again.'
+	String get manualServerConnectionFailed => 'Could not connect to server. Please check the address and try again.';
+
+	/// en: 'Connection failed.'
+	String get manualServerGenericFailure => 'Connection failed.';
 }
 
 // Path: hubDetail
@@ -3582,6 +3600,12 @@ extension on Translations {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => 'Could not connect to any servers. Please ensure they are configured correctly.',
 			'serverSelection.connectionFailedPlex' => 'Server connection failed. Please try signing in again.',
+			'serverSelection.manualServerUrlRequired' => 'Please enter a server address',
+			'serverSelection.manualServerUrlInvalid' => 'Invalid server address format',
+			'serverSelection.manualServerDefaultName' => 'Local Server',
+			'serverSelection.manualServerSaveFailed' => 'Failed to save server.',
+			'serverSelection.manualServerConnectionFailed' => 'Could not connect to server. Please check the address and try again.',
+			'serverSelection.manualServerGenericFailure' => 'Connection failed.',
 			'hubDetail.title' => 'Title',
 			'hubDetail.releaseYear' => 'Release Year',
 			'hubDetail.dateAdded' => 'Date Added',

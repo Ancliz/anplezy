@@ -763,6 +763,12 @@ class _TranslationsServerSelectionKo implements TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => '오프라인 모드를 초기화할 수 없습니다. 서버 설정을 확인하세요.';
 	@override String get connectionFailedGuest => '어떤 서버에도 연결할 수 없습니다. 설정을 확인하세요.';
 	@override String get connectionFailedPlex => '서버 연결에 실패했습니다. 다시 로그인하세요.';
+	@override String get manualServerUrlRequired => '서버 주소를 입력하세요';
+	@override String get manualServerUrlInvalid => '잘못된 서버 주소 형식입니다';
+	@override String get manualServerDefaultName => '로컬 서버';
+	@override String get manualServerSaveFailed => '서버를 저장할 수 없습니다.';
+	@override String get manualServerConnectionFailed => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.';
+	@override String get manualServerGenericFailure => '연결에 실패했습니다.';
 }
 
 // Path: hubDetail
@@ -1867,6 +1873,12 @@ extension on TranslationsKo {
 		} ?? switch (path) {
 			'serverSelection.connectionFailedGuest' => '어떤 서버에도 연결할 수 없습니다. 설정을 확인하세요.',
 			'serverSelection.connectionFailedPlex' => '서버 연결에 실패했습니다. 다시 로그인하세요.',
+			'serverSelection.manualServerUrlRequired' => '서버 주소를 입력하세요',
+			'serverSelection.manualServerUrlInvalid' => '잘못된 서버 주소 형식입니다',
+			'serverSelection.manualServerDefaultName' => '로컬 서버',
+			'serverSelection.manualServerSaveFailed' => '서버를 저장할 수 없습니다.',
+			'serverSelection.manualServerConnectionFailed' => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.',
+			'serverSelection.manualServerGenericFailure' => '연결에 실패했습니다.',
 			'hubDetail.title' => '제목',
 			'hubDetail.releaseYear' => '출시 연도',
 			'hubDetail.dateAdded' => '추가 날짜',
