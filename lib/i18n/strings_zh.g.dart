@@ -759,6 +759,10 @@ class _TranslationsServerSelectionZh implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => '无法连接到任何服务器。请检查你的网络并重试。';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '未找到 ${username} (${email}) 的服务器';
 	@override String failedToLoadServers({required Object error}) => '无法加载服务器: ${error}';
+	@override String get offlineInitPlex => '无法初始化离线模式。请重新登录。';
+	@override String get offlineInitGuest => '无法初始化离线模式。请确保服务器配置正确。';
+	@override String get connectionFailedGuest => '无法连接到任何服务器。请确保配置正确。';
+	@override String get connectionFailedPlex => '服务器连接失败。请重新登录。';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsZh {
 			'serverSelection.allServerConnectionsFailed' => '无法连接到任何服务器。请检查你的网络并重试。',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '未找到 ${username} (${email}) 的服务器',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => '无法加载服务器: ${error}',
-			'hubDetail.title' => '标题',
-			'hubDetail.releaseYear' => '发行年份',
+			'serverSelection.offlineInitPlex' => '无法初始化离线模式。请重新登录。',
+			'serverSelection.offlineInitGuest' => '无法初始化离线模式。请确保服务器配置正确。',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => '无法连接到任何服务器。请确保配置正确。',
+			'serverSelection.connectionFailedPlex' => '服务器连接失败。请重新登录。',
+			'hubDetail.title' => '标题',
+			'hubDetail.releaseYear' => '发行年份',
 			'hubDetail.dateAdded' => '添加日期',
 			'hubDetail.rating' => '评分',
 			'hubDetail.noItemsFound' => '未找到项目',

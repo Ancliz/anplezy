@@ -759,6 +759,10 @@ class _TranslationsServerSelectionNl implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kon niet verbinden met servers. Controleer je netwerk en probeer opnieuw.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Geen servers gevonden voor ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kon servers niet laden: ${error}';
+	@override String get offlineInitPlex => 'Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.';
+	@override String get offlineInitGuest => 'Kan offline modus niet initialiseren. Zorg ervoor dat je servers correct zijn geconfigureerd.';
+	@override String get connectionFailedGuest => 'Kan geen verbinding maken met servers. Zorg ervoor dat ze correct zijn geconfigureerd.';
+	@override String get connectionFailedPlex => 'Serververbinding mislukt. Probeer opnieuw in te loggen.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsNl {
 			'serverSelection.allServerConnectionsFailed' => 'Kon niet verbinden met servers. Controleer je netwerk en probeer opnieuw.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Geen servers gevonden voor ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kon servers niet laden: ${error}',
-			'hubDetail.title' => 'Titel',
-			'hubDetail.releaseYear' => 'Uitgavejaar',
+			'serverSelection.offlineInitPlex' => 'Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.',
+			'serverSelection.offlineInitGuest' => 'Kan offline modus niet initialiseren. Zorg ervoor dat je servers correct zijn geconfigureerd.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Kan geen verbinding maken met servers. Zorg ervoor dat ze correct zijn geconfigureerd.',
+			'serverSelection.connectionFailedPlex' => 'Serververbinding mislukt. Probeer opnieuw in te loggen.',
+			'hubDetail.title' => 'Titel',
+			'hubDetail.releaseYear' => 'Uitgavejaar',
 			'hubDetail.dateAdded' => 'Datum toegevoegd',
 			'hubDetail.rating' => 'Beoordeling',
 			'hubDetail.noItemsFound' => 'Geen items gevonden',

@@ -759,6 +759,10 @@ class _TranslationsServerSelectionEs implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'No se pudo conectar con ningún servidor. Por favor, comprueba tu conexión e inténtalo de nuevo.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Error al cargar servidores: ${error}';
+	@override String get offlineInitPlex => 'No se pudo inicializar el modo sin conexión. Inténtalo iniciando sesión de nuevo.';
+	@override String get offlineInitGuest => 'No se pudo inicializar el modo sin conexión. Asegúrate de que tus servidores estén configurados correctamente.';
+	@override String get connectionFailedGuest => 'No se pudo conectar a ningún servidor. Asegúrate de que estén configurados correctamente.';
+	@override String get connectionFailedPlex => 'Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsEs {
 			'serverSelection.allServerConnectionsFailed' => 'No se pudo conectar con ningún servidor. Por favor, comprueba tu conexión e inténtalo de nuevo.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Error al cargar servidores: ${error}',
-			'hubDetail.title' => 'Título',
-			'hubDetail.releaseYear' => 'Año de lanzamiento',
+			'serverSelection.offlineInitPlex' => 'No se pudo inicializar el modo sin conexión. Inténtalo iniciando sesión de nuevo.',
+			'serverSelection.offlineInitGuest' => 'No se pudo inicializar el modo sin conexión. Asegúrate de que tus servidores estén configurados correctamente.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'No se pudo conectar a ningún servidor. Asegúrate de que estén configurados correctamente.',
+			'serverSelection.connectionFailedPlex' => 'Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo.',
+			'hubDetail.title' => 'Título',
+			'hubDetail.releaseYear' => 'Año de lanzamiento',
 			'hubDetail.dateAdded' => 'Añadido el',
 			'hubDetail.rating' => 'Calificación',
 			'hubDetail.noItemsFound' => 'No se encontraron elementos',

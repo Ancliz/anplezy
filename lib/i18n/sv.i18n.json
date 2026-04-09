@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Misslyckades att ansluta till servrar. Kontrollera ditt nätverk och försök igen.",
     "noServersFoundForAccount": "Inga servrar hittades för ${username} (${email})",
-    "failedToLoadServers": "Misslyckades att ladda servrar: ${error}"
+    "failedToLoadServers": "Misslyckades att ladda servrar: ${error}",
+    "offlineInitPlex": "Kunde inte initiera offlineläge. Försök logga in igen.",
+    "offlineInitGuest": "Kunde inte initiera offlineläge. Se till att dina servrar är korrekt konfigurerade.",
+    "connectionFailedGuest": "Kunde inte ansluta till några servrar. Kontrollera konfigurationen.",
+    "connectionFailedPlex": "Serveranslutning misslyckades. Försök logga in igen."
   },
   "hubDetail": {
     "title": "Titel",

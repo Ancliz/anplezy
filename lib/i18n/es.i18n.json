@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "No se pudo conectar con ningún servidor. Por favor, comprueba tu conexión e inténtalo de nuevo.",
     "noServersFoundForAccount": "No se encontraron servidores para ${username} (${email})",
-    "failedToLoadServers": "Error al cargar servidores: ${error}"
+    "failedToLoadServers": "Error al cargar servidores: ${error}",
+    "offlineInitPlex": "No se pudo inicializar el modo sin conexión. Inténtalo iniciando sesión de nuevo.",
+    "offlineInitGuest": "No se pudo inicializar el modo sin conexión. Asegúrate de que tus servidores estén configurados correctamente.",
+    "connectionFailedGuest": "No se pudo conectar a ningún servidor. Asegúrate de que estén configurados correctamente.",
+    "connectionFailedPlex": "Error de conexión con el servidor. Inténtalo iniciando sesión de nuevo."
   },
   "hubDetail": {
     "title": "Título",

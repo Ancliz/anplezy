@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Nie udało się połączyć z żadnym serwerem. Sprawdź sieć i spróbuj ponownie.",
     "noServersFoundForAccount": "Nie znaleziono serwerów dla ${username} (${email})",
-    "failedToLoadServers": "Nie udało się załadować serwerów: ${error}"
+    "failedToLoadServers": "Nie udało się załadować serwerów: ${error}",
+    "offlineInitPlex": "Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.",
+    "offlineInitGuest": "Nie można zainicjować trybu offline. Upewnij się, że serwery są poprawnie skonfigurowane.",
+    "connectionFailedGuest": "Nie można połączyć się z żadnym serwerem. Upewnij się, że są poprawnie skonfigurowane.",
+    "connectionFailedPlex": "Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie."
   },
   "hubDetail": {
     "title": "Tytuł",

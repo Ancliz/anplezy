@@ -759,6 +759,10 @@ class _TranslationsServerSelectionKo implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => '어떤 서버에도 연결할 수 없습니다. 네트워크를 확인하고 다시 시도하세요.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '${username} (${email})의 서버를 찾을 수 없습니다.';
 	@override String failedToLoadServers({required Object error}) => '서버를 로드할 수 없습니다: ${error}';
+	@override String get offlineInitPlex => '오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.';
+	@override String get offlineInitGuest => '오프라인 모드를 초기화할 수 없습니다. 서버 설정을 확인하세요.';
+	@override String get connectionFailedGuest => '어떤 서버에도 연결할 수 없습니다. 설정을 확인하세요.';
+	@override String get connectionFailedPlex => '서버 연결에 실패했습니다. 다시 로그인하세요.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsKo {
 			'serverSelection.allServerConnectionsFailed' => '어떤 서버에도 연결할 수 없습니다. 네트워크를 확인하고 다시 시도하세요.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '${username} (${email})의 서버를 찾을 수 없습니다.',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => '서버를 로드할 수 없습니다: ${error}',
-			'hubDetail.title' => '제목',
-			'hubDetail.releaseYear' => '출시 연도',
+			'serverSelection.offlineInitPlex' => '오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.',
+			'serverSelection.offlineInitGuest' => '오프라인 모드를 초기화할 수 없습니다. 서버 설정을 확인하세요.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => '어떤 서버에도 연결할 수 없습니다. 설정을 확인하세요.',
+			'serverSelection.connectionFailedPlex' => '서버 연결에 실패했습니다. 다시 로그인하세요.',
+			'hubDetail.title' => '제목',
+			'hubDetail.releaseYear' => '출시 연도',
 			'hubDetail.dateAdded' => '추가 날짜',
 			'hubDetail.rating' => '평점',
 			'hubDetail.noItemsFound' => '항목이 없습니다',

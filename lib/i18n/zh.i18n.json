@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "无法连接到任何服务器。请检查你的网络并重试。",
     "noServersFoundForAccount": "未找到 ${username} (${email}) 的服务器",
-    "failedToLoadServers": "无法加载服务器: ${error}"
+    "failedToLoadServers": "无法加载服务器: ${error}",
+    "offlineInitPlex": "无法初始化离线模式。请重新登录。",
+    "offlineInitGuest": "无法初始化离线模式。请确保服务器配置正确。",
+    "connectionFailedGuest": "无法连接到任何服务器。请确保配置正确。",
+    "connectionFailedPlex": "服务器连接失败。请重新登录。"
   },
   "hubDetail": {
     "title": "标题",

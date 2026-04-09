@@ -759,6 +759,10 @@ class _TranslationsServerSelectionPt implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Falha ao conectar a qualquer servidor. Verifique sua rede e tente novamente.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nenhum servidor encontrado para ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Falha ao carregar servidores: ${error}';
+	@override String get offlineInitPlex => 'Não foi possível inicializar o modo offline. Tente iniciar sessão novamente.';
+	@override String get offlineInitGuest => 'Não foi possível inicializar o modo offline. Certifique-se de que os servidores estão configurados corretamente.';
+	@override String get connectionFailedGuest => 'Não foi possível conectar a nenhum servidor. Certifique-se de que estão configurados corretamente.';
+	@override String get connectionFailedPlex => 'Falha na conexão com o servidor. Tente iniciar sessão novamente.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsPt {
 			'serverSelection.allServerConnectionsFailed' => 'Falha ao conectar a qualquer servidor. Verifique sua rede e tente novamente.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nenhum servidor encontrado para ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Falha ao carregar servidores: ${error}',
-			'hubDetail.title' => 'Título',
-			'hubDetail.releaseYear' => 'Ano de Lançamento',
+			'serverSelection.offlineInitPlex' => 'Não foi possível inicializar o modo offline. Tente iniciar sessão novamente.',
+			'serverSelection.offlineInitGuest' => 'Não foi possível inicializar o modo offline. Certifique-se de que os servidores estão configurados corretamente.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Não foi possível conectar a nenhum servidor. Certifique-se de que estão configurados corretamente.',
+			'serverSelection.connectionFailedPlex' => 'Falha na conexão com o servidor. Tente iniciar sessão novamente.',
+			'hubDetail.title' => 'Título',
+			'hubDetail.releaseYear' => 'Ano de Lançamento',
 			'hubDetail.dateAdded' => 'Data de Adição',
 			'hubDetail.rating' => 'Avaliação',
 			'hubDetail.noItemsFound' => 'Nenhum item encontrado',

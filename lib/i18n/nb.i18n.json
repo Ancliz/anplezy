@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Kunne ikke koble til noen servere. Sjekk nettverket ditt og prøv igjen.",
     "noServersFoundForAccount": "Ingen servere funnet for ${username} (${email})",
-    "failedToLoadServers": "Kunne ikke laste servere: ${error}"
+    "failedToLoadServers": "Kunne ikke laste servere: ${error}",
+    "offlineInitPlex": "Kunne ikke initialisere frakoblet modus. Prøv å logge inn igjen.",
+    "offlineInitGuest": "Kunne ikke initialisere frakoblet modus. Sørg for at serverne er riktig konfigurert.",
+    "connectionFailedGuest": "Kunne ikke koble til noen servere. Sørg for at de er riktig konfigurert.",
+    "connectionFailedPlex": "Servertilkobling mislyktes. Prøv å logge inn igjen."
   },
   "hubDetail": {
     "title": "Tittel",

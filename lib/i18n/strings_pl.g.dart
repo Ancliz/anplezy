@@ -759,6 +759,10 @@ class _TranslationsServerSelectionPl implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Nie udało się połączyć z żadnym serwerem. Sprawdź sieć i spróbuj ponownie.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nie znaleziono serwerów dla ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Nie udało się załadować serwerów: ${error}';
+	@override String get offlineInitPlex => 'Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.';
+	@override String get offlineInitGuest => 'Nie można zainicjować trybu offline. Upewnij się, że serwery są poprawnie skonfigurowane.';
+	@override String get connectionFailedGuest => 'Nie można połączyć się z żadnym serwerem. Upewnij się, że są poprawnie skonfigurowane.';
+	@override String get connectionFailedPlex => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsPl {
 			'serverSelection.allServerConnectionsFailed' => 'Nie udało się połączyć z żadnym serwerem. Sprawdź sieć i spróbuj ponownie.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nie znaleziono serwerów dla ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Nie udało się załadować serwerów: ${error}',
-			'hubDetail.title' => 'Tytuł',
-			'hubDetail.releaseYear' => 'Rok premiery',
+			'serverSelection.offlineInitPlex' => 'Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.',
+			'serverSelection.offlineInitGuest' => 'Nie można zainicjować trybu offline. Upewnij się, że serwery są poprawnie skonfigurowane.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Nie można połączyć się z żadnym serwerem. Upewnij się, że są poprawnie skonfigurowane.',
+			'serverSelection.connectionFailedPlex' => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.',
+			'hubDetail.title' => 'Tytuł',
+			'hubDetail.releaseYear' => 'Rok premiery',
 			'hubDetail.dateAdded' => 'Data dodania',
 			'hubDetail.rating' => 'Ocena',
 			'hubDetail.noItemsFound' => 'Nie znaleziono elementów',

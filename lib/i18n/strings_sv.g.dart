@@ -759,6 +759,10 @@ class _TranslationsServerSelectionSv implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Misslyckades att ansluta till servrar. Kontrollera ditt nätverk och försök igen.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Inga servrar hittades för ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Misslyckades att ladda servrar: ${error}';
+	@override String get offlineInitPlex => 'Kunde inte initiera offlineläge. Försök logga in igen.';
+	@override String get offlineInitGuest => 'Kunde inte initiera offlineläge. Se till att dina servrar är korrekt konfigurerade.';
+	@override String get connectionFailedGuest => 'Kunde inte ansluta till några servrar. Kontrollera konfigurationen.';
+	@override String get connectionFailedPlex => 'Serveranslutning misslyckades. Försök logga in igen.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsSv {
 			'serverSelection.allServerConnectionsFailed' => 'Misslyckades att ansluta till servrar. Kontrollera ditt nätverk och försök igen.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Inga servrar hittades för ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Misslyckades att ladda servrar: ${error}',
-			'hubDetail.title' => 'Titel',
-			'hubDetail.releaseYear' => 'Utgivningsår',
+			'serverSelection.offlineInitPlex' => 'Kunde inte initiera offlineläge. Försök logga in igen.',
+			'serverSelection.offlineInitGuest' => 'Kunde inte initiera offlineläge. Se till att dina servrar är korrekt konfigurerade.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Kunde inte ansluta till några servrar. Kontrollera konfigurationen.',
+			'serverSelection.connectionFailedPlex' => 'Serveranslutning misslyckades. Försök logga in igen.',
+			'hubDetail.title' => 'Titel',
+			'hubDetail.releaseYear' => 'Utgivningsår',
 			'hubDetail.dateAdded' => 'Datum tillagd',
 			'hubDetail.rating' => 'Betyg',
 			'hubDetail.noItemsFound' => 'Inga objekt hittades',

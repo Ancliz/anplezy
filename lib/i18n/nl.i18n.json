@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Kon niet verbinden met servers. Controleer je netwerk en probeer opnieuw.",
     "noServersFoundForAccount": "Geen servers gevonden voor ${username} (${email})",
-    "failedToLoadServers": "Kon servers niet laden: ${error}"
+    "failedToLoadServers": "Kon servers niet laden: ${error}",
+    "offlineInitPlex": "Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.",
+    "offlineInitGuest": "Kan offline modus niet initialiseren. Zorg ervoor dat je servers correct zijn geconfigureerd.",
+    "connectionFailedGuest": "Kan geen verbinding maken met servers. Zorg ervoor dat ze correct zijn geconfigureerd.",
+    "connectionFailedPlex": "Serververbinding mislukt. Probeer opnieuw in te loggen."
   },
   "hubDetail": {
     "title": "Titel",

@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Kunne ikke forbinde til nogen servere. Tjek dit netværk og prøv igen.",
     "noServersFoundForAccount": "Ingen servere fundet for ${username} (${email})",
-    "failedToLoadServers": "Kunne ikke indlæse servere: ${error}"
+    "failedToLoadServers": "Kunne ikke indlæse servere: ${error}",
+    "offlineInitPlex": "Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.",
+    "offlineInitGuest": "Kunne ikke initialisere offline-tilstand. Sørg for, at dine servere er korrekt konfigureret.",
+    "connectionFailedGuest": "Kunne ikke oprette forbindelse til nogen servere. Sørg for, at de er korrekt konfigureret.",
+    "connectionFailedPlex": "Serverforbindelse mislykkedes. Prøv at logge ind igen."
   },
   "hubDetail": {
     "title": "Titel",

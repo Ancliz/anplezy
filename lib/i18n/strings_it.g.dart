@@ -759,6 +759,10 @@ class _TranslationsServerSelectionIt implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Impossibile connettersi a nessun server. Controlla la tua rete e riprova.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nessun server trovato per ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Impossibile caricare i server: ${error}';
+	@override String get offlineInitPlex => 'Impossibile inizializzare la modalità offline. Riprova ad accedere.';
+	@override String get offlineInitGuest => 'Impossibile inizializzare la modalità offline. Assicurati che i server siano configurati correttamente.';
+	@override String get connectionFailedGuest => 'Impossibile connettersi a nessun server. Assicurati che siano configurati correttamente.';
+	@override String get connectionFailedPlex => 'Connessione al server non riuscita. Riprova ad accedere.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsIt {
 			'serverSelection.allServerConnectionsFailed' => 'Impossibile connettersi a nessun server. Controlla la tua rete e riprova.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nessun server trovato per ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Impossibile caricare i server: ${error}',
-			'hubDetail.title' => 'Titolo',
-			'hubDetail.releaseYear' => 'Anno rilascio',
+			'serverSelection.offlineInitPlex' => 'Impossibile inizializzare la modalità offline. Riprova ad accedere.',
+			'serverSelection.offlineInitGuest' => 'Impossibile inizializzare la modalità offline. Assicurati che i server siano configurati correttamente.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Impossibile connettersi a nessun server. Assicurati che siano configurati correttamente.',
+			'serverSelection.connectionFailedPlex' => 'Connessione al server non riuscita. Riprova ad accedere.',
+			'hubDetail.title' => 'Titolo',
+			'hubDetail.releaseYear' => 'Anno rilascio',
 			'hubDetail.dateAdded' => 'Data aggiunta',
 			'hubDetail.rating' => 'Valutazione',
 			'hubDetail.noItemsFound' => 'Nessun elemento trovato',

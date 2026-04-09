@@ -759,6 +759,10 @@ class _TranslationsServerSelectionFr implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Impossible de se connecter à un serveur. Veuillez vérifier votre connexion réseau et réessayer.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Aucun serveur trouvé pour ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Échec du chargement des serveurs: ${error}';
+	@override String get offlineInitPlex => 'Impossible d\'initialiser le mode hors ligne. Veuillez vous reconnecter.';
+	@override String get offlineInitGuest => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier que vos serveurs sont correctement configurés.';
+	@override String get connectionFailedGuest => 'Impossible de se connecter à un serveur. Veuillez vérifier leur configuration.';
+	@override String get connectionFailedPlex => 'Échec de la connexion au serveur. Veuillez vous reconnecter.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsFr {
 			'serverSelection.allServerConnectionsFailed' => 'Impossible de se connecter à un serveur. Veuillez vérifier votre connexion réseau et réessayer.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Aucun serveur trouvé pour ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Échec du chargement des serveurs: ${error}',
-			'hubDetail.title' => 'Titre',
-			'hubDetail.releaseYear' => 'Année de sortie',
+			'serverSelection.offlineInitPlex' => 'Impossible d\'initialiser le mode hors ligne. Veuillez vous reconnecter.',
+			'serverSelection.offlineInitGuest' => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier que vos serveurs sont correctement configurés.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Impossible de se connecter à un serveur. Veuillez vérifier leur configuration.',
+			'serverSelection.connectionFailedPlex' => 'Échec de la connexion au serveur. Veuillez vous reconnecter.',
+			'hubDetail.title' => 'Titre',
+			'hubDetail.releaseYear' => 'Année de sortie',
 			'hubDetail.dateAdded' => 'Date d\'ajout',
 			'hubDetail.rating' => 'Évaluation',
 			'hubDetail.noItemsFound' => 'Aucun élément trouvé',

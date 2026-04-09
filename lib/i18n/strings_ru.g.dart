@@ -759,6 +759,10 @@ class _TranslationsServerSelectionRu implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Не удалось подключиться ни к одному серверу. Проверьте сеть и попробуйте снова.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Серверы не найдены для ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Не удалось загрузить серверы: ${error}';
+	@override String get offlineInitPlex => 'Не удалось инициализировать офлайн-режим. Попробуйте снова войти.';
+	@override String get offlineInitGuest => 'Не удалось инициализировать офлайн-режим. Убедитесь, что серверы настроены правильно.';
+	@override String get connectionFailedGuest => 'Не удалось подключиться ни к одному серверу. Проверьте настройки.';
+	@override String get connectionFailedPlex => 'Не удалось подключиться к серверу. Попробуйте снова войти.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsRu {
 			'serverSelection.allServerConnectionsFailed' => 'Не удалось подключиться ни к одному серверу. Проверьте сеть и попробуйте снова.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Серверы не найдены для ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Не удалось загрузить серверы: ${error}',
-			'hubDetail.title' => 'Название',
-			'hubDetail.releaseYear' => 'Год выпуска',
+			'serverSelection.offlineInitPlex' => 'Не удалось инициализировать офлайн-режим. Попробуйте снова войти.',
+			'serverSelection.offlineInitGuest' => 'Не удалось инициализировать офлайн-режим. Убедитесь, что серверы настроены правильно.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Не удалось подключиться ни к одному серверу. Проверьте настройки.',
+			'serverSelection.connectionFailedPlex' => 'Не удалось подключиться к серверу. Попробуйте снова войти.',
+			'hubDetail.title' => 'Название',
+			'hubDetail.releaseYear' => 'Год выпуска',
 			'hubDetail.dateAdded' => 'Дата добавления',
 			'hubDetail.rating' => 'Рейтинг',
 			'hubDetail.noItemsFound' => 'Элементы не найдены',

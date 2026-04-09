@@ -759,6 +759,10 @@ class _TranslationsServerSelectionDe implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Verbindung zu allen Servern fehlgeschlagen. Bitte Netzwerk prüfen und erneut versuchen.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Keine Server gefunden für ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Server konnten nicht geladen werden: ${error}';
+	@override String get offlineInitPlex => 'Offline-Modus konnte nicht initialisiert werden. Bitte versuchen Sie, sich erneut anzumelden.';
+	@override String get offlineInitGuest => 'Offline-Modus konnte nicht initialisiert werden. Bitte stellen Sie sicher, dass Ihre Server korrekt konfiguriert sind.';
+	@override String get connectionFailedGuest => 'Verbindung zu keinem Server möglich. Bitte stellen Sie sicher, dass diese korrekt konfiguriert sind.';
+	@override String get connectionFailedPlex => 'Serververbindung fehlgeschlagen. Bitte melden Sie sich erneut an.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsDe {
 			'serverSelection.allServerConnectionsFailed' => 'Verbindung zu allen Servern fehlgeschlagen. Bitte Netzwerk prüfen und erneut versuchen.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Keine Server gefunden für ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Server konnten nicht geladen werden: ${error}',
-			'hubDetail.title' => 'Titel',
-			'hubDetail.releaseYear' => 'Erscheinungsjahr',
+			'serverSelection.offlineInitPlex' => 'Offline-Modus konnte nicht initialisiert werden. Bitte versuchen Sie, sich erneut anzumelden.',
+			'serverSelection.offlineInitGuest' => 'Offline-Modus konnte nicht initialisiert werden. Bitte stellen Sie sicher, dass Ihre Server korrekt konfiguriert sind.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Verbindung zu keinem Server möglich. Bitte stellen Sie sicher, dass diese korrekt konfiguriert sind.',
+			'serverSelection.connectionFailedPlex' => 'Serververbindung fehlgeschlagen. Bitte melden Sie sich erneut an.',
+			'hubDetail.title' => 'Titel',
+			'hubDetail.releaseYear' => 'Erscheinungsjahr',
 			'hubDetail.dateAdded' => 'Hinzugefügt am',
 			'hubDetail.rating' => 'Bewertung',
 			'hubDetail.noItemsFound' => 'Keine Elemente gefunden',

@@ -759,6 +759,10 @@ class _TranslationsServerSelectionJa implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'どのサーバーにも接続できませんでした。ネットワークを確認してもう一度お試しください。';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '${username} (${email})のサーバーが見つかりません';
 	@override String failedToLoadServers({required Object error}) => 'サーバーの読み込みに失敗しました: ${error}';
+	@override String get offlineInitPlex => 'オフラインモードを初期化できませんでした。再度ログインしてください。';
+	@override String get offlineInitGuest => 'オフラインモードを初期化できませんでした。サーバーが正しく設定されていることを確認してください。';
+	@override String get connectionFailedGuest => 'どのサーバーにも接続できませんでした。設定を確認してください。';
+	@override String get connectionFailedPlex => 'サーバー接続に失敗しました。再度ログインしてください。';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsJa {
 			'serverSelection.allServerConnectionsFailed' => 'どのサーバーにも接続できませんでした。ネットワークを確認してもう一度お試しください。',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '${username} (${email})のサーバーが見つかりません',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'サーバーの読み込みに失敗しました: ${error}',
-			'hubDetail.title' => 'タイトル',
-			'hubDetail.releaseYear' => '公開年',
+			'serverSelection.offlineInitPlex' => 'オフラインモードを初期化できませんでした。再度ログインしてください。',
+			'serverSelection.offlineInitGuest' => 'オフラインモードを初期化できませんでした。サーバーが正しく設定されていることを確認してください。',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'どのサーバーにも接続できませんでした。設定を確認してください。',
+			'serverSelection.connectionFailedPlex' => 'サーバー接続に失敗しました。再度ログインしてください。',
+			'hubDetail.title' => 'タイトル',
+			'hubDetail.releaseYear' => '公開年',
 			'hubDetail.dateAdded' => '追加日',
 			'hubDetail.rating' => '評価',
 			'hubDetail.noItemsFound' => 'アイテムが見つかりません',

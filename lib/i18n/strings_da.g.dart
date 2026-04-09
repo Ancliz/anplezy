@@ -759,6 +759,10 @@ class _TranslationsServerSelectionDa implements TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kunne ikke forbinde til nogen servere. Tjek dit netværk og prøv igen.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Ingen servere fundet for ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kunne ikke indlæse servere: ${error}';
+	@override String get offlineInitPlex => 'Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.';
+	@override String get offlineInitGuest => 'Kunne ikke initialisere offline-tilstand. Sørg for, at dine servere er korrekt konfigureret.';
+	@override String get connectionFailedGuest => 'Kunne ikke oprette forbindelse til nogen servere. Sørg for, at de er korrekt konfigureret.';
+	@override String get connectionFailedPlex => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.';
 }
 
 // Path: hubDetail
@@ -1857,10 +1861,14 @@ extension on TranslationsDa {
 			'serverSelection.allServerConnectionsFailed' => 'Kunne ikke forbinde til nogen servere. Tjek dit netværk og prøv igen.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Ingen servere fundet for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kunne ikke indlæse servere: ${error}',
-			'hubDetail.title' => 'Titel',
-			'hubDetail.releaseYear' => 'Udgivelsesår',
+			'serverSelection.offlineInitPlex' => 'Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.',
+			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere offline-tilstand. Sørg for, at dine servere er korrekt konfigureret.',
 			_ => null,
 		} ?? switch (path) {
+			'serverSelection.connectionFailedGuest' => 'Kunne ikke oprette forbindelse til nogen servere. Sørg for, at de er korrekt konfigureret.',
+			'serverSelection.connectionFailedPlex' => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.',
+			'hubDetail.title' => 'Titel',
+			'hubDetail.releaseYear' => 'Udgivelsesår',
 			'hubDetail.dateAdded' => 'Tilføjelsesdato',
 			'hubDetail.rating' => 'Bedømmelse',
 			'hubDetail.noItemsFound' => 'Ingen elementer fundet',

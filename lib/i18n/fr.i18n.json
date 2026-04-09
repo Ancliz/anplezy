@@ -561,7 +561,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Impossible de se connecter à un serveur. Veuillez vérifier votre connexion réseau et réessayer.",
     "noServersFoundForAccount": "Aucun serveur trouvé pour ${username} (${email})",
-    "failedToLoadServers": "Échec du chargement des serveurs: ${error}"
+    "failedToLoadServers": "Échec du chargement des serveurs: ${error}",
+    "offlineInitPlex": "Impossible d'initialiser le mode hors ligne. Veuillez vous reconnecter.",
+    "offlineInitGuest": "Impossible d'initialiser le mode hors ligne. Veuillez vérifier que vos serveurs sont correctement configurés.",
+    "connectionFailedGuest": "Impossible de se connecter à un serveur. Veuillez vérifier leur configuration.",
+    "connectionFailedPlex": "Échec de la connexion au serveur. Veuillez vous reconnecter."
   },
   "hubDetail": {
     "title": "Titre",
