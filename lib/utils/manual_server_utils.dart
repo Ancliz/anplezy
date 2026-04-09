@@ -48,8 +48,8 @@ class ManualServerUtils {
   }
 
   /// Connect to a manual server and save it to the registry
-  /// Returns a tuple of (success, errorMessage, serverName)
-  static Future<(bool success, String? error, String serverName)> addManualServer({
+  /// Returns a tuple of (success, errorMessage, serverName, savedServer)
+  static Future<(bool success, String? error, String serverName, PlexServer? savedServer)> addManualServer({
     required BuildContext context,
     required String url,
     required String displayName,
@@ -58,12 +58,12 @@ class ManualServerUtils {
     bool shouldCancelConnection = false,
   }) async {
     if (url.isEmpty) {
-      return (false, t.serverSelection.manualServerUrlRequired, '');
+      return (false, t.serverSelection.manualServerUrlRequired, '', null);
     }
 
     final parsed = parseServerUrl(url);
     if (parsed == null) {
-      return (false, t.serverSelection.manualServerUrlInvalid, '');
+      return (false, t.serverSelection.manualServerUrlInvalid, '', null);
     }
 
     try {
@@ -106,7 +106,7 @@ class ManualServerUtils {
       if (shouldCancelConnection) {
         // Connection attempts may have already registered temporary state
         multiServerProvider.serverManager.removeServer(generatedId);
-        return (false, 'Connection cancelled', serverName);
+        return (false, 'Connection cancelled', serverName, null);
       }
 
       if (result.connectedCount > 0) {
@@ -116,7 +116,7 @@ class ManualServerUtils {
 
           // Persist the manual server after it has proved it can connect
           await registry.upsertServer(server);
-          return (true, null, serverName);
+          return (true, null, serverName, server);
         } catch (error, stackTrace) {
           appLogger.e(
             'Failed to persist manual server after successful connection',
@@ -125,17 +125,17 @@ class ManualServerUtils {
           );
           // Roll back the live connection so add behaves atomically
           multiServerProvider.serverManager.removeServer(generatedId);
-          return (false, t.serverSelection.manualServerSaveFailed, serverName);
+          return (false, t.serverSelection.manualServerSaveFailed, serverName, null);
         }
       } else {
         // Clean up any offline/failed entry the connection manager recorded
         multiServerProvider.serverManager.removeServer(generatedId);
-        return (false, t.serverSelection.manualServerConnectionFailed, serverName);
+        return (false, t.serverSelection.manualServerConnectionFailed, serverName, null);
       }
     } catch (e) {
       final errorMsg = e.toString();
       final displayError = errorMsg.length > 200 ? '${errorMsg.substring(0, 200)}...' : errorMsg;
-      return (false, displayError, '');
+      return (false, displayError, '', null);
     }
   }
 }

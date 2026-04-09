@@ -59,7 +59,7 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
     });
 
     try {
-      final (success, error, serverName) = await ManualServerUtils.addManualServer(
+      final (success, error, serverName, _) = await ManualServerUtils.addManualServer(
         context: context,
         url: url,
         displayName: displayName,

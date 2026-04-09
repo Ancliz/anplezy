@@ -84,7 +84,7 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
     });
 
     try {
-      final (success, error, serverName) = await ManualServerUtils.addManualServer(
+      final (success, error, serverName, savedServer) = await ManualServerUtils.addManualServer(
         context: context,
         url: url,
         displayName: displayName,
@@ -117,11 +117,14 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
       _serverNameController.clear();
       _serverTokenController.clear();
 
-      // Reload servers
-      await _loadSavedServers();
-
       if (mounted) {
         setState(() {
+          if (savedServer != null) {
+            _savedServers = [
+              ..._savedServers.where((server) => server.clientIdentifier != savedServer.clientIdentifier),
+              savedServer,
+            ];
+          }
           _isConnecting = false;
           _errorMessage = null;
         });
