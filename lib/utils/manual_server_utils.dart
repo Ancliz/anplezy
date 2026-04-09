@@ -19,22 +19,22 @@ class ManualServerUtils {
   /// Returns null if URL is invalid
   static ({String protocol, String address, int port})? parseServerUrl(String url) {
     try {
-      String normalizedUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        normalizedUrl = 'https://$url';
-      }
-
-      final uri = Uri.parse(normalizedUrl);
-
-      if (uri.host.isEmpty) {
+      final trimmedUrl = url.trim();
+      if (trimmedUrl.isEmpty) {
         return null;
       }
 
-      final protocol = uri.scheme;
-      final address = uri.host;
-      final port = uri.port > 0 ? uri.port : plexDefaultPort;
+      final hasProtocol = trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://');
+      final normalizedUrl = hasProtocol ? trimmedUrl : 'https://$trimmedUrl';
+      final uri = Uri.tryParse(normalizedUrl);
 
-      return (protocol: protocol, address: address, port: port);
+      if (uri == null || uri.host.isEmpty) {
+        return null;
+      }
+      
+      final port = uri.hasPort ? uri.port : plexDefaultPort;
+
+      return (protocol: uri.scheme, address: uri.host, port: port);
     } catch (error) {
       appLogger.w('Failed to parse server URL', error: error);
       return null;
