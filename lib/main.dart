@@ -890,18 +890,28 @@ class _SetupScreenState extends State<SetupScreen> {
           Positioned(
             left: 0, right: 0,
             bottom: MediaQuery.of(context).size.height * 0.5 - 170,
-            child: Row(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  onPressed: () => _openSplashServerManagement(),
-                  icon: const AppIcon(Symbols.storage_rounded, fill: 1),
-                  tooltip: t.common.settings,
-                  visualDensity: VisualDensity.compact,
-                  iconSize: 18,
+                const SizedBox(
+                  width: 20, height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
                 ),
-                Flexible(child: _buildStatusText(context)),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () => _openSplashServerManagement(),
+                      icon: const AppIcon(Symbols.storage_rounded, fill: 1),
+                      tooltip: t.common.settings,
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 18,
+                    ),
+                    Flexible(child: _buildStatusText(context)),
+                  ],
+                ),
               ],
             ),
           ),
@@ -909,12 +919,7 @@ class _SetupScreenState extends State<SetupScreen> {
             left: 0, right: 0,
             top: MediaQuery.of(context).size.height * 0.5 + 180,
             child: Center(
-              child: _serverStatus.isEmpty
-                  ? const SizedBox(
-                      width: 20, height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
-                    )
-                  : _buildServerStatusList(context),
+              child: _serverStatus.isEmpty ? const SizedBox.shrink() : _buildServerStatusList(context),
             ),
           ),
         ],
