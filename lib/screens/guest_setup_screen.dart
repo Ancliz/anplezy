@@ -93,7 +93,11 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
       if (firstServerId != null) {
         final client = multiServerProvider.getClientForServer(firstServerId);
         if (client != null) {
-          Navigator.pushReplacement(context, fadeRoute(MainScreen(client: client)));
+          Navigator.pushAndRemoveUntil(
+            context,
+            fadeRoute(MainScreen(client: client)),
+            (route) => false,
+          );
           return;
         }
       }

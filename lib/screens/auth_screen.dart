@@ -452,14 +452,28 @@ class _AuthScreenState extends State<AuthScreen> {
 
       // No servers or failed to connect, go to guest setup
       if (mounted) {
-        Navigator.pushReplacement(context, fadeRoute(const GuestSetupScreen()));
+        await _openGuestSetup();
       }
     } catch (e) {
       // Fallback to guest setup
       if (mounted) {
-        Navigator.pushReplacement(context, fadeRoute(const GuestSetupScreen()));
+        await _openGuestSetup();
       }
     }
+  }
+
+  Future<void> _openGuestSetup() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isAuthenticating = false;
+      _isGuestConnectionLoading = false;
+      _errorMessage = null;
+      _useQrFlow = false;
+      _qrAuthUrl = null;
+    });
+
+    await Navigator.push(context, fadeRoute(const GuestSetupScreen()));
   }
 
   @override
