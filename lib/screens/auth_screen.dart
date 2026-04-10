@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -22,6 +23,7 @@ import '../utils/snackbar_helper.dart';
 import '../focus/focusable_button.dart';
 import '../utils/connection_constants.dart';
 import '../utils/navigation_transitions.dart';
+import '../widgets/app_icon.dart';
 import '../screens/settings/server_management_screen.dart';
 import 'main_screen.dart';
 import 'guest_setup_screen.dart';
@@ -97,6 +99,13 @@ class _AuthScreenState extends State<AuthScreen> {
           },
         ),
       ),
+    );
+  }
+
+  void _openServerManagementScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ServerManagementScreen()),
     );
   }
 
@@ -612,16 +621,29 @@ class _AuthScreenState extends State<AuthScreen> {
         const SizedBox(height: 24),
         // Guest mode link
         Center(
-          child: GestureDetector(
-            onTap: _handleContinueWithoutPlex,
-            child: Text(
-              'Continue without Plex Login',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 12,
-                decoration: TextDecoration.underline,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: _openServerManagementScreen,
+                icon: const AppIcon(Symbols.storage_rounded, fill: 1),
+                tooltip: t.common.settings,
+                visualDensity: VisualDensity.compact,
+                iconSize: 18,
               ),
-            ),
+              const SizedBox(width: 4),
+              GestureDetector(
+                onTap: _handleContinueWithoutPlex,
+                child: Text(
+                  'Continue without Plex Login',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 12,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],

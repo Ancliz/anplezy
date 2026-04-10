@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:io' show Platform, ProcessInfo;
 import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -55,6 +56,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'utils/navigation_transitions.dart';
 import 'utils/log_redaction_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'widgets/app_icon.dart';
 
 const bool _enableSentry = bool.fromEnvironment('ENABLE_SENTRY', defaultValue: false);
 const String gitCommit = String.fromEnvironment('GIT_COMMIT');
@@ -539,6 +541,8 @@ enum StartupFailure {
 
 class _SetupScreenState extends State<SetupScreen> {
   String _statusMessage = '';
+  int _startupAttemptId = 0;
+  bool _isManagingServers = false;
 
   // Per-server connection status: serverId -> (name, connected?)
   final Map<String, (String name, bool? connected)> _serverStatus = {};
@@ -546,7 +550,22 @@ class _SetupScreenState extends State<SetupScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
+    _startStartupAttempt();
+  }
+
+  /// Guards splash startup callbacks so stale async
+  /// work cannot update UI after a newer attempt starts
+  bool _isAttemptActive(int attemptId) =>
+    mounted && !_isManagingServers && attemptId == _startupAttemptId;
+
+  void _startStartupAttempt() {
+    if (!mounted) return;
+    final attemptId = ++_startupAttemptId;
+    setState(() {
+      _statusMessage = '';
+      _serverStatus.clear();
+    });
+    unawaited(_loadSavedCredentials(attemptId));
   }
 
   void _setStatus(String message) {
@@ -555,6 +574,25 @@ class _SetupScreenState extends State<SetupScreen> {
 
   void _navigateToAuthScreen() {
     Navigator.pushReplacement(context, fadeRoute(const AuthScreen()));
+  }
+
+  Future<void> _openSplashServerManagement() async {
+    setState(() {
+      _isManagingServers = true;
+      _startupAttemptId++;
+    });
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ServerManagementScreen()),
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isManagingServers = false;
+    });
+    _startStartupAttempt();
   }
 
   void _openServerManagement(NavigatorState navigator, ScaffoldMessengerState messengerState) {
@@ -624,14 +662,16 @@ class _SetupScreenState extends State<SetupScreen> {
     required DownloadProvider downloadProvider,
     required bool hasPlexToken,
     required StartupFailure failure,
+    required int attemptId,
   }) async {
+    if (!_isAttemptActive(attemptId)) return;
     _setStatus(t.common.startingOfflineMode);
     final offlineReady = await OfflineModeUtils.initialize(
       downloadProvider,
       logContext: 'startup',
     );
 
-    if (!mounted) return;
+    if (!_isAttemptActive(attemptId)) return;
 
     if (!offlineReady) {
       _returnToAuthWithFailure(
@@ -644,7 +684,8 @@ class _SetupScreenState extends State<SetupScreen> {
     Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
   }
 
-  Future<void> _loadSavedCredentials() async {
+  Future<void> _loadSavedCredentials(int attemptId) async {
+    if (!_isAttemptActive(attemptId)) return;
     _setStatus(t.common.checkingNetwork);
 
     final storage = await StorageService.getInstance();
@@ -668,6 +709,8 @@ class _SetupScreenState extends State<SetupScreen> {
       hasNetwork = true;
     }
 
+    if (!_isAttemptActive(attemptId)) return;
+
     Sentry.addBreadcrumb(Breadcrumb(message: 'Network check done: hasNetwork=$hasNetwork', category: 'setup'));
 
     if (hasNetwork) {
@@ -677,9 +720,10 @@ class _SetupScreenState extends State<SetupScreen> {
       // If the stored token is invalid (e.g. after removing a Plex profile PIN),
       // redirect to AuthScreen so the user can re-authenticate.
       final refreshResult = await registry.refreshServersFromApi();
+      if (!_isAttemptActive(attemptId)) return;
       if (refreshResult == ServerRefreshResult.authError) {
         await storage.clearCredentials();
-        if (mounted) {
+        if (_isAttemptActive(attemptId)) {
           _navigateToAuthScreen();
         }
         return;
@@ -690,15 +734,14 @@ class _SetupScreenState extends State<SetupScreen> {
 
     // Load all configured servers
     final servers = await registry.getServers();
+    if (!_isAttemptActive(attemptId)) return;
 
     if (servers.isEmpty) {
-      if (mounted) {
+      if (_isAttemptActive(attemptId)) {
         _navigateToAuthScreen();
       }
       return;
     }
-
-    if (!mounted) return;
 
     // No network — skip connection attempts and go straight to offline mode
     if (!hasNetwork) {
@@ -706,6 +749,7 @@ class _SetupScreenState extends State<SetupScreen> {
         downloadProvider: context.read<DownloadProvider>(),
         hasPlexToken: hasPlexToken,
         failure: StartupFailure.offlineInit,
+        attemptId: attemptId,
       );
       return;
     }
@@ -716,6 +760,7 @@ class _SetupScreenState extends State<SetupScreen> {
     // Populate per-server status for splash display
     if (mounted) {
       setState(() {
+        _serverStatus.clear();
         for (final server in servers) {
           _serverStatus[server.clientIdentifier] = (server.name, null);
         }
@@ -730,7 +775,7 @@ class _SetupScreenState extends State<SetupScreen> {
         syncService: context.read<OfflineWatchSyncService>(),
         clientIdentifier: storage.getClientIdentifier(),
         onServerStatus: (serverId, success) {
-          if (mounted) {
+          if (_isAttemptActive(attemptId)) {
             setState(() {
               final existing = _serverStatus[serverId];
               if (existing != null) {
@@ -744,7 +789,7 @@ class _SetupScreenState extends State<SetupScreen> {
         onTimeout: () => throw TimeoutException('Server connection timed out'),
       );
 
-      if (!mounted) return;
+      if (!_isAttemptActive(attemptId)) return;
 
       if (result.hasConnections && result.firstClient != null) {
         // Resume any downloads that were interrupted by app kill
@@ -759,16 +804,20 @@ class _SetupScreenState extends State<SetupScreen> {
           downloadProvider: context.read<DownloadProvider>(),
           hasPlexToken: hasPlexToken,
           failure: StartupFailure.noServerConnections,
+          attemptId: attemptId,
         );
       }
     } on TimeoutException {
+      if (!_isAttemptActive(attemptId)) return;
       appLogger.w('Server connection timed out during startup');
       await _enterOfflineModeOrReturnToAuth(
         downloadProvider: context.read<DownloadProvider>(),
         hasPlexToken: hasPlexToken,
         failure: StartupFailure.connectionTimeout,
+        attemptId: attemptId,
       );
     } catch (e, stackTrace) {
+      if (!_isAttemptActive(attemptId)) return;
       appLogger.e('Error during multi-server connection', error: e, stackTrace: stackTrace);
 
       _returnToAuthWithFailure(
@@ -841,7 +890,20 @@ class _SetupScreenState extends State<SetupScreen> {
           Positioned(
             left: 0, right: 0,
             bottom: MediaQuery.of(context).size.height * 0.5 - 170,
-            child: _buildStatusText(context),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () => _openSplashServerManagement(),
+                  icon: const AppIcon(Symbols.storage_rounded, fill: 1),
+                  tooltip: t.common.settings,
+                  visualDensity: VisualDensity.compact,
+                  iconSize: 18,
+                ),
+                Flexible(child: _buildStatusText(context)),
+              ],
+            ),
           ),
           Positioned(
             left: 0, right: 0,
