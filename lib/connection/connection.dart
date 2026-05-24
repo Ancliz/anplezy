@@ -26,6 +26,8 @@ enum ConnectionKind {
   };
 }
 
+const manualPlexConnectionIdPrefix = 'plex.manual.';
+
 /// Health snapshot for a connection. Updated by the orchestrator each time a
 /// session is established or refreshed.
 enum ConnectionStatus { unknown, online, offline, authError, disabled }
@@ -111,6 +113,8 @@ class PlexAccountConnection extends Connection {
 
   @override
   ConnectionKind get kind => ConnectionKind.plex;
+
+  bool get isManual => id.startsWith(manualPlexConnectionIdPrefix);
 
   @override
   String get displayName => activeProfile != null && activeProfile!.title.isNotEmpty

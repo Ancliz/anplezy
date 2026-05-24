@@ -589,7 +589,10 @@ class PlexClient
     try {
       client = MediaServerHttpClient(baseUrl: baseUrl, connectTimeout: timeout, receiveTimeout: timeout);
 
-      final headers = <String, String>{'X-Plex-Token': token};
+      final headers = <String, String>{};
+      if (token.isNotEmpty) {
+        headers['X-Plex-Token'] = token;
+      }
       if (clientIdentifier != null) {
         headers['X-Plex-Client-Identifier'] = clientIdentifier;
         headers['X-Plex-Product'] = 'Plezy';
@@ -2963,6 +2966,7 @@ class PlexClient
       '&protocol=http&CopyMatroskaAttachments=true)',
     );
     final clientProfileExtra = profileExtraClauses.join('+');
+    final authToken = config.token;
 
     // HTTP/MKV matches Plex Desktop and lets MPV see embedded subtitle streams.
     // HLS `subtitles=segmented` was accepted by Plex but produced manifests
@@ -3013,7 +3017,7 @@ class PlexClient
       'X-Plex-Platform': _transcodePlatformName(),
       if (config.device != null) 'X-Plex-Device': config.device!,
       if (offsetMs != null) 'offset': (offsetMs ~/ 1000).toString(),
-      if (config.token != null) 'X-Plex-Token': config.token!,
+      if (authToken != null && authToken.isNotEmpty) 'X-Plex-Token': authToken,
     };
   }
 

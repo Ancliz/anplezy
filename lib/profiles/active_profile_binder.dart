@@ -455,6 +455,14 @@ class ActiveProfileBinder {
     required PlexAccountConnection conn,
     required ProfileConnection pc,
   }) async {
+    if (conn.isManual) {
+      final ids = await _connectFromServers(conn, pc.userToken ?? '', conn.servers, profile.displayName);
+      if (ids.visibleServerIds.isNotEmpty) {
+        await profileConnections.markUsed(profile.id, conn.id);
+      }
+      return ids;
+    }
+
     final auth = await _ensureAuth();
     String? userToken = pc.userToken;
     List<PlexServer>? servers;

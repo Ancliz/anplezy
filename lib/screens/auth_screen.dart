@@ -23,6 +23,7 @@ import '../utils/navigation_transitions.dart';
 import '../widgets/backend_badge.dart';
 import '../widgets/dialog_action_button.dart';
 import 'auth/plex_pin_auth_flow.dart';
+import 'guest_setup_screen.dart';
 import 'main_screen.dart';
 import 'profile/profile_switch_screen.dart';
 import 'settings/add_jellyfin_screen.dart';
@@ -188,6 +189,10 @@ class _AuthScreenState extends State<AuthScreen> {
     // straight to the main screen. [MainScreen] reads the active client
     // from the server provider, so no client argument is needed here.
     unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen())));
+  }
+
+  void _openGuestSetup() {
+    unawaited(Navigator.push(context, fadeRoute(const GuestSetupScreen())));
   }
 
   void _showDebugTokenDialog() {
@@ -397,6 +402,11 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
         ],
+        const SizedBox(height: 24),
+        FocusableButton(
+          onPressed: busy ? null : _openGuestSetup,
+          child: TextButton(onPressed: busy ? null : _openGuestSetup, child: const Text('Continue without Plex Login')),
+        ),
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
           Text(

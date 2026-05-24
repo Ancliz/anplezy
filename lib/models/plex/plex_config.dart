@@ -59,8 +59,9 @@ class PlexConfig {
       'Accept-Charset': 'utf-8',
     };
 
-    if (token != null) {
-      headers['X-Plex-Token'] = token!;
+    final authToken = token;
+    if (authToken != null && authToken.isNotEmpty) {
+      headers['X-Plex-Token'] = authToken;
     }
 
     return headers;
