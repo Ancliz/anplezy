@@ -700,6 +700,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               registry: context.read<ProfileRegistry>(),
               plexHome: context.read<PlexHomeService>(),
               connections: context.read<ConnectionRegistry>(),
+              profileConnections: context.read<ProfileConnectionRegistry>(),
             );
             unawaited(provider.initialize());
             return provider;
@@ -1168,6 +1169,24 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     if (!mounted) return;
 
+    final startupConnections = storage.isGuestModeEnabled()
+        ? allConnections
+              .where(
+                (connection) => switch (connection) {
+                  PlexAccountConnection(:final isManual) => isManual,
+                  _ => false,
+                },
+              )
+              .toList()
+        : allConnections;
+
+    if (startupConnections.isEmpty) {
+      if (mounted) {
+        unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+      }
+      return;
+    }
+
     // No network — skip connection attempts and go straight to offline mode
     if (!hasNetwork) {
       await _enterOfflineMode();
@@ -1176,7 +1195,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     if (mounted) {
       setState(() {
-        for (final conn in allConnections) {
+        for (final conn in startupConnections) {
           if (conn is PlexAccountConnection) {
             for (final s in conn.servers) {
               _serverStatus[s.clientIdentifier] = (s.name, null);
@@ -1188,8 +1207,11 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       });
     }
 
-    final plexCount = allConnections.whereType<PlexAccountConnection>().fold<int>(0, (n, c) => n + c.servers.length);
-    final jellyfinCount = allConnections.whereType<JellyfinConnection>().length;
+    final plexCount = startupConnections.whereType<PlexAccountConnection>().fold<int>(
+      0,
+      (n, c) => n + c.servers.length,
+    );
+    final jellyfinCount = startupConnections.whereType<JellyfinConnection>().length;
     unawaited(
       Sentry.addBreadcrumb(
         Breadcrumb(
@@ -1271,8 +1293,15 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     // Repopulate metadata for downloaded items now that per-backend caches
     // are resolvable (the Connections row + live JellyfinClient are in
     // place). Without this the downloads list and sync-rule titles render
-    // empty until something forces a later refresh.
-    await downloadProvider.refreshMetadataFromCache();
+    // empty until something forces a later refresh. This is a best-effort
+    // UI repair step; do not let a slow local or no-token server strand
+    // startup on the splash screen.
+    await downloadProvider.refreshMetadataFromCache().timeout(
+      const Duration(seconds: 8),
+      onTimeout: () {
+        appLogger.w('Setup: metadata cache refresh timed out; continuing startup');
+      },
+    );
     if (!mounted) return;
 
     unawaited(Navigator.pushReplacement(context, fadeRoute(MainScreen(initialPromptHandled: shouldPrompt))));

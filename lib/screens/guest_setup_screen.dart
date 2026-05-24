@@ -98,6 +98,7 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
 
     try {
       final storage = await StorageService.getInstance();
+      await storage.setGuestModeEnabled(true);
       final clientIdentifier = await storage.getOrCreateClientIdentifier();
       final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
       final manualId = _generateServerId();

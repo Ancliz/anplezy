@@ -6,11 +6,15 @@ import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
 import '../mixins/controller_disposer_mixin.dart';
 import '../profiles/active_profile_provider.dart';
+import '../profiles/active_profile_binder.dart';
 import '../profiles/plex_home_service.dart';
 import '../profiles/profile.dart';
+import '../profiles/profile_connection_registry.dart';
+import '../profiles/profile_registry.dart';
 import '../services/plex_auth_service.dart';
 import '../services/settings_service.dart';
 import '../services/storage_service.dart';
+import '../providers/download_provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
@@ -74,7 +78,7 @@ class _AuthScreenState extends State<AuthScreen> {
     ActiveProfileProvider activeProfiles,
     PlexAccountConnection accountConn,
   ) async {
-    await activeProfiles.initialize();
+    await activeProfiles.reloadFromStorage();
     final profile = initialPlexHomeProfileFromCache(plexHome, accountConn);
     if (profile == null) {
       await activeProfiles.clearActiveProfile();
@@ -107,6 +111,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       final servers = await svc.fetchServers(plexToken);
       final storage = await StorageService.getInstance();
+      await storage.setGuestModeEnabled(false);
 
       if (servers.isEmpty) {
         await storage.clearCredentials();
@@ -189,6 +194,104 @@ class _AuthScreenState extends State<AuthScreen> {
     // straight to the main screen. [MainScreen] reads the active client
     // from the server provider, so no client argument is needed here.
     unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen())));
+  }
+
+  Future<void> _handleContinueWithoutPlex() async {
+    if (!mounted) return;
+
+    final connectionRegistry = context.read<ConnectionRegistry>();
+    final profileRegistry = context.read<ProfileRegistry>();
+    final profileConnectionRegistry = context.read<ProfileConnectionRegistry>();
+    final activeProfiles = context.read<ActiveProfileProvider>();
+    final activeProfileBinder = context.read<ActiveProfileBinder>();
+    final downloadProvider = context.read<DownloadProvider>();
+    final storage = await StorageService.getInstance();
+    await storage.setGuestModeEnabled(true);
+    if (!mounted) return;
+
+    setState(() {
+      _isAuthenticating = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final manualConnections = (await connectionRegistry.listPlexAccounts())
+          .where((connection) => connection.isManual)
+          .toList();
+
+      if (manualConnections.isEmpty) {
+        if (!mounted) return;
+        setState(() => _isAuthenticating = false);
+        _openGuestSetup();
+        return;
+      }
+
+      var activatedManualProfile = false;
+      for (final connection in manualConnections) {
+        final result = await _activateManualConnection(
+          connection: connection,
+          profileRegistry: profileRegistry,
+          profileConnectionRegistry: profileConnectionRegistry,
+          activeProfiles: activeProfiles,
+          activeProfileBinder: activeProfileBinder,
+        );
+        activatedManualProfile = activatedManualProfile || result.activated;
+        if (result.connected) {
+          if (mounted) {
+            unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen())));
+          }
+          return;
+        }
+      }
+
+      if (activatedManualProfile) {
+        await downloadProvider.ensureInitialized();
+        if (mounted) {
+          unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
+        }
+        return;
+      }
+
+      if (!mounted) return;
+      setState(() => _isAuthenticating = false);
+      _openGuestSetup();
+    } catch (e, st) {
+      appLogger.w('Failed to continue with saved manual Plex servers', error: e, stackTrace: st);
+      if (!mounted) return;
+      setState(() => _isAuthenticating = false);
+      _openGuestSetup();
+    }
+  }
+
+  Future<({bool activated, bool connected})> _activateManualConnection({
+    required PlexAccountConnection connection,
+    required ProfileRegistry profileRegistry,
+    required ProfileConnectionRegistry profileConnectionRegistry,
+    required ActiveProfileProvider activeProfiles,
+    required ActiveProfileBinder activeProfileBinder,
+  }) async {
+    final links = await profileConnectionRegistry.listForConnection(connection.id);
+    if (links.isEmpty) {
+      appLogger.w('Manual Plex connection ${connection.id} has no profile link');
+      return (activated: false, connected: false);
+    }
+
+    await activeProfiles.reloadFromStorage();
+    for (final link in links) {
+      final profile = await profileRegistry.get(link.profileId);
+      if (profile == null) {
+        appLogger.w('Manual Plex profile ${link.profileId} missing for ${connection.id}');
+        continue;
+      }
+      final hydratedProfile = activeProfiles.profiles.firstWhere((p) => p.id == profile.id, orElse: () => profile);
+      final activated = await activeProfiles.activate(hydratedProfile);
+      if (!activated) continue;
+      await activeProfileBinder.rebindActive();
+      final connected = await activeProfiles.awaitBindingSettle();
+      return (activated: true, connected: connected);
+    }
+
+    return (activated: false, connected: false);
   }
 
   void _openGuestSetup() {
@@ -404,8 +507,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ],
         const SizedBox(height: 24),
         FocusableButton(
-          onPressed: busy ? null : _openGuestSetup,
-          child: TextButton(onPressed: busy ? null : _openGuestSetup, child: const Text('Continue without Plex Login')),
+          onPressed: busy ? null : _handleContinueWithoutPlex,
+          child: TextButton(
+            onPressed: busy ? null : _handleContinueWithoutPlex,
+            child: const Text('Continue without Plex Login'),
+          ),
         ),
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),

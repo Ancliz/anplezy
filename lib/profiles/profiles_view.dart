@@ -88,7 +88,23 @@ ProfilesView _build({
     connectionsById: connectionsById,
     storage: storage,
   );
-  return ProfilesView(profiles: all, connectionsByProfile: _groupByProfile(pcs), connectionsById: connectionsById);
+  final connectionsByProfile = _groupByProfile(pcs);
+  final guestMode = storage?.isGuestModeEnabled() == true;
+  final visibleConnectionsByProfile = guestMode
+      ? _manualGuestConnectionsByProfile(connectionsByProfile: connectionsByProfile, connectionsById: connectionsById)
+      : connectionsByProfile;
+  final visibleProfiles = guestMode
+      ? _manualGuestProfiles(
+          profiles: all,
+          connectionsByProfile: visibleConnectionsByProfile,
+          connectionsById: connectionsById,
+        )
+      : all;
+  return ProfilesView(
+    profiles: visibleProfiles,
+    connectionsByProfile: visibleConnectionsByProfile,
+    connectionsById: connectionsById,
+  );
 }
 
 Map<String, List<ProfileConnection>> _groupByProfile(List<ProfileConnection> pcs) {
@@ -97,6 +113,40 @@ Map<String, List<ProfileConnection>> _groupByProfile(List<ProfileConnection> pcs
     out.putIfAbsent(pc.profileId, () => []).add(pc);
   }
   return out;
+}
+
+List<Profile> _manualGuestProfiles({
+  required List<Profile> profiles,
+  required Map<String, List<ProfileConnection>> connectionsByProfile,
+  required Map<String, Connection> connectionsById,
+}) {
+  return profiles.where((profile) {
+    if (!profile.isLocal) return false;
+    final rows = connectionsByProfile[profile.id] ?? const <ProfileConnection>[];
+    return rows.any(
+      (row) => switch (connectionsById[row.connectionId]) {
+        PlexAccountConnection(:final isManual) => isManual,
+        _ => false,
+      },
+    );
+  }).toList();
+}
+
+Map<String, List<ProfileConnection>> _manualGuestConnectionsByProfile({
+  required Map<String, List<ProfileConnection>> connectionsByProfile,
+  required Map<String, Connection> connectionsById,
+}) {
+  return connectionsByProfile.map((profileId, rows) {
+    final manualRows = rows
+        .where(
+          (row) => switch (connectionsById[row.connectionId]) {
+            PlexAccountConnection(:final isManual) => isManual,
+            _ => false,
+          },
+        )
+        .toList();
+    return MapEntry(profileId, manualRows);
+  })..removeWhere((_, rows) => rows.isEmpty);
 }
 
 /// Lightweight `combineLatest4` — emits the combined value once each input

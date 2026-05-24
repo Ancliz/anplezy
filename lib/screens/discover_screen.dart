@@ -60,6 +60,7 @@ import '../utils/layout_constants.dart';
 import '../utils/platform_detector.dart';
 import '../theme/mono_tokens.dart';
 import '../services/watch_next_service.dart';
+import '../connection/connection.dart';
 import 'auth_screen.dart';
 import 'libraries/content_state_builder.dart';
 import 'main_screen.dart';
@@ -1058,20 +1059,65 @@ class _DiscoverScreenState extends State<DiscoverScreen>
       final connectionRegistry = context.read<ConnectionRegistry>();
       final profileRegistry = context.read<ProfileRegistry>();
       final profileConnReg = context.read<ProfileConnectionRegistry>();
+      final activeProfileProvider = context.read<ActiveProfileProvider>();
       final plexHome = context.read<PlexHomeService>();
       final companionRemote = context.read<CompanionRemoteProvider>();
+
+      final storage = await StorageService.getInstance();
+      if (storage.isGuestModeEnabled()) {
+        await companionRemote.resetForLogout();
+        multiServerProvider.clearAllConnections();
+        await storage.setGuestModeEnabled(false);
+        await activeProfileProvider.clearActiveProfile();
+        await hiddenLibrariesProvider.refresh();
+        playbackStateProvider.clearShuffle();
+        if (navigator.mounted) {
+          unawaited(
+            navigator.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const AuthScreen()), (route) => false),
+          );
+        }
+        return;
+      }
+
+      final connectionsBeforeLogout = await connectionRegistry.list();
+      final manualConnectionIds = connectionsBeforeLogout
+          .whereType<PlexAccountConnection>()
+          .where((connection) => connection.isManual)
+          .map((connection) => connection.id)
+          .toSet();
+      final manualProfileIds = <String>{};
+      for (final connectionId in manualConnectionIds) {
+        final links = await profileConnReg.listForConnection(connectionId);
+        manualProfileIds.addAll(links.map((link) => link.profileId));
+      }
 
       // Clear all user data and provider states
       await companionRemote.resetForLogout();
       await userProfileProvider.logout();
       multiServerProvider.clearAllConnections();
-      // Drop the profile/connection rows so the next sign-in starts clean
-      // and doesn't bind to stale tokens or orphaned profile rows.
-      await profileConnReg.clear();
-      await profileRegistry.clear();
-      await connectionRegistry.clear();
+      // Drop Plex-account-backed rows so the next sign-in starts clean, while
+      // preserving manually configured local Plex servers for guest mode.
+      for (final link in await profileConnReg.listAll()) {
+        if (!manualConnectionIds.contains(link.connectionId) || !manualProfileIds.contains(link.profileId)) {
+          await profileConnReg.remove(link.profileId, link.connectionId);
+        }
+      }
+      for (final profile in await profileRegistry.list()) {
+        if (!manualProfileIds.contains(profile.id)) {
+          await profileRegistry.remove(profile.id);
+        }
+      }
+      for (final connection in connectionsBeforeLogout) {
+        if (connection is PlexAccountConnection && connection.isManual) continue;
+        if (connection is PlexAccountConnection) {
+          for (final server in connection.servers) {
+            await storage.clearServerEndpoint(server.clientIdentifier);
+          }
+        }
+        await connectionRegistry.remove(connection.id);
+      }
       await plexHome.clearAll();
-      final storage = await StorageService.getInstance();
+      await storage.setGuestModeEnabled(false);
       await storage.clearActiveProfileId();
       await storage.clearAllProfileLastUsed();
       await hiddenLibrariesProvider.refresh();

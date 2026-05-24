@@ -170,12 +170,16 @@ class PlexHomeService {
   Future<void> refresh(PlexAccountConnection conn) => _fetchAndCache(conn);
 
   Future<void> _fetchAndCache(PlexAccountConnection conn) async {
+    final storage = _storage ?? await StorageService.getInstance();
+    _storage = storage;
+    if (storage.isGuestModeEnabled() && !conn.isManual) {
+      appLogger.d('PlexHomeService: skipping refresh for ${conn.accountLabel} (${conn.id}) while guest mode is active');
+      return;
+    }
     if (conn.accountToken.isEmpty) {
       appLogger.w('PlexHomeService: skipping fetch for ${conn.accountLabel} (${conn.id}) — empty token');
       return;
     }
-    final storage = _storage ?? await StorageService.getInstance();
-    _storage = storage;
     try {
       final users = await _fetchHomeUsers(conn.accountToken);
       _byConnection[conn.id] = users;
