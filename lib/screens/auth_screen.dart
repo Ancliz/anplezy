@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
@@ -26,6 +27,7 @@ import '../focus/focusable_text_field.dart';
 import '../focus/key_event_utils.dart';
 import '../media/media_backend.dart';
 import '../utils/navigation_transitions.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/backend_badge.dart';
 import '../widgets/dialog_action_button.dart';
 import 'auth/plex_pin_auth_flow.dart';
@@ -235,6 +237,10 @@ class _AuthScreenState extends State<AuthScreen> {
   void _handleDebugTap() {
     if (!kDebugMode) return;
     _showDebugTokenDialog();
+  }
+
+  void _openServerManagementScreen() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
   }
 
   Future<void> _connectToJellyfin() async {
@@ -562,12 +568,26 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ],
         const SizedBox(height: 24),
-        FocusableButton(
-          onPressed: busy ? null : _handleContinueWithoutPlex,
-          child: TextButton(
-            onPressed: busy ? null : _handleContinueWithoutPlex,
-            child: const Text('Continue without Plex Login'),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: busy ? null : _openServerManagementScreen,
+              icon: const AppIcon(Symbols.storage_rounded),
+              tooltip: t.common.configure,
+              visualDensity: VisualDensity.compact,
+              iconSize: 18,
+            ),
+            const SizedBox(width: 4),
+            FocusableButton(
+              onPressed: busy ? null : _handleContinueWithoutPlex,
+              child: TextButton(
+                onPressed: busy ? null : _handleContinueWithoutPlex,
+                child: const Text('Continue without Plex Login'),
+              ),
+            ),
+          ],
         ),
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
