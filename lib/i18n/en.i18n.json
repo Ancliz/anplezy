@@ -40,6 +40,7 @@
     "addTo": "Add to...",
     "createNew": "Create new",
     "connect": "Connect",
+    "configure": "Configure",
     "disconnect": "Disconnect",
     "play": "Play",
     "pause": "Pause",
@@ -739,7 +740,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Couldn't connect to any servers. Check your network.",
     "noServersFoundForAccount": "No servers found for ${username} (${email})",
-    "failedToLoadServers": "Failed to load servers: ${error}"
+    "failedToLoadServers": "Failed to load servers: ${error}",
+    "offlineInitPlex": "Could not initialize offline mode. Please try signing in again.",
+    "offlineInitGuest": "Could not initialize offline mode. Please check your manual servers.",
+    "connectionFailedGuest": "Couldn't connect to your manual servers. Check that they're available on this network.",
+    "connectionFailedPlex": "Server connection failed. Please try signing in again."
   },
   "hubDetail": {
     "title": "Title",

@@ -18,7 +18,9 @@ import '../providers/download_provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
+import '../utils/offline_mode_utils.dart';
 import '../utils/platform_detector.dart';
+import '../utils/snackbar_helper.dart';
 import '../focus/focusable_button.dart';
 import '../focus/focusable_text_field.dart';
 import '../focus/key_event_utils.dart';
@@ -31,6 +33,7 @@ import 'guest_setup_screen.dart';
 import 'main_screen.dart';
 import 'profile/profile_switch_screen.dart';
 import 'settings/add_jellyfin_screen.dart';
+import 'settings/server_management_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -41,6 +44,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool _isAuthenticating = false;
+  bool _isGuestConnectionLoading = false;
   String? _errorMessage;
   // Reuse a one-shot service for the debug-token verify path; the Plex
   // PIN/QR flow inside [PlexPinAuthFlow] owns its own service instance.
@@ -182,6 +186,52 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  void _showGuestConfigurationSnackBar({
+    required String message,
+    required NavigatorState navigator,
+    required ColorScheme colorScheme,
+  }) {
+    final messenger = rootScaffoldMessengerKey.currentState;
+    if (messenger == null) return;
+    messenger.removeCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(color: colorScheme.onError)),
+        backgroundColor: colorScheme.error,
+        duration: const Duration(days: 1),
+        action: SnackBarAction(
+          label: t.common.configure,
+          textColor: colorScheme.onError,
+          disabledTextColor: colorScheme.onError,
+          onPressed: () {
+            messenger.hideCurrentSnackBar();
+            navigator.push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _enterGuestOfflineMode(DownloadProvider downloadProvider) async {
+    final offlineReady = await OfflineModeUtils.initialize(downloadProvider, logContext: 'guest mode');
+    if (!mounted) return false;
+
+    if (!offlineReady) {
+      final navigator = Navigator.of(context);
+      final colorScheme = Theme.of(context).colorScheme;
+      unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
+      _showGuestConfigurationSnackBar(
+        message: t.serverSelection.offlineInitGuest,
+        navigator: navigator,
+        colorScheme: colorScheme,
+      );
+      return false;
+    }
+
+    unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
+    return true;
+  }
+
   void _handleDebugTap() {
     if (!kDebugMode) return;
     _showDebugTokenDialog();
@@ -198,6 +248,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _handleContinueWithoutPlex() async {
     if (!mounted) return;
+    rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
 
     final connectionRegistry = context.read<ConnectionRegistry>();
     final profileRegistry = context.read<ProfileRegistry>();
@@ -211,6 +262,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     setState(() {
       _isAuthenticating = true;
+      _isGuestConnectionLoading = true;
       _errorMessage = null;
     });
 
@@ -245,20 +297,23 @@ class _AuthScreenState extends State<AuthScreen> {
       }
 
       if (activatedManualProfile) {
-        await downloadProvider.ensureInitialized();
-        if (mounted) {
-          unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
-        }
+        await _enterGuestOfflineMode(downloadProvider);
         return;
       }
 
       if (!mounted) return;
-      setState(() => _isAuthenticating = false);
+      setState(() {
+        _isAuthenticating = false;
+        _isGuestConnectionLoading = false;
+      });
       _openGuestSetup();
     } catch (e, st) {
       appLogger.w('Failed to continue with saved manual Plex servers', error: e, stackTrace: st);
       if (!mounted) return;
-      setState(() => _isAuthenticating = false);
+      setState(() {
+        _isAuthenticating = false;
+        _isGuestConnectionLoading = false;
+      });
       _openGuestSetup();
     }
   }
@@ -378,13 +433,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Widget _buildAuthBody() {
     if (_isAuthenticating) {
+      final message = _isGuestConnectionLoading ? t.common.connectingToServers : t.auth.waitingForAuth;
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Center(child: CircularProgressIndicator()),
           const SizedBox(height: 16),
           Text(
-            t.auth.waitingForAuth,
+            message,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey),
           ),

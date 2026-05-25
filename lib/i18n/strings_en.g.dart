@@ -221,6 +221,9 @@ class TranslationsCommonEn {
 	/// en: 'Connect'
 	String get connect => 'Connect';
 
+	/// en: 'Configure'
+	String get configure => 'Configure';
+
 	/// en: 'Disconnect'
 	String get disconnect => 'Disconnect';
 
@@ -2173,6 +2176,18 @@ class TranslationsServerSelectionEn {
 
 	/// en: 'Failed to load servers: ${error}'
 	String failedToLoadServers({required Object error}) => 'Failed to load servers: ${error}';
+
+	/// en: 'Could not initialize offline mode. Please try signing in again.'
+	String get offlineInitPlex => 'Could not initialize offline mode. Please try signing in again.';
+
+	/// en: 'Could not initialize offline mode. Please check your manual servers.'
+	String get offlineInitGuest => 'Could not initialize offline mode. Please check your manual servers.';
+
+	/// en: 'Couldn't connect to your manual servers. Check that they're available on this network.'
+	String get connectionFailedGuest => 'Couldn\'t connect to your manual servers. Check that they\'re available on this network.';
+
+	/// en: 'Server connection failed. Please try signing in again.'
+	String get connectionFailedPlex => 'Server connection failed. Please try signing in again.';
 }
 
 // Path: hubDetail
@@ -4184,6 +4199,7 @@ extension on Translations {
 			'common.addTo' => 'Add to...',
 			'common.createNew' => 'Create new',
 			'common.connect' => 'Connect',
+			'common.configure' => 'Configure',
 			'common.disconnect' => 'Disconnect',
 			'common.play' => 'Play',
 			'common.pause' => 'Pause',
@@ -4659,9 +4675,9 @@ extension on Translations {
 			'profiles.delete' => 'Delete',
 			'profiles.signOut' => 'Sign out',
 			'profiles.signOutPlexTitle' => 'Sign out of Plex?',
-			'profiles.signOutPlexMessage' => ({required Object displayName}) => 'Remove ${displayName} and all Plex Home users? Sign back in anytime.',
 			_ => null,
 		} ?? switch (path) {
+			'profiles.signOutPlexMessage' => ({required Object displayName}) => 'Remove ${displayName} and all Plex Home users? Sign back in anytime.',
 			'profiles.signedOutPlex' => 'Signed out of Plex.',
 			'profiles.signOutFailed' => 'Sign out failed.',
 			'profiles.sectionTitle' => 'Profiles',
@@ -4828,6 +4844,10 @@ extension on Translations {
 			'serverSelection.allServerConnectionsFailed' => 'Couldn\'t connect to any servers. Check your network.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No servers found for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Failed to load servers: ${error}',
+			'serverSelection.offlineInitPlex' => 'Could not initialize offline mode. Please try signing in again.',
+			'serverSelection.offlineInitGuest' => 'Could not initialize offline mode. Please check your manual servers.',
+			'serverSelection.connectionFailedGuest' => 'Couldn\'t connect to your manual servers. Check that they\'re available on this network.',
+			'serverSelection.connectionFailedPlex' => 'Server connection failed. Please try signing in again.',
 			'hubDetail.title' => 'Title',
 			'hubDetail.releaseYear' => 'Release Year',
 			'hubDetail.dateAdded' => 'Date Added',
@@ -5169,13 +5189,13 @@ extension on Translations {
 			'metadataEdit.releaseDate' => 'Release Date',
 			'metadataEdit.contentRating' => 'Content Rating',
 			'metadataEdit.studio' => 'Studio',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.tagline' => 'Tagline',
 			'metadataEdit.summary' => 'Summary',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Background',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Square Art',
 			'metadataEdit.selectPoster' => 'Select Poster',
 			'metadataEdit.selectBackground' => 'Select Background',

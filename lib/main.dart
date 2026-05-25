@@ -25,6 +25,7 @@ import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/profile/pin_entry_dialog.dart';
 import 'screens/profile/profile_switch_screen.dart';
+import 'screens/settings/server_management_screen.dart';
 import 'services/storage_service.dart';
 import 'services/macos_window_service.dart';
 import 'services/native_window_service.dart';
@@ -70,6 +71,7 @@ import 'screens/video_player_screen.dart';
 import 'utils/app_logger.dart';
 import 'utils/managed_http_client.dart';
 import 'utils/media_server_http_client.dart';
+import 'utils/offline_mode_utils.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
 import 'i18n/strings.g.dart';
@@ -1060,6 +1062,8 @@ class SetupScreen extends StatefulWidget {
   State<SetupScreen> createState() => _SetupScreenState();
 }
 
+enum StartupFailure { offlineInit, noServerConnections, connectionFailed }
+
 class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   String _statusMessage = '';
   bool _enteringOffline = false;
@@ -1077,12 +1081,69 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     setStateIfMounted(() => _statusMessage = message);
   }
 
-  Future<void> _enterOfflineMode() async {
+  ({String plex, String guest}) _messagesForFailure(StartupFailure failure) {
+    return switch (failure) {
+      StartupFailure.offlineInit => (
+        plex: t.serverSelection.offlineInitPlex,
+        guest: t.serverSelection.offlineInitGuest,
+      ),
+      StartupFailure.noServerConnections => (
+        plex: t.serverSelection.allServerConnectionsFailed,
+        guest: t.serverSelection.connectionFailedGuest,
+      ),
+      StartupFailure.connectionFailed => (
+        plex: t.serverSelection.connectionFailedPlex,
+        guest: t.serverSelection.connectionFailedGuest,
+      ),
+    };
+  }
+
+  void _returnToAuthWithFailure({required bool isGuestMode, required StartupFailure failure}) {
+    if (!mounted) return;
+
+    final messages = _messagesForFailure(failure);
+    final colorScheme = Theme.of(context).colorScheme;
+    final navigator = Navigator.of(context);
+    final messenger = rootScaffoldMessengerKey.currentState;
+
+    unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
+
+    if (messenger == null) return;
+    messenger.removeCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(isGuestMode ? messages.guest : messages.plex, style: TextStyle(color: colorScheme.onError)),
+        backgroundColor: colorScheme.error,
+        duration: isGuestMode ? const Duration(days: 1) : const Duration(seconds: 5),
+        action: isGuestMode
+            ? SnackBarAction(
+                label: t.common.configure,
+                textColor: colorScheme.onError,
+                disabledTextColor: colorScheme.onError,
+                onPressed: () {
+                  messenger.hideCurrentSnackBar();
+                  navigator.push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
+                },
+              )
+            : null,
+      ),
+    );
+  }
+
+  Future<void> _enterOfflineMode({
+    required bool isGuestMode,
+    StartupFailure failure = StartupFailure.offlineInit,
+  }) async {
     if (_enteringOffline) return;
     _enteringOffline = true;
     _setStatus(t.common.startingOfflineMode);
-    await context.read<DownloadProvider>().ensureInitialized();
+    final offlineReady = await OfflineModeUtils.initialize(context.read<DownloadProvider>(), logContext: 'startup');
     if (!mounted) return;
+    if (!offlineReady) {
+      _enteringOffline = false;
+      _returnToAuthWithFailure(isGuestMode: isGuestMode, failure: failure);
+      return;
+    }
     unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
   }
 
@@ -1091,6 +1152,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     final storage = await StorageService.getInstance();
     final registry = ServerRegistry(storage);
+    final startupIsGuestMode = storage.isGuestModeEnabled();
 
     // Idempotent: brings legacy SharedPreferences state (plexToken,
     // currentUserUUID, homeUsersCache) into the new ConnectionRegistry +
@@ -1169,7 +1231,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     if (!mounted) return;
 
-    final startupConnections = storage.isGuestModeEnabled()
+    final startupConnections = startupIsGuestMode
         ? allConnections
               .where(
                 (connection) => switch (connection) {
@@ -1182,14 +1244,14 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     if (startupConnections.isEmpty) {
       if (mounted) {
-        unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+        _returnToAuthWithFailure(isGuestMode: startupIsGuestMode, failure: StartupFailure.noServerConnections);
       }
       return;
     }
 
     // No network — skip connection attempts and go straight to offline mode
     if (!hasNetwork) {
-      await _enterOfflineMode();
+      await _enterOfflineMode(isGuestMode: startupIsGuestMode, failure: StartupFailure.offlineInit);
       return;
     }
 
@@ -1281,12 +1343,16 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       if (!mounted) return;
     }
 
+    final serverManager = _serverManagerFromContext();
     if (shouldEnterOfflineModeAfterStartupBind(
       bindingSucceeded: bindingSucceeded,
-      hasOnlineServers: _serverManagerFromContext().onlineServerIds.isNotEmpty,
+      hasOnlineServers: serverManager.onlineServerIds.isNotEmpty,
     )) {
       appLogger.w('Setup: no servers online after startup bind; starting offline mode');
-      await _enterOfflineMode();
+      await _enterOfflineMode(
+        isGuestMode: startupIsGuestMode,
+        failure: bindingSucceeded ? StartupFailure.noServerConnections : StartupFailure.connectionFailed,
+      );
       return;
     }
 
