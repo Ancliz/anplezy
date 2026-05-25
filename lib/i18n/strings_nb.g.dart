@@ -939,6 +939,10 @@ class _TranslationsServerSelectionNb extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kunne ikke koble til noen servere. Sjekk nettverket ditt.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Ingen servere funnet for ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kunne ikke laste servere: ${error}';
+	@override String get offlineInitPlex => 'Kunne ikke initialisere frakoblet modus. Prøv å logge inn igjen.';
+	@override String get offlineInitGuest => 'Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.';
+	@override String get connectionFailedGuest => 'Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.';
+	@override String get connectionFailedPlex => 'Servertilkobling mislyktes. Prøv å logge inn igjen.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsNb {
 			'serverSelection.allServerConnectionsFailed' => 'Kunne ikke koble til noen servere. Sjekk nettverket ditt.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Ingen servere funnet for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kunne ikke laste servere: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kunne ikke initialisere frakoblet modus. Prøv å logge inn igjen.',
+			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.',
+			'serverSelection.connectionFailedGuest' => 'Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.',
+			'serverSelection.connectionFailedPlex' => 'Servertilkobling mislyktes. Prøv å logge inn igjen.',
 			'hubDetail.title' => 'Tittel',
 			'hubDetail.releaseYear' => 'Utgivelsesår',
 			'hubDetail.dateAdded' => 'Dato lagt til',
@@ -2822,12 +2830,12 @@ extension on TranslationsNb {
 			'metadataEdit.contentRating' => 'Innholdsvurdering',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Slagord',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Sammendrag',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Bakgrunn',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Kvadratisk bilde',
 			'metadataEdit.selectPoster' => 'Velg plakat',
 			'metadataEdit.selectBackground' => 'Velg bakgrunn',

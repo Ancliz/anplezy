@@ -939,6 +939,10 @@ class _TranslationsServerSelectionDa extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kunne ikke oprette forbindelse til nogen servere. Tjek dit netværk.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Ingen servere fundet for ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kunne ikke indlæse servere: ${error}';
+	@override String get offlineInitPlex => 'Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.';
+	@override String get offlineInitGuest => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.';
+	@override String get connectionFailedGuest => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.';
+	@override String get connectionFailedPlex => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsDa {
 			'serverSelection.allServerConnectionsFailed' => 'Kunne ikke oprette forbindelse til nogen servere. Tjek dit netværk.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Ingen servere fundet for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kunne ikke indlæse servere: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.',
+			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.',
+			'serverSelection.connectionFailedGuest' => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.',
+			'serverSelection.connectionFailedPlex' => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Udgivelsesår',
 			'hubDetail.dateAdded' => 'Tilføjelsesdato',
@@ -2822,12 +2830,12 @@ extension on TranslationsDa {
 			'metadataEdit.contentRating' => 'Aldersgrænse',
 			'metadataEdit.studio' => 'Studie',
 			'metadataEdit.tagline' => 'Tagline',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Resumé',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Baggrund',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Kvadratisk billede',
 			'metadataEdit.selectPoster' => 'Vælg plakat',
 			'metadataEdit.selectBackground' => 'Vælg baggrund',

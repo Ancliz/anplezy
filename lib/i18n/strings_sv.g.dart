@@ -939,6 +939,10 @@ class _TranslationsServerSelectionSv extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kunde inte ansluta till några servrar. Kontrollera nätverket.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Inga servrar hittades för ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Misslyckades att ladda servrar: ${error}';
+	@override String get offlineInitPlex => 'Kunde inte initiera offlineläge. Försök logga in igen.';
+	@override String get offlineInitGuest => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.';
+	@override String get connectionFailedGuest => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.';
+	@override String get connectionFailedPlex => 'Serveranslutning misslyckades. Försök logga in igen.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsSv {
 			'serverSelection.allServerConnectionsFailed' => 'Kunde inte ansluta till några servrar. Kontrollera nätverket.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Inga servrar hittades för ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Misslyckades att ladda servrar: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kunde inte initiera offlineläge. Försök logga in igen.',
+			'serverSelection.offlineInitGuest' => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.',
+			'serverSelection.connectionFailedGuest' => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.',
+			'serverSelection.connectionFailedPlex' => 'Serveranslutning misslyckades. Försök logga in igen.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Utgivningsår',
 			'hubDetail.dateAdded' => 'Datum tillagd',
@@ -2822,12 +2830,12 @@ extension on TranslationsSv {
 			'metadataEdit.contentRating' => 'Åldersgräns',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Sammanfattning',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Bakgrund',
 			'metadataEdit.logo' => 'Logotyp',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Kvadratisk bild',
 			'metadataEdit.selectPoster' => 'Välj poster',
 			'metadataEdit.selectBackground' => 'Välj bakgrund',

@@ -939,6 +939,10 @@ class _TranslationsServerSelectionPl extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Nie udało się połączyć z żadnym serwerem. Sprawdź sieć.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nie znaleziono serwerów dla ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Nie udało się załadować serwerów: ${error}';
+	@override String get offlineInitPlex => 'Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.';
+	@override String get offlineInitGuest => 'Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.';
+	@override String get connectionFailedGuest => 'Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.';
+	@override String get connectionFailedPlex => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsPl {
 			'serverSelection.allServerConnectionsFailed' => 'Nie udało się połączyć z żadnym serwerem. Sprawdź sieć.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nie znaleziono serwerów dla ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Nie udało się załadować serwerów: ${error}',
+			'serverSelection.offlineInitPlex' => 'Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.',
+			'serverSelection.offlineInitGuest' => 'Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.',
+			'serverSelection.connectionFailedGuest' => 'Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.',
+			'serverSelection.connectionFailedPlex' => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.',
 			'hubDetail.title' => 'Tytuł',
 			'hubDetail.releaseYear' => 'Rok premiery',
 			'hubDetail.dateAdded' => 'Data dodania',
@@ -2822,12 +2830,12 @@ extension on TranslationsPl {
 			'metadataEdit.contentRating' => 'Klasyfikacja wiekowa',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Opis',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Tło',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Kwadratowy obraz',
 			'metadataEdit.selectPoster' => 'Wybierz plakat',
 			'metadataEdit.selectBackground' => 'Wybierz tło',

@@ -939,6 +939,10 @@ class _TranslationsServerSelectionIt extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Impossibile connettersi ai server. Controlla la rete.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nessun server trovato per ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Impossibile caricare i server: ${error}';
+	@override String get offlineInitPlex => 'Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.';
+	@override String get offlineInitGuest => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.';
+	@override String get connectionFailedGuest => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.';
+	@override String get connectionFailedPlex => 'Connessione al server non riuscita. Prova ad accedere di nuovo.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsIt {
 			'serverSelection.allServerConnectionsFailed' => 'Impossibile connettersi ai server. Controlla la rete.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nessun server trovato per ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Impossibile caricare i server: ${error}',
+			'serverSelection.offlineInitPlex' => 'Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.',
+			'serverSelection.offlineInitGuest' => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.',
+			'serverSelection.connectionFailedGuest' => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.',
+			'serverSelection.connectionFailedPlex' => 'Connessione al server non riuscita. Prova ad accedere di nuovo.',
 			'hubDetail.title' => 'Titolo',
 			'hubDetail.releaseYear' => 'Anno rilascio',
 			'hubDetail.dateAdded' => 'Data aggiunta',
@@ -2822,12 +2830,12 @@ extension on TranslationsIt {
 			'metadataEdit.contentRating' => 'Classificazione',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Trama',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Sfondo',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Immagine quadrata',
 			'metadataEdit.selectPoster' => 'Seleziona poster',
 			'metadataEdit.selectBackground' => 'Seleziona sfondo',

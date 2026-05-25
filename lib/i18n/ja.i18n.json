@@ -739,7 +739,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "どのサーバーにも接続できませんでした。ネットワークを確認してください。",
     "noServersFoundForAccount": "${username} (${email})のサーバーが見つかりません",
-    "failedToLoadServers": "サーバーの読み込みに失敗しました: ${error}"
+    "failedToLoadServers": "サーバーの読み込みに失敗しました: ${error}",
+    "offlineInitPlex": "オフラインモードを初期化できませんでした。再度ログインしてください。",
+    "offlineInitGuest": "オフラインモードを初期化できませんでした。手動サーバーを確認してください。",
+    "connectionFailedGuest": "手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。",
+    "connectionFailedPlex": "サーバー接続に失敗しました。再度ログインしてください。"
   },
   "hubDetail": {
     "title": "タイトル",

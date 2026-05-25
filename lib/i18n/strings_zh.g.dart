@@ -939,6 +939,10 @@ class _TranslationsServerSelectionZh extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => '无法连接到任何服务器。请检查网络。';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '未找到 ${username} (${email}) 的服务器';
 	@override String failedToLoadServers({required Object error}) => '无法加载服务器: ${error}';
+	@override String get offlineInitPlex => '无法初始化离线模式。请重新登录。';
+	@override String get offlineInitGuest => '无法初始化离线模式。请检查你的手动服务器。';
+	@override String get connectionFailedGuest => '无法连接到你的手动服务器。请检查它们是否在此网络上可用。';
+	@override String get connectionFailedPlex => '服务器连接失败。请重新登录。';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsZh {
 			'serverSelection.allServerConnectionsFailed' => '无法连接到任何服务器。请检查网络。',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '未找到 ${username} (${email}) 的服务器',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => '无法加载服务器: ${error}',
+			'serverSelection.offlineInitPlex' => '无法初始化离线模式。请重新登录。',
+			'serverSelection.offlineInitGuest' => '无法初始化离线模式。请检查你的手动服务器。',
+			'serverSelection.connectionFailedGuest' => '无法连接到你的手动服务器。请检查它们是否在此网络上可用。',
+			'serverSelection.connectionFailedPlex' => '服务器连接失败。请重新登录。',
 			'hubDetail.title' => '标题',
 			'hubDetail.releaseYear' => '发行年份',
 			'hubDetail.dateAdded' => '添加日期',
@@ -2822,12 +2830,12 @@ extension on TranslationsZh {
 			'metadataEdit.contentRating' => '内容分级',
 			'metadataEdit.studio' => '制片厂',
 			'metadataEdit.tagline' => '标语',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => '简介',
 			'metadataEdit.poster' => '海报',
 			'metadataEdit.background' => '背景',
 			'metadataEdit.logo' => '标志',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => '方形图片',
 			'metadataEdit.selectPoster' => '选择海报',
 			'metadataEdit.selectBackground' => '选择背景',

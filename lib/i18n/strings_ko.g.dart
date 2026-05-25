@@ -939,6 +939,10 @@ class _TranslationsServerSelectionKo extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => '서버에 연결할 수 없습니다. 네트워크를 확인하세요.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '${username} (${email})의 서버를 찾을 수 없습니다.';
 	@override String failedToLoadServers({required Object error}) => '서버를 로드할 수 없습니다: ${error}';
+	@override String get offlineInitPlex => '오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.';
+	@override String get offlineInitGuest => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.';
+	@override String get connectionFailedGuest => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.';
+	@override String get connectionFailedPlex => '서버 연결에 실패했습니다. 다시 로그인하세요.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsKo {
 			'serverSelection.allServerConnectionsFailed' => '서버에 연결할 수 없습니다. 네트워크를 확인하세요.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '${username} (${email})의 서버를 찾을 수 없습니다.',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => '서버를 로드할 수 없습니다: ${error}',
+			'serverSelection.offlineInitPlex' => '오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.',
+			'serverSelection.offlineInitGuest' => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.',
+			'serverSelection.connectionFailedGuest' => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.',
+			'serverSelection.connectionFailedPlex' => '서버 연결에 실패했습니다. 다시 로그인하세요.',
 			'hubDetail.title' => '제목',
 			'hubDetail.releaseYear' => '출시 연도',
 			'hubDetail.dateAdded' => '추가 날짜',
@@ -2822,12 +2830,12 @@ extension on TranslationsKo {
 			'metadataEdit.contentRating' => '콘텐츠 등급',
 			'metadataEdit.studio' => '스튜디오',
 			'metadataEdit.tagline' => '태그라인',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => '줄거리',
 			'metadataEdit.poster' => '포스터',
 			'metadataEdit.background' => '배경',
 			'metadataEdit.logo' => '로고',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => '정사각형 아트',
 			'metadataEdit.selectPoster' => '포스터 선택',
 			'metadataEdit.selectBackground' => '배경 선택',

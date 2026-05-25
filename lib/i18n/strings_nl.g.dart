@@ -939,6 +939,10 @@ class _TranslationsServerSelectionNl extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kon met geen enkele server verbinden. Controleer je netwerk.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Geen servers gevonden voor ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kon servers niet laden: ${error}';
+	@override String get offlineInitPlex => 'Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.';
+	@override String get offlineInitGuest => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.';
+	@override String get connectionFailedGuest => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.';
+	@override String get connectionFailedPlex => 'Serververbinding mislukt. Probeer opnieuw in te loggen.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsNl {
 			'serverSelection.allServerConnectionsFailed' => 'Kon met geen enkele server verbinden. Controleer je netwerk.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Geen servers gevonden voor ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kon servers niet laden: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.',
+			'serverSelection.offlineInitGuest' => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.',
+			'serverSelection.connectionFailedGuest' => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.',
+			'serverSelection.connectionFailedPlex' => 'Serververbinding mislukt. Probeer opnieuw in te loggen.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Uitgavejaar',
 			'hubDetail.dateAdded' => 'Datum toegevoegd',
@@ -2822,12 +2830,12 @@ extension on TranslationsNl {
 			'metadataEdit.contentRating' => 'Leeftijdsclassificatie',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Samenvatting',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Achtergrond',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Vierkante afbeelding',
 			'metadataEdit.selectPoster' => 'Poster selecteren',
 			'metadataEdit.selectBackground' => 'Achtergrond selecteren',

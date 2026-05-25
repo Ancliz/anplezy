@@ -939,6 +939,10 @@ class _TranslationsServerSelectionRu extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Не удалось подключиться ни к одному серверу. Проверьте сеть.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Серверы не найдены для ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Не удалось загрузить серверы: ${error}';
+	@override String get offlineInitPlex => 'Не удалось инициализировать офлайн-режим. Попробуйте снова войти.';
+	@override String get offlineInitGuest => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.';
+	@override String get connectionFailedGuest => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.';
+	@override String get connectionFailedPlex => 'Не удалось подключиться к серверу. Попробуйте снова войти.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsRu {
 			'serverSelection.allServerConnectionsFailed' => 'Не удалось подключиться ни к одному серверу. Проверьте сеть.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Серверы не найдены для ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Не удалось загрузить серверы: ${error}',
+			'serverSelection.offlineInitPlex' => 'Не удалось инициализировать офлайн-режим. Попробуйте снова войти.',
+			'serverSelection.offlineInitGuest' => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.',
+			'serverSelection.connectionFailedGuest' => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.',
+			'serverSelection.connectionFailedPlex' => 'Не удалось подключиться к серверу. Попробуйте снова войти.',
 			'hubDetail.title' => 'Название',
 			'hubDetail.releaseYear' => 'Год выпуска',
 			'hubDetail.dateAdded' => 'Дата добавления',
@@ -2822,12 +2830,12 @@ extension on TranslationsRu {
 			'metadataEdit.contentRating' => 'Возрастной рейтинг',
 			'metadataEdit.studio' => 'Студия',
 			'metadataEdit.tagline' => 'Слоган',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Описание',
 			'metadataEdit.poster' => 'Постер',
 			'metadataEdit.background' => 'Фон',
 			'metadataEdit.logo' => 'Логотип',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Квадратное изображение',
 			'metadataEdit.selectPoster' => 'Выбрать постер',
 			'metadataEdit.selectBackground' => 'Выбрать фон',

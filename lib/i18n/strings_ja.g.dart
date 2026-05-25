@@ -939,6 +939,10 @@ class _TranslationsServerSelectionJa extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'どのサーバーにも接続できませんでした。ネットワークを確認してください。';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '${username} (${email})のサーバーが見つかりません';
 	@override String failedToLoadServers({required Object error}) => 'サーバーの読み込みに失敗しました: ${error}';
+	@override String get offlineInitPlex => 'オフラインモードを初期化できませんでした。再度ログインしてください。';
+	@override String get offlineInitGuest => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。';
+	@override String get connectionFailedGuest => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。';
+	@override String get connectionFailedPlex => 'サーバー接続に失敗しました。再度ログインしてください。';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsJa {
 			'serverSelection.allServerConnectionsFailed' => 'どのサーバーにも接続できませんでした。ネットワークを確認してください。',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '${username} (${email})のサーバーが見つかりません',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'サーバーの読み込みに失敗しました: ${error}',
+			'serverSelection.offlineInitPlex' => 'オフラインモードを初期化できませんでした。再度ログインしてください。',
+			'serverSelection.offlineInitGuest' => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。',
+			'serverSelection.connectionFailedGuest' => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。',
+			'serverSelection.connectionFailedPlex' => 'サーバー接続に失敗しました。再度ログインしてください。',
 			'hubDetail.title' => 'タイトル',
 			'hubDetail.releaseYear' => '公開年',
 			'hubDetail.dateAdded' => '追加日',
@@ -2822,12 +2830,12 @@ extension on TranslationsJa {
 			'metadataEdit.contentRating' => 'コンテンツレーティング',
 			'metadataEdit.studio' => 'スタジオ',
 			'metadataEdit.tagline' => 'タグライン',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'あらすじ',
 			'metadataEdit.poster' => 'ポスター',
 			'metadataEdit.background' => '背景',
 			'metadataEdit.logo' => 'ロゴ',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => '正方形アート',
 			'metadataEdit.selectPoster' => 'ポスターを選択',
 			'metadataEdit.selectBackground' => '背景を選択',

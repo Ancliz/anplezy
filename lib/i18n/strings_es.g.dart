@@ -939,6 +939,10 @@ class _TranslationsServerSelectionEs extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'No se pudo conectar a ningún servidor. Revisa tu red.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Error al cargar servidores: ${error}';
+	@override String get offlineInitPlex => 'No se pudo inicializar el modo sin conexión. Intenta iniciar sesión de nuevo.';
+	@override String get offlineInitGuest => 'No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.';
+	@override String get connectionFailedGuest => 'No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.';
+	@override String get connectionFailedPlex => 'Error de conexión con el servidor. Intenta iniciar sesión de nuevo.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsEs {
 			'serverSelection.allServerConnectionsFailed' => 'No se pudo conectar a ningún servidor. Revisa tu red.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Error al cargar servidores: ${error}',
+			'serverSelection.offlineInitPlex' => 'No se pudo inicializar el modo sin conexión. Intenta iniciar sesión de nuevo.',
+			'serverSelection.offlineInitGuest' => 'No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.',
+			'serverSelection.connectionFailedGuest' => 'No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.',
+			'serverSelection.connectionFailedPlex' => 'Error de conexión con el servidor. Intenta iniciar sesión de nuevo.',
 			'hubDetail.title' => 'Título',
 			'hubDetail.releaseYear' => 'Año de lanzamiento',
 			'hubDetail.dateAdded' => 'Añadido el',
@@ -2822,12 +2830,12 @@ extension on TranslationsEs {
 			'metadataEdit.contentRating' => 'Clasificación de contenido',
 			'metadataEdit.studio' => 'Estudio',
 			'metadataEdit.tagline' => 'Eslogan',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Resumen',
 			'metadataEdit.poster' => 'Póster',
 			'metadataEdit.background' => 'Fondo',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Imagen cuadrada',
 			'metadataEdit.selectPoster' => 'Seleccionar póster',
 			'metadataEdit.selectBackground' => 'Seleccionar fondo',

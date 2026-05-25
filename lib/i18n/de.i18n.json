@@ -739,7 +739,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Keine Verbindung zu Servern möglich. Prüfe dein Netzwerk.",
     "noServersFoundForAccount": "Keine Server gefunden für ${username} (${email})",
-    "failedToLoadServers": "Server konnten nicht geladen werden: ${error}"
+    "failedToLoadServers": "Server konnten nicht geladen werden: ${error}",
+    "offlineInitPlex": "Offline-Modus konnte nicht initialisiert werden. Bitte versuche, dich erneut anzumelden.",
+    "offlineInitGuest": "Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.",
+    "connectionFailedGuest": "Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.",
+    "connectionFailedPlex": "Serververbindung fehlgeschlagen. Bitte melde dich erneut an."
   },
   "hubDetail": {
     "title": "Titel",

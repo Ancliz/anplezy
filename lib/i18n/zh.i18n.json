@@ -739,7 +739,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "无法连接到任何服务器。请检查网络。",
     "noServersFoundForAccount": "未找到 ${username} (${email}) 的服务器",
-    "failedToLoadServers": "无法加载服务器: ${error}"
+    "failedToLoadServers": "无法加载服务器: ${error}",
+    "offlineInitPlex": "无法初始化离线模式。请重新登录。",
+    "offlineInitGuest": "无法初始化离线模式。请检查你的手动服务器。",
+    "connectionFailedGuest": "无法连接到你的手动服务器。请检查它们是否在此网络上可用。",
+    "connectionFailedPlex": "服务器连接失败。请重新登录。"
   },
   "hubDetail": {
     "title": "标题",

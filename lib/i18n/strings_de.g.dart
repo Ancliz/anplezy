@@ -939,6 +939,10 @@ class _TranslationsServerSelectionDe extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Keine Verbindung zu Servern möglich. Prüfe dein Netzwerk.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Keine Server gefunden für ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Server konnten nicht geladen werden: ${error}';
+	@override String get offlineInitPlex => 'Offline-Modus konnte nicht initialisiert werden. Bitte versuche, dich erneut anzumelden.';
+	@override String get offlineInitGuest => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.';
+	@override String get connectionFailedGuest => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.';
+	@override String get connectionFailedPlex => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.';
 }
 
 // Path: hubDetail
@@ -2480,6 +2484,10 @@ extension on TranslationsDe {
 			'serverSelection.allServerConnectionsFailed' => 'Keine Verbindung zu Servern möglich. Prüfe dein Netzwerk.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Keine Server gefunden für ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Server konnten nicht geladen werden: ${error}',
+			'serverSelection.offlineInitPlex' => 'Offline-Modus konnte nicht initialisiert werden. Bitte versuche, dich erneut anzumelden.',
+			'serverSelection.offlineInitGuest' => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.',
+			'serverSelection.connectionFailedGuest' => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.',
+			'serverSelection.connectionFailedPlex' => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Erscheinungsjahr',
 			'hubDetail.dateAdded' => 'Hinzugefügt am',
@@ -2822,12 +2830,12 @@ extension on TranslationsDe {
 			'metadataEdit.contentRating' => 'Altersfreigabe',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.summary' => 'Zusammenfassung',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Hintergrund',
 			'metadataEdit.logo' => 'Logo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.squareArt' => 'Quadratisches Bild',
 			'metadataEdit.selectPoster' => 'Poster auswählen',
 			'metadataEdit.selectBackground' => 'Hintergrund auswählen',

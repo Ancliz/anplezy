@@ -739,7 +739,11 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Impossibile connettersi ai server. Controlla la rete.",
     "noServersFoundForAccount": "Nessun server trovato per ${username} (${email})",
-    "failedToLoadServers": "Impossibile caricare i server: ${error}"
+    "failedToLoadServers": "Impossibile caricare i server: ${error}",
+    "offlineInitPlex": "Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.",
+    "offlineInitGuest": "Impossibile inizializzare la modalità offline. Controlla i server manuali.",
+    "connectionFailedGuest": "Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.",
+    "connectionFailedPlex": "Connessione al server non riuscita. Prova ad accedere di nuovo."
   },
   "hubDetail": {
     "title": "Titolo",
