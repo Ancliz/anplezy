@@ -3,19 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
 import '../i18n/strings.g.dart';
 import '../profiles/active_profile_binder.dart';
 import '../profiles/active_profile_provider.dart';
-import '../profiles/profile.dart';
-import '../profiles/profile_connection.dart';
 import '../profiles/profile_connection_registry.dart';
 import '../profiles/profile_registry.dart';
-import '../services/plex_auth_service.dart';
-import '../services/storage_service.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/app_logger.dart';
+import '../utils/manual_server_utils.dart';
 import '../utils/navigation_transitions.dart';
 import 'main_screen.dart';
 
@@ -43,46 +39,12 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
     super.dispose();
   }
 
-  ({String protocol, String address, int port, String uri})? _parseServerUrl(String url) {
-    try {
-      var normalizedUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        normalizedUrl = 'http://$url';
-      }
-
-      final uri = Uri.parse(normalizedUrl);
-      final protocol = uri.scheme.toLowerCase();
-      if (uri.host.isEmpty || (protocol != 'http' && protocol != 'https')) {
-        return null;
-      }
-
-      final port = uri.hasPort ? uri.port : (protocol == 'https' ? 443 : 80);
-      final connectionUri = Uri(scheme: protocol, host: uri.host, port: port).toString();
-
-      return (protocol: protocol, address: uri.host, port: port, uri: connectionUri);
-    } catch (error) {
-      appLogger.w('Failed to parse manual Plex server URL', error: error);
-      return null;
-    }
-  }
-
   Future<void> _connectToManualServer() async {
     if (!mounted) return;
 
     final url = _serverUrlController.text.trim();
     final displayName = _serverNameController.text.trim();
     final token = _serverTokenController.text.trim();
-
-    if (url.isEmpty) {
-      setState(() => _errorMessage = 'Please enter a server URL');
-      return;
-    }
-
-    final parsed = _parseServerUrl(url);
-    if (parsed == null) {
-      setState(() => _errorMessage = 'Invalid server URL format');
-      return;
-    }
 
     final connectionRegistry = context.read<ConnectionRegistry>();
     final profileRegistry = context.read<ProfileRegistry>();
@@ -97,86 +59,30 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
     });
 
     try {
-      final storage = await StorageService.getInstance();
-      await storage.setGuestModeEnabled(true);
-      final clientIdentifier = await storage.getOrCreateClientIdentifier();
-      final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
-      final manualId = _generateServerId();
-      final now = DateTime.now();
-
-      final connection = PlexConnection(
-        protocol: parsed.protocol,
-        address: parsed.address,
-        port: parsed.port,
-        uri: parsed.uri,
-        local: true,
-        relay: false,
-        ipv6: parsed.address.contains(':'),
-      );
-      final server = PlexServer(
-        name: serverName,
-        clientIdentifier: manualId,
-        accessToken: token,
-        connections: [connection],
-        owned: false,
-        presence: false,
-      );
-      final accountConnection = PlexAccountConnection(
-        id: '$manualPlexConnectionIdPrefix$manualId',
-        accountToken: '',
-        clientIdentifier: clientIdentifier,
-        accountLabel: serverName,
-        servers: [server],
-        createdAt: now,
-        lastAuthenticatedAt: now,
-      );
-      final profile = Profile.local(
-        id: 'local.$manualId',
-        displayName: serverName,
-        sortOrder: now.millisecondsSinceEpoch,
-        createdAt: now,
+      final result = await ManualServerUtils.addManualServer(
+        url: url,
+        displayName: displayName,
+        token: token,
+        connectionRegistry: connectionRegistry,
+        profileRegistry: profileRegistry,
+        profileConnectionRegistry: profileConnectionRegistry,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: activeProfileBinder,
+        shouldCancelConnection: () => _shouldCancelConnection,
       );
 
-      await connectionRegistry.upsert(accountConnection);
-      await profileRegistry.upsert(profile);
-      await profileConnectionRegistry.upsert(
-        ProfileConnection(profileId: profile.id, connectionId: accountConnection.id, userIdentifier: manualId),
-        makeDefault: true,
-      );
-
-      if (_shouldCancelConnection) {
+      if (result.cancelled) {
         if (!mounted) return;
         setState(() => _isConnecting = false);
         unawaited(Navigator.of(context).maybePop());
         return;
       }
 
-      await activeProfiles.reloadFromStorage();
-      final activated = await activeProfiles.activate(profile);
-      if (!activated) {
+      if (!result.connected) {
         if (!mounted) return;
         setState(() {
           _isConnecting = false;
-          _errorMessage = t.serverSelection.allServerConnectionsFailed;
-        });
-        return;
-      }
-
-      await activeProfileBinder.rebindActive();
-      final connected = await activeProfiles.awaitBindingSettle();
-
-      if (_shouldCancelConnection) {
-        if (!mounted) return;
-        setState(() => _isConnecting = false);
-        unawaited(Navigator.of(context).maybePop());
-        return;
-      }
-
-      if (!connected) {
-        if (!mounted) return;
-        setState(() {
-          _isConnecting = false;
-          _errorMessage = t.serverSelection.allServerConnectionsFailed;
+          _errorMessage = result.error ?? t.serverSelection.allServerConnectionsFailed;
         });
         return;
       }
@@ -195,10 +101,6 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
         _errorMessage = errorMessage.length > 200 ? '${errorMessage.substring(0, 200)}...' : errorMessage;
       });
     }
-  }
-
-  String _generateServerId() {
-    return 'manual_${DateTime.now().microsecondsSinceEpoch}';
   }
 
   void _goBack() {

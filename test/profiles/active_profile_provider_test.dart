@@ -44,7 +44,7 @@ PlexAccountConnection _account(String id) {
 
 PlexAccountConnection _manualAccount(String manualId) {
   return PlexAccountConnection(
-    id: '$manualPlexConnectionIdPrefix$manualId',
+    id: '$manualPlexIdPrefix$manualId',
     accountToken: '',
     clientIdentifier: 'client-$manualId',
     accountLabel: 'Manual Plex',
