@@ -50,6 +50,7 @@ class ManualServerUtils {
     required ActiveProfileProvider activeProfiles,
     required ActiveProfileBinder activeProfileBinder,
     required bool Function() shouldCancelConnection,
+    bool enableGuestMode = true,
   }) async {
     if (url.isEmpty) {
       return (connected: false, cancelled: false, error: 'Please enter a server URL');
@@ -61,7 +62,9 @@ class ManualServerUtils {
     }
 
     final storage = await StorageService.getInstance();
-    await storage.setGuestModeEnabled(true);
+    if (enableGuestMode) {
+      await storage.setGuestModeEnabled(true);
+    }
     final clientIdentifier = await storage.getOrCreateClientIdentifier();
     final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
     final manualId = generateServerId();

@@ -47,6 +47,7 @@ import 'appearance_settings_screen.dart';
 import 'keyboard_shortcuts_screen.dart';
 import 'logs_screen.dart';
 import 'playback_settings_screen.dart';
+import 'server_management_screen.dart';
 import '../profile/profile_switch_screen.dart';
 import 'trackers_settings_screen.dart';
 import '../../widgets/loading_indicator_box.dart';
@@ -82,6 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   static const _kWatchTogetherRelay = 'watch_together_relay';
   static const _kExportSettings = 'export_settings';
   static const _kImportSettings = 'import_settings';
+  static const _kServerManagement = 'server_management';
 
   KeyboardShortcutsService? _keyboardService;
   late final bool _keyboardShortcutsSupported = KeyboardShortcutsService.isPlatformSupported();
@@ -270,6 +272,13 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
             final active = context.read<ActiveProfileProvider>().active;
             Navigator.push(context, MaterialPageRoute(builder: (_) => AddConnectionScreen(targetProfile: active)));
           },
+        ),
+        SettingNavigationTile(
+          focusNode: _focusTracker.get(_kServerManagement),
+          icon: Symbols.storage_rounded,
+          title: 'Manage Servers',
+          subtitle: 'Add or remove manual servers',
+          destinationBuilder: (_) => const ServerManagementScreen(),
         ),
       ],
     );
