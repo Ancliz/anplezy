@@ -943,6 +943,12 @@ class _TranslationsServerSelectionFr extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.';
 	@override String get connectionFailedGuest => 'Impossible de se connecter à vos serveurs manuels. Vérifiez qu\'ils sont disponibles sur ce réseau.';
 	@override String get connectionFailedPlex => 'Échec de la connexion au serveur. Veuillez vous reconnecter.';
+	@override String get manualServerUrlRequired => 'Veuillez saisir une adresse de serveur';
+	@override String get manualServerUrlInvalid => 'Format d\'adresse de serveur invalide';
+	@override String get manualServerDefaultName => 'Serveur local';
+	@override String get manualServerSaveFailed => 'Impossible d\'enregistrer le serveur.';
+	@override String get manualServerConnectionFailed => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.';
+	@override String get manualServerGenericFailure => 'Échec de la connexion.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsFr {
 			'serverSelection.offlineInitGuest' => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.',
 			'serverSelection.connectionFailedGuest' => 'Impossible de se connecter à vos serveurs manuels. Vérifiez qu\'ils sont disponibles sur ce réseau.',
 			'serverSelection.connectionFailedPlex' => 'Échec de la connexion au serveur. Veuillez vous reconnecter.',
+			'serverSelection.manualServerUrlRequired' => 'Veuillez saisir une adresse de serveur',
+			'serverSelection.manualServerUrlInvalid' => 'Format d\'adresse de serveur invalide',
+			'serverSelection.manualServerDefaultName' => 'Serveur local',
+			'serverSelection.manualServerSaveFailed' => 'Impossible d\'enregistrer le serveur.',
+			'serverSelection.manualServerConnectionFailed' => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.',
+			'serverSelection.manualServerGenericFailure' => 'Échec de la connexion.',
 			'hubDetail.title' => 'Titre',
 			'hubDetail.releaseYear' => 'Année de sortie',
 			'hubDetail.dateAdded' => 'Date d\'ajout',
@@ -2824,14 +2836,14 @@ extension on TranslationsFr {
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Paramètres avancés',
 			'metadataEdit.title' => 'Titre',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Titre de tri',
 			'metadataEdit.originalTitle' => 'Titre original',
 			'metadataEdit.releaseDate' => 'Date de sortie',
 			'metadataEdit.contentRating' => 'Classification',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Slogan',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Résumé',
 			'metadataEdit.poster' => 'Affiche',
 			'metadataEdit.background' => 'Arrière-plan',

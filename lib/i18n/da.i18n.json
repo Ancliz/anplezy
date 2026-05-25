@@ -743,7 +743,13 @@
     "offlineInitPlex": "Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.",
     "offlineInitGuest": "Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.",
     "connectionFailedGuest": "Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.",
-    "connectionFailedPlex": "Serverforbindelse mislykkedes. Prøv at logge ind igen."
+    "connectionFailedPlex": "Serverforbindelse mislykkedes. Prøv at logge ind igen.",
+    "manualServerUrlRequired": "Indtast en serveradresse",
+    "manualServerUrlInvalid": "Ugyldigt serveradresseformat",
+    "manualServerDefaultName": "Lokal server",
+    "manualServerSaveFailed": "Kunne ikke gemme serveren.",
+    "manualServerConnectionFailed": "Kunne ikke oprette forbindelse til serveren. Tjek adressen, og prøv igen.",
+    "manualServerGenericFailure": "Forbindelse mislykkedes."
   },
   "hubDetail": {
     "title": "Titel",

@@ -743,7 +743,13 @@
     "offlineInitPlex": "Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.",
     "offlineInitGuest": "Impossibile inizializzare la modalità offline. Controlla i server manuali.",
     "connectionFailedGuest": "Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.",
-    "connectionFailedPlex": "Connessione al server non riuscita. Prova ad accedere di nuovo."
+    "connectionFailedPlex": "Connessione al server non riuscita. Prova ad accedere di nuovo.",
+    "manualServerUrlRequired": "Inserisci un indirizzo del server",
+    "manualServerUrlInvalid": "Formato dell'indirizzo del server non valido",
+    "manualServerDefaultName": "Server locale",
+    "manualServerSaveFailed": "Impossibile salvare il server.",
+    "manualServerConnectionFailed": "Impossibile connettersi al server. Controlla l'indirizzo e riprova.",
+    "manualServerGenericFailure": "Connessione non riuscita."
   },
   "hubDetail": {
     "title": "Titolo",

@@ -943,6 +943,12 @@ class _TranslationsServerSelectionIt extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.';
 	@override String get connectionFailedGuest => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.';
 	@override String get connectionFailedPlex => 'Connessione al server non riuscita. Prova ad accedere di nuovo.';
+	@override String get manualServerUrlRequired => 'Inserisci un indirizzo del server';
+	@override String get manualServerUrlInvalid => 'Formato dell\'indirizzo del server non valido';
+	@override String get manualServerDefaultName => 'Server locale';
+	@override String get manualServerSaveFailed => 'Impossibile salvare il server.';
+	@override String get manualServerConnectionFailed => 'Impossibile connettersi al server. Controlla l\'indirizzo e riprova.';
+	@override String get manualServerGenericFailure => 'Connessione non riuscita.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsIt {
 			'serverSelection.offlineInitGuest' => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.',
 			'serverSelection.connectionFailedGuest' => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.',
 			'serverSelection.connectionFailedPlex' => 'Connessione al server non riuscita. Prova ad accedere di nuovo.',
+			'serverSelection.manualServerUrlRequired' => 'Inserisci un indirizzo del server',
+			'serverSelection.manualServerUrlInvalid' => 'Formato dell\'indirizzo del server non valido',
+			'serverSelection.manualServerDefaultName' => 'Server locale',
+			'serverSelection.manualServerSaveFailed' => 'Impossibile salvare il server.',
+			'serverSelection.manualServerConnectionFailed' => 'Impossibile connettersi al server. Controlla l\'indirizzo e riprova.',
+			'serverSelection.manualServerGenericFailure' => 'Connessione non riuscita.',
 			'hubDetail.title' => 'Titolo',
 			'hubDetail.releaseYear' => 'Anno rilascio',
 			'hubDetail.dateAdded' => 'Data aggiunta',
@@ -2824,14 +2836,14 @@ extension on TranslationsIt {
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Impostazioni avanzate',
 			'metadataEdit.title' => 'Titolo',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Titolo di ordinamento',
 			'metadataEdit.originalTitle' => 'Titolo originale',
 			'metadataEdit.releaseDate' => 'Data di uscita',
 			'metadataEdit.contentRating' => 'Classificazione',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Trama',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Sfondo',

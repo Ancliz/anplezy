@@ -943,6 +943,12 @@ class _TranslationsServerSelectionJa extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。';
 	@override String get connectionFailedGuest => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。';
 	@override String get connectionFailedPlex => 'サーバー接続に失敗しました。再度ログインしてください。';
+	@override String get manualServerUrlRequired => 'サーバーアドレスを入力してください';
+	@override String get manualServerUrlInvalid => '無効なサーバーアドレス形式です';
+	@override String get manualServerDefaultName => 'ローカルサーバー';
+	@override String get manualServerSaveFailed => 'サーバーを保存できませんでした。';
+	@override String get manualServerConnectionFailed => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。';
+	@override String get manualServerGenericFailure => '接続に失敗しました。';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsJa {
 			'serverSelection.offlineInitGuest' => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。',
 			'serverSelection.connectionFailedGuest' => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。',
 			'serverSelection.connectionFailedPlex' => 'サーバー接続に失敗しました。再度ログインしてください。',
+			'serverSelection.manualServerUrlRequired' => 'サーバーアドレスを入力してください',
+			'serverSelection.manualServerUrlInvalid' => '無効なサーバーアドレス形式です',
+			'serverSelection.manualServerDefaultName' => 'ローカルサーバー',
+			'serverSelection.manualServerSaveFailed' => 'サーバーを保存できませんでした。',
+			'serverSelection.manualServerConnectionFailed' => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。',
+			'serverSelection.manualServerGenericFailure' => '接続に失敗しました。',
 			'hubDetail.title' => 'タイトル',
 			'hubDetail.releaseYear' => '公開年',
 			'hubDetail.dateAdded' => '追加日',
@@ -2824,14 +2836,14 @@ extension on TranslationsJa {
 			'metadataEdit.artwork' => 'アートワーク',
 			'metadataEdit.advancedSettings' => '詳細設定',
 			'metadataEdit.title' => 'タイトル',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'ソートタイトル',
 			'metadataEdit.originalTitle' => '原題',
 			'metadataEdit.releaseDate' => '公開日',
 			'metadataEdit.contentRating' => 'コンテンツレーティング',
 			'metadataEdit.studio' => 'スタジオ',
 			'metadataEdit.tagline' => 'タグライン',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'あらすじ',
 			'metadataEdit.poster' => 'ポスター',
 			'metadataEdit.background' => '背景',

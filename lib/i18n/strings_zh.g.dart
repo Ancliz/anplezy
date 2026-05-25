@@ -943,6 +943,12 @@ class _TranslationsServerSelectionZh extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => '无法初始化离线模式。请检查你的手动服务器。';
 	@override String get connectionFailedGuest => '无法连接到你的手动服务器。请检查它们是否在此网络上可用。';
 	@override String get connectionFailedPlex => '服务器连接失败。请重新登录。';
+	@override String get manualServerUrlRequired => '请输入服务器地址';
+	@override String get manualServerUrlInvalid => '无效的服务器地址格式';
+	@override String get manualServerDefaultName => '本地服务器';
+	@override String get manualServerSaveFailed => '无法保存服务器。';
+	@override String get manualServerConnectionFailed => '无法连接到服务器。请检查地址并重试。';
+	@override String get manualServerGenericFailure => '连接失败。';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsZh {
 			'serverSelection.offlineInitGuest' => '无法初始化离线模式。请检查你的手动服务器。',
 			'serverSelection.connectionFailedGuest' => '无法连接到你的手动服务器。请检查它们是否在此网络上可用。',
 			'serverSelection.connectionFailedPlex' => '服务器连接失败。请重新登录。',
+			'serverSelection.manualServerUrlRequired' => '请输入服务器地址',
+			'serverSelection.manualServerUrlInvalid' => '无效的服务器地址格式',
+			'serverSelection.manualServerDefaultName' => '本地服务器',
+			'serverSelection.manualServerSaveFailed' => '无法保存服务器。',
+			'serverSelection.manualServerConnectionFailed' => '无法连接到服务器。请检查地址并重试。',
+			'serverSelection.manualServerGenericFailure' => '连接失败。',
 			'hubDetail.title' => '标题',
 			'hubDetail.releaseYear' => '发行年份',
 			'hubDetail.dateAdded' => '添加日期',
@@ -2824,14 +2836,14 @@ extension on TranslationsZh {
 			'metadataEdit.artwork' => '封面图片',
 			'metadataEdit.advancedSettings' => '高级设置',
 			'metadataEdit.title' => '标题',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => '排序标题',
 			'metadataEdit.originalTitle' => '原始标题',
 			'metadataEdit.releaseDate' => '上映日期',
 			'metadataEdit.contentRating' => '内容分级',
 			'metadataEdit.studio' => '制片厂',
 			'metadataEdit.tagline' => '标语',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => '简介',
 			'metadataEdit.poster' => '海报',
 			'metadataEdit.background' => '背景',

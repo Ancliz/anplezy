@@ -943,6 +943,12 @@ class _TranslationsServerSelectionEs extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.';
 	@override String get connectionFailedGuest => 'No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.';
 	@override String get connectionFailedPlex => 'Error de conexión con el servidor. Intenta iniciar sesión de nuevo.';
+	@override String get manualServerUrlRequired => 'Introduce una dirección del servidor';
+	@override String get manualServerUrlInvalid => 'Formato de dirección del servidor no válido';
+	@override String get manualServerDefaultName => 'Servidor local';
+	@override String get manualServerSaveFailed => 'No se pudo guardar el servidor.';
+	@override String get manualServerConnectionFailed => 'No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.';
+	@override String get manualServerGenericFailure => 'Error de conexión.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsEs {
 			'serverSelection.offlineInitGuest' => 'No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.',
 			'serverSelection.connectionFailedGuest' => 'No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.',
 			'serverSelection.connectionFailedPlex' => 'Error de conexión con el servidor. Intenta iniciar sesión de nuevo.',
+			'serverSelection.manualServerUrlRequired' => 'Introduce una dirección del servidor',
+			'serverSelection.manualServerUrlInvalid' => 'Formato de dirección del servidor no válido',
+			'serverSelection.manualServerDefaultName' => 'Servidor local',
+			'serverSelection.manualServerSaveFailed' => 'No se pudo guardar el servidor.',
+			'serverSelection.manualServerConnectionFailed' => 'No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.',
+			'serverSelection.manualServerGenericFailure' => 'Error de conexión.',
 			'hubDetail.title' => 'Título',
 			'hubDetail.releaseYear' => 'Año de lanzamiento',
 			'hubDetail.dateAdded' => 'Añadido el',
@@ -2824,14 +2836,14 @@ extension on TranslationsEs {
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
 			'metadataEdit.title' => 'Título',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Título de ordenación',
 			'metadataEdit.originalTitle' => 'Título original',
 			'metadataEdit.releaseDate' => 'Fecha de estreno',
 			'metadataEdit.contentRating' => 'Clasificación de contenido',
 			'metadataEdit.studio' => 'Estudio',
 			'metadataEdit.tagline' => 'Eslogan',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Resumen',
 			'metadataEdit.poster' => 'Póster',
 			'metadataEdit.background' => 'Fondo',

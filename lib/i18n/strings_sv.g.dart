@@ -943,6 +943,12 @@ class _TranslationsServerSelectionSv extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.';
 	@override String get connectionFailedGuest => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.';
 	@override String get connectionFailedPlex => 'Serveranslutning misslyckades. Försök logga in igen.';
+	@override String get manualServerUrlRequired => 'Ange en serveradress';
+	@override String get manualServerUrlInvalid => 'Ogiltigt serveradressformat';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunde inte spara servern.';
+	@override String get manualServerConnectionFailed => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.';
+	@override String get manualServerGenericFailure => 'Anslutning misslyckades.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsSv {
 			'serverSelection.offlineInitGuest' => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.',
 			'serverSelection.connectionFailedGuest' => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.',
 			'serverSelection.connectionFailedPlex' => 'Serveranslutning misslyckades. Försök logga in igen.',
+			'serverSelection.manualServerUrlRequired' => 'Ange en serveradress',
+			'serverSelection.manualServerUrlInvalid' => 'Ogiltigt serveradressformat',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunde inte spara servern.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.',
+			'serverSelection.manualServerGenericFailure' => 'Anslutning misslyckades.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Utgivningsår',
 			'hubDetail.dateAdded' => 'Datum tillagd',
@@ -2824,14 +2836,14 @@ extension on TranslationsSv {
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Avancerade inställningar',
 			'metadataEdit.title' => 'Titel',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Sorteringstitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',
 			'metadataEdit.releaseDate' => 'Utgivningsdatum',
 			'metadataEdit.contentRating' => 'Åldersgräns',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Sammanfattning',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Bakgrund',

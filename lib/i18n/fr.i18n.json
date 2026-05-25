@@ -743,7 +743,13 @@
     "offlineInitPlex": "Impossible d'initialiser le mode hors ligne. Veuillez vous reconnecter.",
     "offlineInitGuest": "Impossible d'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.",
     "connectionFailedGuest": "Impossible de se connecter à vos serveurs manuels. Vérifiez qu'ils sont disponibles sur ce réseau.",
-    "connectionFailedPlex": "Échec de la connexion au serveur. Veuillez vous reconnecter."
+    "connectionFailedPlex": "Échec de la connexion au serveur. Veuillez vous reconnecter.",
+    "manualServerUrlRequired": "Veuillez saisir une adresse de serveur",
+    "manualServerUrlInvalid": "Format d'adresse de serveur invalide",
+    "manualServerDefaultName": "Serveur local",
+    "manualServerSaveFailed": "Impossible d'enregistrer le serveur.",
+    "manualServerConnectionFailed": "Impossible de se connecter au serveur. Vérifiez l'adresse et réessayez.",
+    "manualServerGenericFailure": "Échec de la connexion."
   },
   "hubDetail": {
     "title": "Titre",

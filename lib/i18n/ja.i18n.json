@@ -743,7 +743,13 @@
     "offlineInitPlex": "オフラインモードを初期化できませんでした。再度ログインしてください。",
     "offlineInitGuest": "オフラインモードを初期化できませんでした。手動サーバーを確認してください。",
     "connectionFailedGuest": "手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。",
-    "connectionFailedPlex": "サーバー接続に失敗しました。再度ログインしてください。"
+    "connectionFailedPlex": "サーバー接続に失敗しました。再度ログインしてください。",
+    "manualServerUrlRequired": "サーバーアドレスを入力してください",
+    "manualServerUrlInvalid": "無効なサーバーアドレス形式です",
+    "manualServerDefaultName": "ローカルサーバー",
+    "manualServerSaveFailed": "サーバーを保存できませんでした。",
+    "manualServerConnectionFailed": "サーバーに接続できませんでした。アドレスを確認して再試行してください。",
+    "manualServerGenericFailure": "接続に失敗しました。"
   },
   "hubDetail": {
     "title": "タイトル",

@@ -943,6 +943,12 @@ class _TranslationsServerSelectionRu extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.';
 	@override String get connectionFailedGuest => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.';
 	@override String get connectionFailedPlex => 'Не удалось подключиться к серверу. Попробуйте снова войти.';
+	@override String get manualServerUrlRequired => 'Введите адрес сервера';
+	@override String get manualServerUrlInvalid => 'Неверный формат адреса сервера';
+	@override String get manualServerDefaultName => 'Локальный сервер';
+	@override String get manualServerSaveFailed => 'Не удалось сохранить сервер.';
+	@override String get manualServerConnectionFailed => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.';
+	@override String get manualServerGenericFailure => 'Ошибка подключения.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsRu {
 			'serverSelection.offlineInitGuest' => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.',
 			'serverSelection.connectionFailedGuest' => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.',
 			'serverSelection.connectionFailedPlex' => 'Не удалось подключиться к серверу. Попробуйте снова войти.',
+			'serverSelection.manualServerUrlRequired' => 'Введите адрес сервера',
+			'serverSelection.manualServerUrlInvalid' => 'Неверный формат адреса сервера',
+			'serverSelection.manualServerDefaultName' => 'Локальный сервер',
+			'serverSelection.manualServerSaveFailed' => 'Не удалось сохранить сервер.',
+			'serverSelection.manualServerConnectionFailed' => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.',
+			'serverSelection.manualServerGenericFailure' => 'Ошибка подключения.',
 			'hubDetail.title' => 'Название',
 			'hubDetail.releaseYear' => 'Год выпуска',
 			'hubDetail.dateAdded' => 'Дата добавления',
@@ -2824,14 +2836,14 @@ extension on TranslationsRu {
 			'metadataEdit.artwork' => 'Обложка',
 			'metadataEdit.advancedSettings' => 'Дополнительные настройки',
 			'metadataEdit.title' => 'Название',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Название для сортировки',
 			'metadataEdit.originalTitle' => 'Оригинальное название',
 			'metadataEdit.releaseDate' => 'Дата выпуска',
 			'metadataEdit.contentRating' => 'Возрастной рейтинг',
 			'metadataEdit.studio' => 'Студия',
 			'metadataEdit.tagline' => 'Слоган',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Описание',
 			'metadataEdit.poster' => 'Постер',
 			'metadataEdit.background' => 'Фон',

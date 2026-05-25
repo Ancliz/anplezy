@@ -943,6 +943,12 @@ class _TranslationsServerSelectionKo extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.';
 	@override String get connectionFailedGuest => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.';
 	@override String get connectionFailedPlex => '서버 연결에 실패했습니다. 다시 로그인하세요.';
+	@override String get manualServerUrlRequired => '서버 주소를 입력하세요';
+	@override String get manualServerUrlInvalid => '잘못된 서버 주소 형식입니다';
+	@override String get manualServerDefaultName => '로컬 서버';
+	@override String get manualServerSaveFailed => '서버를 저장할 수 없습니다.';
+	@override String get manualServerConnectionFailed => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.';
+	@override String get manualServerGenericFailure => '연결에 실패했습니다.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsKo {
 			'serverSelection.offlineInitGuest' => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.',
 			'serverSelection.connectionFailedGuest' => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.',
 			'serverSelection.connectionFailedPlex' => '서버 연결에 실패했습니다. 다시 로그인하세요.',
+			'serverSelection.manualServerUrlRequired' => '서버 주소를 입력하세요',
+			'serverSelection.manualServerUrlInvalid' => '잘못된 서버 주소 형식입니다',
+			'serverSelection.manualServerDefaultName' => '로컬 서버',
+			'serverSelection.manualServerSaveFailed' => '서버를 저장할 수 없습니다.',
+			'serverSelection.manualServerConnectionFailed' => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.',
+			'serverSelection.manualServerGenericFailure' => '연결에 실패했습니다.',
 			'hubDetail.title' => '제목',
 			'hubDetail.releaseYear' => '출시 연도',
 			'hubDetail.dateAdded' => '추가 날짜',
@@ -2824,14 +2836,14 @@ extension on TranslationsKo {
 			'metadataEdit.artwork' => '아트워크',
 			'metadataEdit.advancedSettings' => '고급 설정',
 			'metadataEdit.title' => '제목',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => '정렬 제목',
 			'metadataEdit.originalTitle' => '원제',
 			'metadataEdit.releaseDate' => '출시일',
 			'metadataEdit.contentRating' => '콘텐츠 등급',
 			'metadataEdit.studio' => '스튜디오',
 			'metadataEdit.tagline' => '태그라인',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => '줄거리',
 			'metadataEdit.poster' => '포스터',
 			'metadataEdit.background' => '배경',

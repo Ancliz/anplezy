@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../connection/connection.dart';
 import '../../connection/connection_registry.dart';
+import '../../i18n/strings.g.dart';
 import '../../profiles/active_profile_binder.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../profiles/profile_connection_registry.dart';
@@ -49,7 +50,7 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
     final url = _serverUrlController.text.trim();
     final displayName = _serverNameController.text.trim();
     final token = _serverTokenController.text.trim();
-    final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
+    final serverName = displayName.isNotEmpty ? displayName : t.serverSelection.manualServerDefaultName;
 
     setState(() {
       _isConnecting = true;
@@ -74,7 +75,7 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
       if (!result.connected) {
         setState(() {
           _isConnecting = false;
-          _errorMessage = result.error ?? 'Could not connect to server. Please check the URL and try again.';
+          _errorMessage = result.error ?? t.serverSelection.manualServerConnectionFailed;
         });
         return;
       }
@@ -92,7 +93,7 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
       if (!mounted) return;
       setState(() {
         _isConnecting = false;
-        _errorMessage = 'Connection failed. Please try again.';
+        _errorMessage = t.serverSelection.manualServerGenericFailure;
       });
     }
   }

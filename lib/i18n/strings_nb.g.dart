@@ -943,6 +943,12 @@ class _TranslationsServerSelectionNb extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.';
 	@override String get connectionFailedGuest => 'Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.';
 	@override String get connectionFailedPlex => 'Servertilkobling mislyktes. Prøv å logge inn igjen.';
+	@override String get manualServerUrlRequired => 'Skriv inn en serveradresse';
+	@override String get manualServerUrlInvalid => 'Ugyldig serveradresseformat';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunne ikke lagre serveren.';
+	@override String get manualServerConnectionFailed => 'Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.';
+	@override String get manualServerGenericFailure => 'Tilkobling mislyktes.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsNb {
 			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.',
 			'serverSelection.connectionFailedGuest' => 'Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.',
 			'serverSelection.connectionFailedPlex' => 'Servertilkobling mislyktes. Prøv å logge inn igjen.',
+			'serverSelection.manualServerUrlRequired' => 'Skriv inn en serveradresse',
+			'serverSelection.manualServerUrlInvalid' => 'Ugyldig serveradresseformat',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunne ikke lagre serveren.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.',
+			'serverSelection.manualServerGenericFailure' => 'Tilkobling mislyktes.',
 			'hubDetail.title' => 'Tittel',
 			'hubDetail.releaseYear' => 'Utgivelsesår',
 			'hubDetail.dateAdded' => 'Dato lagt til',
@@ -2824,14 +2836,14 @@ extension on TranslationsNb {
 			'metadataEdit.artwork' => 'Kunstverk',
 			'metadataEdit.advancedSettings' => 'Avanserte innstillinger',
 			'metadataEdit.title' => 'Tittel',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Sorteringsstittel',
 			'metadataEdit.originalTitle' => 'Originaltittel',
 			'metadataEdit.releaseDate' => 'Utgivelsesdato',
 			'metadataEdit.contentRating' => 'Innholdsvurdering',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Slagord',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Sammendrag',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Bakgrunn',

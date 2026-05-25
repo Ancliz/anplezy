@@ -943,6 +943,12 @@ class _TranslationsServerSelectionDa extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.';
 	@override String get connectionFailedGuest => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.';
 	@override String get connectionFailedPlex => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.';
+	@override String get manualServerUrlRequired => 'Indtast en serveradresse';
+	@override String get manualServerUrlInvalid => 'Ugyldigt serveradresseformat';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunne ikke gemme serveren.';
+	@override String get manualServerConnectionFailed => 'Kunne ikke oprette forbindelse til serveren. Tjek adressen, og prøv igen.';
+	@override String get manualServerGenericFailure => 'Forbindelse mislykkedes.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsDa {
 			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.',
 			'serverSelection.connectionFailedGuest' => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.',
 			'serverSelection.connectionFailedPlex' => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.',
+			'serverSelection.manualServerUrlRequired' => 'Indtast en serveradresse',
+			'serverSelection.manualServerUrlInvalid' => 'Ugyldigt serveradresseformat',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunne ikke gemme serveren.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunne ikke oprette forbindelse til serveren. Tjek adressen, og prøv igen.',
+			'serverSelection.manualServerGenericFailure' => 'Forbindelse mislykkedes.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Udgivelsesår',
 			'hubDetail.dateAdded' => 'Tilføjelsesdato',
@@ -2824,14 +2836,14 @@ extension on TranslationsDa {
 			'metadataEdit.artwork' => 'Grafik',
 			'metadataEdit.advancedSettings' => 'Avancerede indstillinger',
 			'metadataEdit.title' => 'Titel',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Sorteringstitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',
 			'metadataEdit.releaseDate' => 'Udgivelsesdato',
 			'metadataEdit.contentRating' => 'Aldersgrænse',
 			'metadataEdit.studio' => 'Studie',
 			'metadataEdit.tagline' => 'Tagline',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Resumé',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Baggrund',

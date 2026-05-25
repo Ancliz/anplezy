@@ -1,5 +1,6 @@
 import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
+import '../i18n/strings.g.dart';
 import '../profiles/active_profile_binder.dart';
 import '../profiles/active_profile_provider.dart';
 import '../profiles/profile.dart';
@@ -40,6 +41,41 @@ class ManualServerUtils {
     return 'manual_${DateTime.now().microsecondsSinceEpoch}';
   }
 
+  static Future<void> _rollbackManualServerAttempt({
+    required ConnectionRegistry connectionRegistry,
+    required ProfileRegistry profileRegistry,
+    required ProfileConnectionRegistry profileConnectionRegistry,
+    required ActiveProfileProvider activeProfiles,
+    required ActiveProfileBinder activeProfileBinder,
+    required StorageService storage,
+    required String connectionId,
+    required String profileId,
+    required String? previousActiveProfileId,
+    required bool previousGuestModeEnabled,
+  }) async {
+    Future<void> tryCleanup(String label, Future<void> Function() cleanup) async {
+      try {
+        await cleanup();
+      } catch (error, stackTrace) {
+        appLogger.w('Manual server rollback failed while $label', error: error, stackTrace: stackTrace);
+      }
+    }
+
+    await tryCleanup('removing profile connection', () => profileConnectionRegistry.remove(profileId, connectionId));
+    await tryCleanup('removing profile', () => profileRegistry.remove(profileId));
+    await tryCleanup('removing connection', () => connectionRegistry.remove(connectionId));
+
+    await tryCleanup('restoring guest mode', () => storage.setGuestModeEnabled(previousGuestModeEnabled));
+    if (previousActiveProfileId == null) {
+      await tryCleanup('clearing active profile', storage.clearActiveProfileId);
+    } else {
+      await tryCleanup('restoring active profile', () => storage.setActiveProfileId(previousActiveProfileId));
+    }
+
+    await tryCleanup('reloading profiles', activeProfiles.reloadFromStorage);
+    await tryCleanup('rebinding active profile', activeProfileBinder.rebindActive);
+  }
+
   static Future<({bool connected, bool cancelled, String? error})> addManualServer({
     required String url,
     required String displayName,
@@ -53,21 +89,22 @@ class ManualServerUtils {
     bool enableGuestMode = true,
   }) async {
     if (url.isEmpty) {
-      return (connected: false, cancelled: false, error: 'Please enter a server URL');
+      return (connected: false, cancelled: false, error: t.serverSelection.manualServerUrlRequired);
     }
 
     final parsed = parseServerUrl(url);
     if (parsed == null) {
-      return (connected: false, cancelled: false, error: 'Invalid server URL format');
+      return (connected: false, cancelled: false, error: t.serverSelection.manualServerUrlInvalid);
     }
 
     final storage = await StorageService.getInstance();
-    if (enableGuestMode) {
-      await storage.setGuestModeEnabled(true);
-    }
+    final previousGuestModeEnabled = storage.isGuestModeEnabled();
+    final previousActiveProfileId = storage.getActiveProfileId();
     final clientIdentifier = await storage.getOrCreateClientIdentifier();
-    final serverName = displayName.isNotEmpty ? displayName : 'Local Server';
+    final serverName = displayName.isNotEmpty ? displayName : t.serverSelection.manualServerDefaultName;
     final manualId = generateServerId();
+    final connectionId = '$manualPlexIdPrefix$manualId';
+    final profileId = 'local.$manualId';
     final now = DateTime.now();
 
     final connection = PlexConnection(
@@ -88,7 +125,7 @@ class ManualServerUtils {
       presence: false,
     );
     final accountConnection = PlexAccountConnection(
-      id: '$manualPlexIdPrefix$manualId',
+      id: connectionId,
       accountToken: '',
       clientIdentifier: clientIdentifier,
       accountLabel: serverName,
@@ -97,36 +134,76 @@ class ManualServerUtils {
       lastAuthenticatedAt: now,
     );
     final profile = Profile.local(
-      id: 'local.$manualId',
+      id: profileId,
       displayName: serverName,
       sortOrder: now.millisecondsSinceEpoch,
       createdAt: now,
     );
 
-    await connectionRegistry.upsert(accountConnection);
-    await profileRegistry.upsert(profile);
-    await profileConnectionRegistry.upsert(
-      ProfileConnection(profileId: profile.id, connectionId: accountConnection.id, userIdentifier: manualId),
-      makeDefault: true,
+    Future<void> rollback() => _rollbackManualServerAttempt(
+      connectionRegistry: connectionRegistry,
+      profileRegistry: profileRegistry,
+      profileConnectionRegistry: profileConnectionRegistry,
+      activeProfiles: activeProfiles,
+      activeProfileBinder: activeProfileBinder,
+      storage: storage,
+      connectionId: connectionId,
+      profileId: profileId,
+      previousActiveProfileId: previousActiveProfileId,
+      previousGuestModeEnabled: previousGuestModeEnabled,
     );
 
-    if (shouldCancelConnection()) {
-      return (connected: false, cancelled: true, error: null);
+    var persistedAttempt = false;
+    try {
+      await connectionRegistry.upsert(accountConnection);
+      await profileRegistry.upsert(profile);
+      await profileConnectionRegistry.upsert(
+        ProfileConnection(profileId: profile.id, connectionId: accountConnection.id, userIdentifier: manualId),
+        makeDefault: true,
+      );
+      persistedAttempt = true;
+
+      if (shouldCancelConnection()) {
+        await rollback();
+        return (connected: false, cancelled: true, error: null);
+      }
+
+      await activeProfiles.reloadFromStorage();
+      final activated = await activeProfiles.activate(profile);
+      if (!activated) {
+        await rollback();
+        return (connected: false, cancelled: false, error: t.serverSelection.manualServerGenericFailure);
+      }
+
+      await activeProfileBinder.rebindActive();
+      final connected = await activeProfiles.awaitBindingSettle();
+
+      if (shouldCancelConnection()) {
+        await rollback();
+        return (connected: false, cancelled: true, error: null);
+      }
+
+      if (!connected) {
+        await rollback();
+        return (connected: false, cancelled: false, error: t.serverSelection.manualServerConnectionFailed);
+      }
+
+      if (enableGuestMode) {
+        await storage.setGuestModeEnabled(true);
+        await activeProfiles.reloadFromStorage();
+      }
+
+      return (connected: true, cancelled: false, error: null);
+    } catch (error, stackTrace) {
+      appLogger.e('Failed to add manual Plex server', error: error, stackTrace: stackTrace);
+      await rollback();
+      return (
+        connected: false,
+        cancelled: false,
+        error: persistedAttempt
+            ? t.serverSelection.manualServerGenericFailure
+            : t.serverSelection.manualServerSaveFailed,
+      );
     }
-
-    await activeProfiles.reloadFromStorage();
-    final activated = await activeProfiles.activate(profile);
-    if (!activated) {
-      return (connected: false, cancelled: false, error: null);
-    }
-
-    await activeProfileBinder.rebindActive();
-    final connected = await activeProfiles.awaitBindingSettle();
-
-    if (shouldCancelConnection()) {
-      return (connected: false, cancelled: true, error: null);
-    }
-
-    return (connected: connected, cancelled: false, error: null);
   }
 }

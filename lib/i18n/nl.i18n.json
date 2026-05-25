@@ -743,7 +743,13 @@
     "offlineInitPlex": "Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.",
     "offlineInitGuest": "Kan offline modus niet initialiseren. Controleer je handmatige servers.",
     "connectionFailedGuest": "Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.",
-    "connectionFailedPlex": "Serververbinding mislukt. Probeer opnieuw in te loggen."
+    "connectionFailedPlex": "Serververbinding mislukt. Probeer opnieuw in te loggen.",
+    "manualServerUrlRequired": "Voer een serveradres in",
+    "manualServerUrlInvalid": "Ongeldig serveradresformaat",
+    "manualServerDefaultName": "Lokale server",
+    "manualServerSaveFailed": "Kon server niet opslaan.",
+    "manualServerConnectionFailed": "Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.",
+    "manualServerGenericFailure": "Verbinding mislukt."
   },
   "hubDetail": {
     "title": "Titel",

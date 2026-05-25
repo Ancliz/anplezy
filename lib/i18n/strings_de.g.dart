@@ -943,6 +943,12 @@ class _TranslationsServerSelectionDe extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.';
 	@override String get connectionFailedGuest => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.';
 	@override String get connectionFailedPlex => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.';
+	@override String get manualServerUrlRequired => 'Bitte gib eine Serveradresse ein';
+	@override String get manualServerUrlInvalid => 'Ungültiges Serveradressformat';
+	@override String get manualServerDefaultName => 'Lokaler Server';
+	@override String get manualServerSaveFailed => 'Server konnte nicht gespeichert werden.';
+	@override String get manualServerConnectionFailed => 'Verbindung zum Server fehlgeschlagen. Bitte überprüfe die Adresse und versuche es erneut.';
+	@override String get manualServerGenericFailure => 'Verbindung fehlgeschlagen.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsDe {
 			'serverSelection.offlineInitGuest' => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.',
 			'serverSelection.connectionFailedGuest' => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.',
 			'serverSelection.connectionFailedPlex' => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.',
+			'serverSelection.manualServerUrlRequired' => 'Bitte gib eine Serveradresse ein',
+			'serverSelection.manualServerUrlInvalid' => 'Ungültiges Serveradressformat',
+			'serverSelection.manualServerDefaultName' => 'Lokaler Server',
+			'serverSelection.manualServerSaveFailed' => 'Server konnte nicht gespeichert werden.',
+			'serverSelection.manualServerConnectionFailed' => 'Verbindung zum Server fehlgeschlagen. Bitte überprüfe die Adresse und versuche es erneut.',
+			'serverSelection.manualServerGenericFailure' => 'Verbindung fehlgeschlagen.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Erscheinungsjahr',
 			'hubDetail.dateAdded' => 'Hinzugefügt am',
@@ -2824,14 +2836,14 @@ extension on TranslationsDe {
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Erweiterte Einstellungen',
 			'metadataEdit.title' => 'Titel',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Sortiertitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',
 			'metadataEdit.releaseDate' => 'Erscheinungsdatum',
 			'metadataEdit.contentRating' => 'Altersfreigabe',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Zusammenfassung',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Hintergrund',

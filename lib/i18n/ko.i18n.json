@@ -743,7 +743,13 @@
     "offlineInitPlex": "오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.",
     "offlineInitGuest": "오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.",
     "connectionFailedGuest": "수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.",
-    "connectionFailedPlex": "서버 연결에 실패했습니다. 다시 로그인하세요."
+    "connectionFailedPlex": "서버 연결에 실패했습니다. 다시 로그인하세요.",
+    "manualServerUrlRequired": "서버 주소를 입력하세요",
+    "manualServerUrlInvalid": "잘못된 서버 주소 형식입니다",
+    "manualServerDefaultName": "로컬 서버",
+    "manualServerSaveFailed": "서버를 저장할 수 없습니다.",
+    "manualServerConnectionFailed": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
+    "manualServerGenericFailure": "연결에 실패했습니다."
   },
   "hubDetail": {
     "title": "제목",

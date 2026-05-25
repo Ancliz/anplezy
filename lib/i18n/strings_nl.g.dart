@@ -943,6 +943,12 @@ class _TranslationsServerSelectionNl extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.';
 	@override String get connectionFailedGuest => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.';
 	@override String get connectionFailedPlex => 'Serververbinding mislukt. Probeer opnieuw in te loggen.';
+	@override String get manualServerUrlRequired => 'Voer een serveradres in';
+	@override String get manualServerUrlInvalid => 'Ongeldig serveradresformaat';
+	@override String get manualServerDefaultName => 'Lokale server';
+	@override String get manualServerSaveFailed => 'Kon server niet opslaan.';
+	@override String get manualServerConnectionFailed => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.';
+	@override String get manualServerGenericFailure => 'Verbinding mislukt.';
 }
 
 // Path: hubDetail
@@ -2488,6 +2494,12 @@ extension on TranslationsNl {
 			'serverSelection.offlineInitGuest' => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.',
 			'serverSelection.connectionFailedGuest' => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.',
 			'serverSelection.connectionFailedPlex' => 'Serververbinding mislukt. Probeer opnieuw in te loggen.',
+			'serverSelection.manualServerUrlRequired' => 'Voer een serveradres in',
+			'serverSelection.manualServerUrlInvalid' => 'Ongeldig serveradresformaat',
+			'serverSelection.manualServerDefaultName' => 'Lokale server',
+			'serverSelection.manualServerSaveFailed' => 'Kon server niet opslaan.',
+			'serverSelection.manualServerConnectionFailed' => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.',
+			'serverSelection.manualServerGenericFailure' => 'Verbinding mislukt.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Uitgavejaar',
 			'hubDetail.dateAdded' => 'Datum toegevoegd',
@@ -2824,14 +2836,14 @@ extension on TranslationsNl {
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
 			'metadataEdit.title' => 'Titel',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.sortTitle' => 'Sorteertitel',
 			'metadataEdit.originalTitle' => 'Oorspronkelijke titel',
 			'metadataEdit.releaseDate' => 'Releasedatum',
 			'metadataEdit.contentRating' => 'Leeftijdsclassificatie',
 			'metadataEdit.studio' => 'Studio',
 			'metadataEdit.tagline' => 'Tagline',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.summary' => 'Samenvatting',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Achtergrond',
