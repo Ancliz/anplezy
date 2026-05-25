@@ -11,30 +11,104 @@ import '../services/plex_auth_service.dart';
 import '../services/storage_service.dart';
 import 'app_logger.dart';
 
+const int plexDefaultPort = 32400;
+
 class ManualServerUtils {
   const ManualServerUtils._();
 
   static ({String protocol, String address, int port, String uri})? parseServerUrl(String url) {
     try {
-      var normalizedUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        normalizedUrl = 'http://$url';
+      final trimmedUrl = url.trim();
+      if (trimmedUrl.isEmpty) {
+        return null;
       }
 
-      final uri = Uri.parse(normalizedUrl);
+      final lowerTrimmedUrl = trimmedUrl.toLowerCase();
+      final hasProtocol = lowerTrimmedUrl.startsWith('http://') || lowerTrimmedUrl.startsWith('https://');
+      if (!hasProtocol && trimmedUrl.contains('://')) {
+        return null;
+      }
+
+      final normalizedUrl = hasProtocol ? trimmedUrl : 'http://$trimmedUrl';
+      final explicitPort = _explicitPortFromUrl(normalizedUrl);
+      if (explicitPort.present && explicitPort.port == null) {
+        return null;
+      }
+
+      final uri = Uri.tryParse(normalizedUrl);
+      if (uri == null) {
+        return null;
+      }
+
       final protocol = uri.scheme.toLowerCase();
       if (uri.host.isEmpty || (protocol != 'http' && protocol != 'https')) {
         return null;
       }
+      if (uri.userInfo.isNotEmpty || uri.path.isNotEmpty || uri.hasQuery || uri.hasFragment) {
+        return null;
+      }
 
-      final port = uri.hasPort ? uri.port : (protocol == 'https' ? 443 : 80);
-      final connectionUri = Uri(scheme: protocol, host: uri.host, port: port).toString();
+      final port = explicitPort.port ?? plexDefaultPort;
+      final connectionUri = _connectionUri(protocol: protocol, host: uri.host, port: port);
 
       return (protocol: protocol, address: uri.host, port: port, uri: connectionUri);
     } catch (error) {
       appLogger.w('Failed to parse manual Plex server URL', error: error);
       return null;
     }
+  }
+
+  static ({bool present, int? port}) _explicitPortFromUrl(String normalizedUrl) {
+    final schemeIndex = normalizedUrl.indexOf('://');
+    if (schemeIndex == -1) {
+      return (present: false, port: null);
+    }
+
+    final authorityStart = schemeIndex + 3;
+    final authorityEnd = normalizedUrl.indexOf(RegExp(r'[/#?]'), authorityStart);
+    final authority = normalizedUrl.substring(authorityStart, authorityEnd == -1 ? normalizedUrl.length : authorityEnd);
+    final hostPort = authority.split('@').last;
+    String? portText;
+    if (hostPort.startsWith('[')) {
+      final bracketEnd = hostPort.indexOf(']');
+      if (bracketEnd == -1) {
+        return (present: true, port: null);
+      }
+
+      final remainder = hostPort.substring(bracketEnd + 1);
+      if (remainder.isEmpty) {
+        return (present: false, port: null);
+      }
+      if (!remainder.startsWith(':')) {
+        return (present: true, port: null);
+      }
+      portText = remainder.substring(1);
+    } else {
+      final colonIndex = hostPort.lastIndexOf(':');
+      if (colonIndex == -1) {
+        return (present: false, port: null);
+      }
+      if (hostPort.indexOf(':') != colonIndex) {
+        return (present: true, port: null);
+      }
+      portText = hostPort.substring(colonIndex + 1);
+    }
+
+    if (portText.isEmpty || !RegExp(r'^\d+$').hasMatch(portText)) {
+      return (present: true, port: null);
+    }
+
+    final port = int.tryParse(portText);
+    if (port == null || port <= 0 || port > 65535) {
+      return (present: true, port: null);
+    }
+
+    return (present: true, port: port);
+  }
+
+  static String _connectionUri({required String protocol, required String host, required int port}) {
+    final formattedHost = host.contains(':') && !host.startsWith('[') ? '[$host]' : host;
+    return '$protocol://$formattedHost:$port';
   }
 
   static String generateServerId() {
