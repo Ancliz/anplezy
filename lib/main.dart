@@ -414,6 +414,20 @@ bool shouldEnterOfflineModeAfterStartupBind({required bool bindingSucceeded, req
   return !bindingSucceeded && !hasOnlineServers;
 }
 
+@visibleForTesting
+Set<String> manualPlexServerIdsForConnections(Iterable<Connection> connections) {
+  final ids = <String>{};
+  for (final connection in connections) {
+    switch (connection) {
+      case PlexAccountConnection(:final isManual, :final servers) when isManual:
+        ids.addAll(servers.map((server) => server.clientIdentifier));
+      case _:
+        break;
+    }
+  }
+  return ids;
+}
+
 /// Top-level PIN prompt used by [ActiveProfileBinder] when it runs above the
 /// per-screen widget tree. Routes through [rootNavigatorKey] so the dialog
 /// renders correctly whether the binder fires from the splash, MainScreen,
@@ -1411,15 +1425,18 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     // Repopulate metadata for downloaded items now that per-backend caches
     // are resolvable (the Connections row + live JellyfinClient are in
     // place). Without this the downloads list and sync-rule titles render
-    // empty until something forces a later refresh. This is a best-effort
-    // UI repair step; do not let a slow local or no-token server strand
-    // startup on the splash screen.
-    await downloadProvider.refreshMetadataFromCache().timeout(
-      const Duration(seconds: 8),
-      onTimeout: () {
-        appLogger.w('Setup: metadata cache refresh timed out; continuing startup');
-      },
-    );
+    // empty until something forces a later refresh.
+    //
+    // This is a best-effort UI repair step, but the live repair fallback can
+    // hang against tokenless manual Plex servers. Still await the refresh so
+    // cached metadata is hydrated before navigation; only skip live network
+    // repair for manual Plex server ids.
+    final manualPlexServerIds = manualPlexServerIdsForConnections(startupConnections);
+    if (manualPlexServerIds.isNotEmpty) {
+      appLogger.i('Setup: skipping live metadata repair for ${manualPlexServerIds.length} manual Plex server(s)');
+    }
+    await downloadProvider.refreshMetadataFromCache(skipLiveFetchForServerIds: manualPlexServerIds);
+
     if (!_isAttemptActive(attemptId)) return;
 
     unawaited(navigator.pushReplacement(fadeRoute(MainScreen(initialPromptHandled: shouldPrompt))));

@@ -36,6 +36,8 @@ class MultiServerManager {
   /// show a "Sign in again" banner instead of a generic offline state.
   final Set<String> _authErrorServers = {};
 
+  final Set<String> _manualPlexServerIds = {};
+
   /// Stream controller for server status changes
   final _statusController = StreamController<Map<String, bool>>.broadcast();
 
@@ -97,6 +99,8 @@ class MultiServerManager {
 
   List<String> get offlineServerIds => _serverStatus.entries.where((e) => !e.value).map((e) => e.key).toList();
 
+  Set<String> get manualPlexServerIds => Set.unmodifiable(_manualPlexServerIds);
+
   /// Get client for specific server.
   MediaServerClient? getClient(String serverId) => _clients[serverId];
 
@@ -142,6 +146,11 @@ class MultiServerManager {
       final id = server.clientIdentifier;
       _clientIdByServer[id] = connection.clientIdentifier;
       _plexServers[id] = server;
+      if (connection.isManual) {
+        _manualPlexServerIds.add(id);
+      } else {
+        _manualPlexServerIds.remove(id);
+      }
       _serverStatus[id] = false;
       _authErrorServers.add(id);
     }
@@ -381,6 +390,11 @@ class MultiServerManager {
       final serverId = server.clientIdentifier;
       _clientIdByServer[serverId] = connection.clientIdentifier;
       _plexServers[serverId] = server;
+      if (connection.isManual) {
+        _manualPlexServerIds.add(serverId);
+      } else {
+        _manualPlexServerIds.remove(serverId);
+      }
       try {
         final client = await _createClientForServer(
           server: server,
@@ -430,6 +444,11 @@ class MultiServerManager {
       final serverId = server.clientIdentifier;
       _clientIdByServer[serverId] = connection.clientIdentifier;
       _plexServers[serverId] = server;
+      if (connection.isManual) {
+        _manualPlexServerIds.add(serverId);
+      } else {
+        _manualPlexServerIds.remove(serverId);
+      }
       final existing = _clients[serverId];
       if (existing is PlexClient && ((_serverStatus[serverId] ?? false) || _authErrorServers.contains(serverId))) {
         // Rotate the X-Plex-Token in-place so the server treats requests
@@ -477,6 +496,7 @@ class MultiServerManager {
       _plexServers.remove(id);
       _serverStatus.remove(id);
       _authErrorServers.remove(id);
+      _manualPlexServerIds.remove(id);
       _clientIdByServer.remove(id);
     }
     _statusController.add(Map.from(_serverStatus));
@@ -983,6 +1003,7 @@ class MultiServerManager {
     _plexServers.clear();
     _serverStatus.clear();
     _authErrorServers.clear();
+    _manualPlexServerIds.clear();
     _clientIdByServer.clear();
     _activeOptimizations.clear();
     if (!_statusController.isClosed) {

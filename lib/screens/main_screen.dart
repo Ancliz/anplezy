@@ -454,7 +454,11 @@ class _MainScreenState extends State<MainScreen>
         await lp.loadLibraries();
         if (!mounted) return;
         context.read<OfflineWatchSyncService>().onServersConnected();
-        unawaited(context.read<DownloadProvider>().refreshMetadataFromCache());
+        unawaited(
+          context.read<DownloadProvider>().refreshMetadataFromCache(
+            skipLiveFetchForServerIds: manager.manualPlexServerIds,
+          ),
+        );
         _resumeQueuedDownloadsIfPossible(mp);
       }
     }
@@ -1235,7 +1239,11 @@ class _MainScreenState extends State<MainScreen>
       context.read<OfflineWatchSyncService>().onServersConnected();
       // Profile switches re-bind connections — give DownloadProvider a chance
       // to repopulate metadata that the per-backend caches now resolve.
-      unawaited(context.read<DownloadProvider>().refreshMetadataFromCache());
+      unawaited(
+        context.read<DownloadProvider>().refreshMetadataFromCache(
+          skipLiveFetchForServerIds: multiServerProvider.serverManager.manualPlexServerIds,
+        ),
+      );
       librariesProvider.initialize(multiServerProvider.aggregationService);
       await librariesProvider.refresh();
     }
