@@ -947,6 +947,7 @@ class _TranslationsServerSelectionRu extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => 'Неверный формат адреса сервера';
 	@override String get manualServerDefaultName => 'Локальный сервер';
 	@override String get manualServerSaveFailed => 'Не удалось сохранить сервер.';
+	@override String get manualServerAlreadyExists => 'Этот сервер уже существует.';
 	@override String get manualServerConnectionFailed => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.';
 	@override String get manualServerGenericFailure => 'Ошибка подключения.';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsRu {
 			'serverSelection.manualServerUrlInvalid' => 'Неверный формат адреса сервера',
 			'serverSelection.manualServerDefaultName' => 'Локальный сервер',
 			'serverSelection.manualServerSaveFailed' => 'Не удалось сохранить сервер.',
+			'serverSelection.manualServerAlreadyExists' => 'Этот сервер уже существует.',
 			'serverSelection.manualServerConnectionFailed' => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.',
 			'serverSelection.manualServerGenericFailure' => 'Ошибка подключения.',
 			'hubDetail.title' => 'Название',
@@ -2835,9 +2837,9 @@ extension on TranslationsRu {
 			'metadataEdit.basicInfo' => 'Основная информация',
 			'metadataEdit.artwork' => 'Обложка',
 			'metadataEdit.advancedSettings' => 'Дополнительные настройки',
-			'metadataEdit.title' => 'Название',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => 'Название',
 			'metadataEdit.sortTitle' => 'Название для сортировки',
 			'metadataEdit.originalTitle' => 'Оригинальное название',
 			'metadataEdit.releaseDate' => 'Дата выпуска',

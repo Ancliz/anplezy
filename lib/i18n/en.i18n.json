@@ -749,6 +749,7 @@
     "manualServerUrlInvalid": "Invalid server address format",
     "manualServerDefaultName": "Local Server",
     "manualServerSaveFailed": "Failed to save server.",
+    "manualServerAlreadyExists": "This server already exists.",
     "manualServerConnectionFailed": "Could not connect to server. Please check the address and try again.",
     "manualServerGenericFailure": "Connection failed."
   },

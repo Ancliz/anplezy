@@ -947,6 +947,7 @@ class _TranslationsServerSelectionKo extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => '잘못된 서버 주소 형식입니다';
 	@override String get manualServerDefaultName => '로컬 서버';
 	@override String get manualServerSaveFailed => '서버를 저장할 수 없습니다.';
+	@override String get manualServerAlreadyExists => '이 서버는 이미 존재합니다.';
 	@override String get manualServerConnectionFailed => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.';
 	@override String get manualServerGenericFailure => '연결에 실패했습니다.';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsKo {
 			'serverSelection.manualServerUrlInvalid' => '잘못된 서버 주소 형식입니다',
 			'serverSelection.manualServerDefaultName' => '로컬 서버',
 			'serverSelection.manualServerSaveFailed' => '서버를 저장할 수 없습니다.',
+			'serverSelection.manualServerAlreadyExists' => '이 서버는 이미 존재합니다.',
 			'serverSelection.manualServerConnectionFailed' => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.',
 			'serverSelection.manualServerGenericFailure' => '연결에 실패했습니다.',
 			'hubDetail.title' => '제목',
@@ -2835,9 +2837,9 @@ extension on TranslationsKo {
 			'metadataEdit.basicInfo' => '기본 정보',
 			'metadataEdit.artwork' => '아트워크',
 			'metadataEdit.advancedSettings' => '고급 설정',
-			'metadataEdit.title' => '제목',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => '제목',
 			'metadataEdit.sortTitle' => '정렬 제목',
 			'metadataEdit.originalTitle' => '원제',
 			'metadataEdit.releaseDate' => '출시일',

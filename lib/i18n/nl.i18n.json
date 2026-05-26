@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "Ongeldig serveradresformaat",
     "manualServerDefaultName": "Lokale server",
     "manualServerSaveFailed": "Kon server niet opslaan.",
+    "manualServerAlreadyExists": "Deze server bestaat al.",
     "manualServerConnectionFailed": "Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.",
     "manualServerGenericFailure": "Verbinding mislukt."
   },

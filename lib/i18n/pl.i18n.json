@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "Nieprawidłowy format adresu serwera",
     "manualServerDefaultName": "Serwer lokalny",
     "manualServerSaveFailed": "Nie udało się zapisać serwera.",
+    "manualServerAlreadyExists": "Ten serwer już istnieje.",
     "manualServerConnectionFailed": "Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.",
     "manualServerGenericFailure": "Połączenie nie powiodło się."
   },

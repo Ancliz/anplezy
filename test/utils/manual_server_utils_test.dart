@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/connection/connection.dart';
 import 'package:plezy/connection/connection_registry.dart';
 import 'package:plezy/database/app_database.dart';
+import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/profiles/active_profile_binder.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/profiles/plex_home_service.dart';
@@ -238,6 +241,8 @@ void main() {
         activeProfileBinder: binder,
         shouldCancelConnection: () => false,
         enableGuestMode: false,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
       );
 
       expect(result, (connected: true, cancelled: false, error: null));
@@ -259,6 +264,66 @@ void main() {
       expect(plexConnection.servers.single.connections.single.uri, 'http://wyvern:32400');
     });
 
+    test('does not persist a manual server before preflight connection succeeds', () async {
+      final verifierCalled = Completer<void>();
+      final verifier = Completer<bool>();
+
+      final resultFuture = ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: (_, _) {
+          verifierCalled.complete();
+          return verifier.future;
+        },
+        hostResolver: _hostResolver(),
+      );
+
+      await verifierCalled.future;
+
+      expect(await connections.list(), isEmpty);
+      expect(await profiles.list(), isEmpty);
+      expect(await profileConnections.listAll(), isEmpty);
+      expect(binder.rebindCount, 0);
+
+      verifier.complete(true);
+      expect(await resultFuture, (connected: true, cancelled: false, error: null));
+    });
+
+    test('does not persist a manual server when preflight connection fails', () async {
+      final result = await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: (_, _) async => false,
+        hostResolver: _hostResolver(),
+      );
+
+      expect(result.connected, isFalse);
+      expect(result.cancelled, isFalse);
+      expect(result.error, isNotNull);
+      expect(await connections.list(), isEmpty);
+      expect(await profiles.list(), isEmpty);
+      expect(await profileConnections.listAll(), isEmpty);
+      expect(binder.rebindCount, 0);
+    });
+
     test('creates and activates a local manual profile for guest setup', () async {
       final result = await ManualServerUtils.addManualServer(
         url: 'wyvern:32400',
@@ -270,6 +335,8 @@ void main() {
         activeProfiles: activeProfiles,
         activeProfileBinder: binder,
         shouldCancelConnection: () => false,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
       );
 
       expect(result, (connected: true, cancelled: false, error: null));
@@ -301,6 +368,8 @@ void main() {
         shouldCancelConnection: () => false,
         enableGuestMode: false,
         createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
       );
 
       expect(result, (connected: true, cancelled: false, error: null));
@@ -316,8 +385,279 @@ void main() {
       expect(profileRows, hasLength(1));
       expect(profileRows.single.connectionId, startsWith(manualPlexIdPrefix));
     });
+
+    test('rejects duplicate manual servers by host and port before preflight', () async {
+      await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
+      );
+
+      var verifierCalls = 0;
+      final result = await ManualServerUtils.addManualServer(
+        url: 'http://WYVERN:32400',
+        displayName: 'Wyvern again',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: (_, _) async {
+          verifierCalls++;
+          return true;
+        },
+        hostResolver: _hostResolver(),
+      );
+
+      expect(result.connected, isFalse);
+      expect(result.cancelled, isFalse);
+      expect(result.error, t.serverSelection.manualServerAlreadyExists);
+      expect(verifierCalls, 0);
+      expect(await connections.list(), hasLength(1));
+      expect(await profileConnections.listAll(), hasLength(1));
+    });
+
+    test('rejects duplicate manual servers by resolved address', () async {
+      final resolver = _hostResolver({
+        'wyvern.local': {'192.168.1.25'},
+        'plex.home.arpa': {'192.168.1.25'},
+      });
+
+      await ManualServerUtils.addManualServer(
+        url: 'wyvern.local:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: resolver,
+      );
+
+      final result = await ManualServerUtils.addManualServer(
+        url: 'plex.home.arpa:32400',
+        displayName: 'Wyvern alias',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: resolver,
+      );
+
+      expect(result.connected, isFalse);
+      expect(result.cancelled, isFalse);
+      expect(result.error, t.serverSelection.manualServerAlreadyExists);
+      expect(await connections.list(), hasLength(1));
+      expect(await profileConnections.listAll(), hasLength(1));
+    });
+
+    test('allows the same manual host on a different port', () async {
+      await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
+      );
+
+      final result = await ManualServerUtils.addManualServer(
+        url: 'wyvern:32401',
+        displayName: 'Wyvern alt',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
+      );
+
+      expect(result, (connected: true, cancelled: false, error: null));
+      expect(await connections.list(), hasLength(2));
+      expect(await profileConnections.listAll(), hasLength(2));
+    });
+
+    test('rejects duplicate manual servers when an IP matches a resolved domain', () async {
+      final resolver = _hostResolver({
+        'wyvern.local': {'192.168.1.25'},
+        '192.168.1.25': {'192.168.1.25'},
+      });
+
+      await ManualServerUtils.addManualServer(
+        url: 'wyvern.local:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: resolver,
+      );
+
+      final result = await ManualServerUtils.addManualServer(
+        url: '192.168.1.25:32400',
+        displayName: 'Wyvern IP',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: resolver,
+      );
+
+      expect(result.connected, isFalse);
+      expect(result.cancelled, isFalse);
+      expect(result.error, t.serverSelection.manualServerAlreadyExists);
+      expect(await connections.list(), hasLength(1));
+      expect(await profileConnections.listAll(), hasLength(1));
+    });
+
+    test('does not treat unresolved different hosts as duplicates', () async {
+      await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
+      );
+
+      final result = await ManualServerUtils.addManualServer(
+        url: 'dragon:32400',
+        displayName: 'Dragon',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
+      );
+
+      expect(result, (connected: true, cancelled: false, error: null));
+      expect(await connections.list(), hasLength(2));
+      expect(await profileConnections.listAll(), hasLength(2));
+    });
+
+    test('does not persist a duplicate manual server while duplicate check is pending', () async {
+      await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver(),
+      );
+
+      final resolverCalled = Completer<void>();
+      final resolver = Completer<Set<String>>();
+      final resultFuture = ManualServerUtils.addManualServer(
+        url: 'dragon:32400',
+        displayName: 'Dragon',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: (host) {
+          if (host == 'dragon') {
+            resolverCalled.complete();
+            return resolver.future;
+          }
+          return Future.value(const {});
+        },
+      );
+
+      await resolverCalled.future;
+
+      expect(await connections.list(), hasLength(1));
+      expect(await profileConnections.listAll(), hasLength(1));
+
+      resolver.complete({'10.0.0.2'});
+      expect(await resultFuture, (connected: true, cancelled: false, error: null));
+      expect(await connections.list(), hasLength(2));
+    });
   });
 }
+
+ManualServerHostResolver _hostResolver([Map<String, Set<String>> resolvedHosts = const {}]) {
+  return (host) async {
+    final normalizedHost = host.toLowerCase();
+    return resolvedHosts[normalizedHost] ?? const {};
+  };
+}
+
+Future<bool> _connectionSucceeds(_, _) async => true;
 
 class _RecordingActiveProfileBinder extends ActiveProfileBinder {
   _RecordingActiveProfileBinder({

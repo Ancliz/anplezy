@@ -947,6 +947,7 @@ class _TranslationsServerSelectionNl extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => 'Ongeldig serveradresformaat';
 	@override String get manualServerDefaultName => 'Lokale server';
 	@override String get manualServerSaveFailed => 'Kon server niet opslaan.';
+	@override String get manualServerAlreadyExists => 'Deze server bestaat al.';
 	@override String get manualServerConnectionFailed => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.';
 	@override String get manualServerGenericFailure => 'Verbinding mislukt.';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsNl {
 			'serverSelection.manualServerUrlInvalid' => 'Ongeldig serveradresformaat',
 			'serverSelection.manualServerDefaultName' => 'Lokale server',
 			'serverSelection.manualServerSaveFailed' => 'Kon server niet opslaan.',
+			'serverSelection.manualServerAlreadyExists' => 'Deze server bestaat al.',
 			'serverSelection.manualServerConnectionFailed' => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.',
 			'serverSelection.manualServerGenericFailure' => 'Verbinding mislukt.',
 			'hubDetail.title' => 'Titel',
@@ -2835,9 +2837,9 @@ extension on TranslationsNl {
 			'metadataEdit.basicInfo' => 'Basisinformatie',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
-			'metadataEdit.title' => 'Titel',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteertitel',
 			'metadataEdit.originalTitle' => 'Oorspronkelijke titel',
 			'metadataEdit.releaseDate' => 'Releasedatum',

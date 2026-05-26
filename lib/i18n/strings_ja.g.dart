@@ -947,6 +947,7 @@ class _TranslationsServerSelectionJa extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => '無効なサーバーアドレス形式です';
 	@override String get manualServerDefaultName => 'ローカルサーバー';
 	@override String get manualServerSaveFailed => 'サーバーを保存できませんでした。';
+	@override String get manualServerAlreadyExists => 'このサーバーは既に存在します。';
 	@override String get manualServerConnectionFailed => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。';
 	@override String get manualServerGenericFailure => '接続に失敗しました。';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsJa {
 			'serverSelection.manualServerUrlInvalid' => '無効なサーバーアドレス形式です',
 			'serverSelection.manualServerDefaultName' => 'ローカルサーバー',
 			'serverSelection.manualServerSaveFailed' => 'サーバーを保存できませんでした。',
+			'serverSelection.manualServerAlreadyExists' => 'このサーバーは既に存在します。',
 			'serverSelection.manualServerConnectionFailed' => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。',
 			'serverSelection.manualServerGenericFailure' => '接続に失敗しました。',
 			'hubDetail.title' => 'タイトル',
@@ -2835,9 +2837,9 @@ extension on TranslationsJa {
 			'metadataEdit.basicInfo' => '基本情報',
 			'metadataEdit.artwork' => 'アートワーク',
 			'metadataEdit.advancedSettings' => '詳細設定',
-			'metadataEdit.title' => 'タイトル',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => 'タイトル',
 			'metadataEdit.sortTitle' => 'ソートタイトル',
 			'metadataEdit.originalTitle' => '原題',
 			'metadataEdit.releaseDate' => '公開日',

@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "Formato de endereço do servidor inválido",
     "manualServerDefaultName": "Servidor local",
     "manualServerSaveFailed": "Não foi possível guardar o servidor.",
+    "manualServerAlreadyExists": "Este servidor já existe.",
     "manualServerConnectionFailed": "Não foi possível conectar ao servidor. Verifique o endereço e tente novamente.",
     "manualServerGenericFailure": "Falha na conexão."
   },

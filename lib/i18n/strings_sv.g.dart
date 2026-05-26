@@ -947,6 +947,7 @@ class _TranslationsServerSelectionSv extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => 'Ogiltigt serveradressformat';
 	@override String get manualServerDefaultName => 'Lokal server';
 	@override String get manualServerSaveFailed => 'Kunde inte spara servern.';
+	@override String get manualServerAlreadyExists => 'Den här servern finns redan.';
 	@override String get manualServerConnectionFailed => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.';
 	@override String get manualServerGenericFailure => 'Anslutning misslyckades.';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsSv {
 			'serverSelection.manualServerUrlInvalid' => 'Ogiltigt serveradressformat',
 			'serverSelection.manualServerDefaultName' => 'Lokal server',
 			'serverSelection.manualServerSaveFailed' => 'Kunde inte spara servern.',
+			'serverSelection.manualServerAlreadyExists' => 'Den här servern finns redan.',
 			'serverSelection.manualServerConnectionFailed' => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.',
 			'serverSelection.manualServerGenericFailure' => 'Anslutning misslyckades.',
 			'hubDetail.title' => 'Titel',
@@ -2835,9 +2837,9 @@ extension on TranslationsSv {
 			'metadataEdit.basicInfo' => 'Grundläggande info',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Avancerade inställningar',
-			'metadataEdit.title' => 'Titel',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteringstitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',
 			'metadataEdit.releaseDate' => 'Utgivningsdatum',

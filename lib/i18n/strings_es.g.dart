@@ -947,6 +947,7 @@ class _TranslationsServerSelectionEs extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => 'Formato de dirección del servidor no válido';
 	@override String get manualServerDefaultName => 'Servidor local';
 	@override String get manualServerSaveFailed => 'No se pudo guardar el servidor.';
+	@override String get manualServerAlreadyExists => 'Este servidor ya existe.';
 	@override String get manualServerConnectionFailed => 'No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.';
 	@override String get manualServerGenericFailure => 'Error de conexión.';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsEs {
 			'serverSelection.manualServerUrlInvalid' => 'Formato de dirección del servidor no válido',
 			'serverSelection.manualServerDefaultName' => 'Servidor local',
 			'serverSelection.manualServerSaveFailed' => 'No se pudo guardar el servidor.',
+			'serverSelection.manualServerAlreadyExists' => 'Este servidor ya existe.',
 			'serverSelection.manualServerConnectionFailed' => 'No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.',
 			'serverSelection.manualServerGenericFailure' => 'Error de conexión.',
 			'hubDetail.title' => 'Título',
@@ -2835,9 +2837,9 @@ extension on TranslationsEs {
 			'metadataEdit.basicInfo' => 'Información básica',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
-			'metadataEdit.title' => 'Título',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => 'Título',
 			'metadataEdit.sortTitle' => 'Título de ordenación',
 			'metadataEdit.originalTitle' => 'Título original',
 			'metadataEdit.releaseDate' => 'Fecha de estreno',

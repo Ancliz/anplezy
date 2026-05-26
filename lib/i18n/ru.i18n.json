@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "Неверный формат адреса сервера",
     "manualServerDefaultName": "Локальный сервер",
     "manualServerSaveFailed": "Не удалось сохранить сервер.",
+    "manualServerAlreadyExists": "Этот сервер уже существует.",
     "manualServerConnectionFailed": "Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.",
     "manualServerGenericFailure": "Ошибка подключения."
   },

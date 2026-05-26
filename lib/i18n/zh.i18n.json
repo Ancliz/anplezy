@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "无效的服务器地址格式",
     "manualServerDefaultName": "本地服务器",
     "manualServerSaveFailed": "无法保存服务器。",
+    "manualServerAlreadyExists": "此服务器已存在。",
     "manualServerConnectionFailed": "无法连接到服务器。请检查地址并重试。",
     "manualServerGenericFailure": "连接失败。"
   },

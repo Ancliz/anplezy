@@ -1,3 +1,5 @@
+import 'dart:io' show InternetAddress;
+
 import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
 import '../i18n/strings.g.dart';
@@ -12,6 +14,9 @@ import '../services/storage_service.dart';
 import 'app_logger.dart';
 
 const int plexDefaultPort = 32400;
+
+typedef ManualServerConnectionVerifier = Future<bool> Function(PlexServer server, String clientIdentifier);
+typedef ManualServerHostResolver = Future<Set<String>> Function(String host);
 
 class ManualServerUtils {
   const ManualServerUtils._();
@@ -115,6 +120,100 @@ class ManualServerUtils {
     return 'manual_${DateTime.now().microsecondsSinceEpoch}';
   }
 
+  static Future<bool> _verifyManualServerConnection(PlexServer server, String clientIdentifier) async {
+    try {
+      await for (final _ in server.findBestWorkingConnection(clientIdentifier: clientIdentifier)) {
+        return true;
+      }
+    } catch (error, stackTrace) {
+      appLogger.w('Manual Plex server preflight failed', error: error, stackTrace: stackTrace);
+    }
+    return false;
+  }
+
+  static Future<Set<String>> _resolveHostAddresses(String host) async {
+    final address = InternetAddress.tryParse(host);
+    if (address != null) {
+      return {_normalizeDuplicateHost(address.address)};
+    }
+
+    try {
+      final addresses = await InternetAddress.lookup(host).timeout(const Duration(seconds: 2));
+      return addresses.map((address) => _normalizeDuplicateHost(address.address)).toSet();
+    } catch (error, stackTrace) {
+      appLogger.w('Manual Plex server host resolution failed', error: error, stackTrace: stackTrace);
+      return const {};
+    }
+  }
+
+  static String _normalizeDuplicateHost(String host) {
+    final trimmed = host.trim().toLowerCase();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      return trimmed.substring(1, trimmed.length - 1);
+    }
+    return trimmed;
+  }
+
+  static Set<String> _normalizeResolvedHosts(Set<String> hosts) {
+    return hosts.map(_normalizeDuplicateHost).where((host) => host.isNotEmpty).toSet();
+  }
+
+  static Future<bool> _manualEndpointAlreadyExists({
+    required ConnectionRegistry connectionRegistry,
+    required PlexConnection candidate,
+    required ManualServerHostResolver hostResolver,
+  }) async {
+    final candidateHost = _normalizeDuplicateHost(candidate.address);
+    final storedConnections = await connectionRegistry.list();
+    final existingEndpoints = <PlexConnection>[];
+    for (final storedConnection in storedConnections.whereType<PlexAccountConnection>().where(
+      (connection) => connection.isManual,
+    )) {
+      for (final server in storedConnection.servers) {
+        for (final existing in server.connections) {
+          if (existing.port != candidate.port) {
+            continue;
+          }
+
+          final existingHost = _normalizeDuplicateHost(existing.address);
+          if (existingHost == candidateHost) {
+            return true;
+          }
+          existingEndpoints.add(existing);
+        }
+      }
+    }
+
+    if (existingEndpoints.isEmpty) {
+      return false;
+    }
+
+    final candidateResolved = _normalizeResolvedHosts(await hostResolver(candidateHost));
+    if (candidateResolved.isEmpty) {
+      return false;
+    }
+
+    final resolvedCache = <String, Future<Set<String>>>{candidateHost: Future.value(candidateResolved)};
+
+    Future<Set<String>> resolve(String host) {
+      final normalizedHost = _normalizeDuplicateHost(host);
+      return resolvedCache.putIfAbsent(
+        normalizedHost,
+        () async => _normalizeResolvedHosts(await hostResolver(normalizedHost)),
+      );
+    }
+
+    for (final existing in existingEndpoints) {
+      final existingHost = _normalizeDuplicateHost(existing.address);
+      final existingResolved = await resolve(existingHost);
+      if (existingResolved.intersection(candidateResolved).isNotEmpty) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   static Future<void> _rollbackManualServerAttempt({
     required ConnectionRegistry connectionRegistry,
     required ProfileRegistry profileRegistry,
@@ -168,6 +267,8 @@ class ManualServerUtils {
     required bool Function() shouldCancelConnection,
     bool enableGuestMode = true,
     bool? createLocalProfile,
+    ManualServerConnectionVerifier? connectionVerifier,
+    ManualServerHostResolver? hostResolver,
   }) async {
     if (url.isEmpty) {
       return (connected: false, cancelled: false, error: t.serverSelection.manualServerUrlRequired);
@@ -231,6 +332,30 @@ class ManualServerUtils {
     final targetProfile = createdProfile ?? activeProfiles.active;
     if (targetProfile == null) {
       return (connected: false, cancelled: false, error: t.serverSelection.manualServerGenericFailure);
+    }
+
+    if (shouldCancelConnection()) {
+      return (connected: false, cancelled: true, error: null);
+    }
+
+    final alreadyExists = await _manualEndpointAlreadyExists(
+      connectionRegistry: connectionRegistry,
+      candidate: connection,
+      hostResolver: hostResolver ?? _resolveHostAddresses,
+    );
+    if (shouldCancelConnection()) {
+      return (connected: false, cancelled: true, error: null);
+    }
+    if (alreadyExists) {
+      return (connected: false, cancelled: false, error: t.serverSelection.manualServerAlreadyExists);
+    }
+
+    final verified = await (connectionVerifier ?? _verifyManualServerConnection)(server, clientIdentifier);
+    if (shouldCancelConnection()) {
+      return (connected: false, cancelled: true, error: null);
+    }
+    if (!verified) {
+      return (connected: false, cancelled: false, error: t.serverSelection.manualServerConnectionFailed);
     }
 
     Future<void> rollback() => _rollbackManualServerAttempt(

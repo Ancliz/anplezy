@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "Ugyldig serveradresseformat",
     "manualServerDefaultName": "Lokal server",
     "manualServerSaveFailed": "Kunne ikke lagre serveren.",
+    "manualServerAlreadyExists": "Denne serveren finnes allerede.",
     "manualServerConnectionFailed": "Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.",
     "manualServerGenericFailure": "Tilkobling mislyktes."
   },

@@ -748,6 +748,7 @@
     "manualServerUrlInvalid": "Ogiltigt serveradressformat",
     "manualServerDefaultName": "Lokal server",
     "manualServerSaveFailed": "Kunde inte spara servern.",
+    "manualServerAlreadyExists": "Den här servern finns redan.",
     "manualServerConnectionFailed": "Kunde inte ansluta till servern. Kontrollera adressen och försök igen.",
     "manualServerGenericFailure": "Anslutning misslyckades."
   },

@@ -947,6 +947,7 @@ class _TranslationsServerSelectionFr extends TranslationsServerSelectionEn {
 	@override String get manualServerUrlInvalid => 'Format d\'adresse de serveur invalide';
 	@override String get manualServerDefaultName => 'Serveur local';
 	@override String get manualServerSaveFailed => 'Impossible d\'enregistrer le serveur.';
+	@override String get manualServerAlreadyExists => 'Ce serveur existe déjà.';
 	@override String get manualServerConnectionFailed => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.';
 	@override String get manualServerGenericFailure => 'Échec de la connexion.';
 }
@@ -2498,6 +2499,7 @@ extension on TranslationsFr {
 			'serverSelection.manualServerUrlInvalid' => 'Format d\'adresse de serveur invalide',
 			'serverSelection.manualServerDefaultName' => 'Serveur local',
 			'serverSelection.manualServerSaveFailed' => 'Impossible d\'enregistrer le serveur.',
+			'serverSelection.manualServerAlreadyExists' => 'Ce serveur existe déjà.',
 			'serverSelection.manualServerConnectionFailed' => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.',
 			'serverSelection.manualServerGenericFailure' => 'Échec de la connexion.',
 			'hubDetail.title' => 'Titre',
@@ -2835,9 +2837,9 @@ extension on TranslationsFr {
 			'metadataEdit.basicInfo' => 'Informations de base',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Paramètres avancés',
-			'metadataEdit.title' => 'Titre',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.title' => 'Titre',
 			'metadataEdit.sortTitle' => 'Titre de tri',
 			'metadataEdit.originalTitle' => 'Titre original',
 			'metadataEdit.releaseDate' => 'Date de sortie',

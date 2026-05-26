@@ -2201,6 +2201,9 @@ class TranslationsServerSelectionEn {
 	/// en: 'Failed to save server.'
 	String get manualServerSaveFailed => 'Failed to save server.';
 
+	/// en: 'This server already exists.'
+	String get manualServerAlreadyExists => 'This server already exists.';
+
 	/// en: 'Could not connect to server. Please check the address and try again.'
 	String get manualServerConnectionFailed => 'Could not connect to server. Please check the address and try again.';
 
@@ -4870,6 +4873,7 @@ extension on Translations {
 			'serverSelection.manualServerUrlInvalid' => 'Invalid server address format',
 			'serverSelection.manualServerDefaultName' => 'Local Server',
 			'serverSelection.manualServerSaveFailed' => 'Failed to save server.',
+			'serverSelection.manualServerAlreadyExists' => 'This server already exists.',
 			'serverSelection.manualServerConnectionFailed' => 'Could not connect to server. Please check the address and try again.',
 			'serverSelection.manualServerGenericFailure' => 'Connection failed.',
 			'hubDetail.title' => 'Title',
@@ -5206,9 +5210,9 @@ extension on Translations {
 			'metadataEdit.screenTitle' => 'Edit Metadata',
 			'metadataEdit.basicInfo' => 'Basic Info',
 			'metadataEdit.artwork' => 'Artwork',
-			'metadataEdit.advancedSettings' => 'Advanced Settings',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Advanced Settings',
 			'metadataEdit.title' => 'Title',
 			'metadataEdit.sortTitle' => 'Sort Title',
 			'metadataEdit.originalTitle' => 'Original Title',
