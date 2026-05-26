@@ -124,6 +124,8 @@ class ManualServerUtils {
     required StorageService storage,
     required String connectionId,
     required String profileId,
+    required bool removeCreatedProfile,
+    required bool restoreProfileState,
     required String? previousActiveProfileId,
     required bool previousGuestModeEnabled,
   }) async {
@@ -136,14 +138,18 @@ class ManualServerUtils {
     }
 
     await tryCleanup('removing profile connection', () => profileConnectionRegistry.remove(profileId, connectionId));
-    await tryCleanup('removing profile', () => profileRegistry.remove(profileId));
+    if (removeCreatedProfile) {
+      await tryCleanup('removing profile', () => profileRegistry.remove(profileId));
+    }
     await tryCleanup('removing connection', () => connectionRegistry.remove(connectionId));
 
-    await tryCleanup('restoring guest mode', () => storage.setGuestModeEnabled(previousGuestModeEnabled));
-    if (previousActiveProfileId == null) {
-      await tryCleanup('clearing active profile', storage.clearActiveProfileId);
-    } else {
-      await tryCleanup('restoring active profile', () => storage.setActiveProfileId(previousActiveProfileId));
+    if (restoreProfileState) {
+      await tryCleanup('restoring guest mode', () => storage.setGuestModeEnabled(previousGuestModeEnabled));
+      if (previousActiveProfileId == null) {
+        await tryCleanup('clearing active profile', storage.clearActiveProfileId);
+      } else {
+        await tryCleanup('restoring active profile', () => storage.setActiveProfileId(previousActiveProfileId));
+      }
     }
 
     await tryCleanup('reloading profiles', activeProfiles.reloadFromStorage);
@@ -161,6 +167,7 @@ class ManualServerUtils {
     required ActiveProfileBinder activeProfileBinder,
     required bool Function() shouldCancelConnection,
     bool enableGuestMode = true,
+    bool? createLocalProfile,
   }) async {
     if (url.isEmpty) {
       return (connected: false, cancelled: false, error: t.serverSelection.manualServerUrlRequired);
@@ -178,8 +185,10 @@ class ManualServerUtils {
     final serverName = displayName.isNotEmpty ? displayName : t.serverSelection.manualServerDefaultName;
     final manualId = generateServerId();
     final connectionId = '$manualPlexIdPrefix$manualId';
-    final profileId = 'local.$manualId';
     final now = DateTime.now();
+    // Guest setup owns a manual server through a new local profile; settings
+    // usually adds it as an extra connection on the currently active profile.
+    final shouldCreateLocalProfile = createLocalProfile ?? enableGuestMode;
 
     final connection = PlexConnection(
       protocol: parsed.protocol,
@@ -207,12 +216,22 @@ class ManualServerUtils {
       createdAt: now,
       lastAuthenticatedAt: now,
     );
-    final profile = Profile.local(
-      id: profileId,
-      displayName: serverName,
-      sortOrder: now.millisecondsSinceEpoch,
-      createdAt: now,
-    );
+    final createdProfile = shouldCreateLocalProfile
+        ? Profile.local(
+            id: 'local.$manualId',
+            displayName: serverName,
+            sortOrder: now.millisecondsSinceEpoch,
+            createdAt: now,
+          )
+        : null;
+
+    if (!shouldCreateLocalProfile) {
+      await activeProfiles.reloadFromStorage();
+    }
+    final targetProfile = createdProfile ?? activeProfiles.active;
+    if (targetProfile == null) {
+      return (connected: false, cancelled: false, error: t.serverSelection.manualServerGenericFailure);
+    }
 
     Future<void> rollback() => _rollbackManualServerAttempt(
       connectionRegistry: connectionRegistry,
@@ -222,7 +241,9 @@ class ManualServerUtils {
       activeProfileBinder: activeProfileBinder,
       storage: storage,
       connectionId: connectionId,
-      profileId: profileId,
+      profileId: targetProfile.id,
+      removeCreatedProfile: createdProfile != null,
+      restoreProfileState: createdProfile != null,
       previousActiveProfileId: previousActiveProfileId,
       previousGuestModeEnabled: previousGuestModeEnabled,
     );
@@ -230,10 +251,12 @@ class ManualServerUtils {
     var persistedAttempt = false;
     try {
       await connectionRegistry.upsert(accountConnection);
-      await profileRegistry.upsert(profile);
+      if (createdProfile != null) {
+        await profileRegistry.upsert(createdProfile);
+      }
       await profileConnectionRegistry.upsert(
-        ProfileConnection(profileId: profile.id, connectionId: accountConnection.id, userIdentifier: manualId),
-        makeDefault: true,
+        ProfileConnection(profileId: targetProfile.id, connectionId: accountConnection.id, userIdentifier: manualId),
+        makeDefault: createdProfile != null,
       );
       persistedAttempt = true;
 
@@ -243,8 +266,13 @@ class ManualServerUtils {
       }
 
       await activeProfiles.reloadFromStorage();
-      final activated = await activeProfiles.activate(profile);
-      if (!activated) {
+      if (createdProfile != null) {
+        final activated = await activeProfiles.activate(createdProfile);
+        if (!activated) {
+          await rollback();
+          return (connected: false, cancelled: false, error: t.serverSelection.manualServerGenericFailure);
+        }
+      } else if (activeProfiles.active?.id != targetProfile.id) {
         await rollback();
         return (connected: false, cancelled: false, error: t.serverSelection.manualServerGenericFailure);
       }

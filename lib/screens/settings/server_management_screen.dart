@@ -58,6 +58,10 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
     });
 
     try {
+      final activeProfiles = context.read<ActiveProfileProvider>();
+      await activeProfiles.reloadFromStorage();
+      if (!mounted) return;
+
       final result = await ManualServerUtils.addManualServer(
         url: url,
         displayName: displayName,
@@ -65,10 +69,11 @@ class _ServerManagementScreenState extends State<ServerManagementScreen> {
         connectionRegistry: context.read<ConnectionRegistry>(),
         profileRegistry: context.read<ProfileRegistry>(),
         profileConnectionRegistry: context.read<ProfileConnectionRegistry>(),
-        activeProfiles: context.read<ActiveProfileProvider>(),
+        activeProfiles: activeProfiles,
         activeProfileBinder: context.read<ActiveProfileBinder>(),
         shouldCancelConnection: () => false,
         enableGuestMode: false,
+        createLocalProfile: activeProfiles.active == null,
       );
 
       if (!mounted) return;

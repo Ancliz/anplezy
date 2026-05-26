@@ -1,5 +1,21 @@
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/connection/connection.dart';
+import 'package:plezy/connection/connection_registry.dart';
+import 'package:plezy/database/app_database.dart';
+import 'package:plezy/profiles/active_profile_binder.dart';
+import 'package:plezy/profiles/active_profile_provider.dart';
+import 'package:plezy/profiles/plex_home_service.dart';
+import 'package:plezy/profiles/profile.dart';
+import 'package:plezy/profiles/profile_connection_registry.dart';
+import 'package:plezy/profiles/profile_registry.dart';
+import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/services/data_aggregation_service.dart';
+import 'package:plezy/services/multi_server_manager.dart';
+import 'package:plezy/services/storage_service.dart';
 import 'package:plezy/utils/manual_server_utils.dart';
+
+import '../test_helpers/prefs.dart';
 
 void main() {
   group('ManualServerUtils.parseServerUrl', () {
@@ -152,4 +168,172 @@ void main() {
       }
     });
   });
+
+  group('ManualServerUtils.addManualServer', () {
+    late AppDatabase db;
+    late ConnectionRegistry connections;
+    late ProfileRegistry profiles;
+    late ProfileConnectionRegistry profileConnections;
+    late PlexHomeService plexHome;
+    late ActiveProfileProvider activeProfiles;
+    late MultiServerManager manager;
+    late MultiServerProvider multiServerProvider;
+    late _RecordingActiveProfileBinder binder;
+    late StorageService storage;
+
+    setUp(() async {
+      resetSharedPreferencesForTest();
+      db = AppDatabase.forTesting(NativeDatabase.memory());
+      connections = ConnectionRegistry(db);
+      profiles = ProfileRegistry(db);
+      profileConnections = ProfileConnectionRegistry(db);
+      storage = await StorageService.getInstance();
+      plexHome = PlexHomeService(
+        connections: connections,
+        profileConnections: profileConnections,
+        storage: storage,
+        plexHomeUserFetcher: (_) async => const [],
+      );
+      activeProfiles = ActiveProfileProvider(
+        registry: profiles,
+        plexHome: plexHome,
+        connections: connections,
+        profileConnections: profileConnections,
+        storage: storage,
+      );
+      manager = MultiServerManager();
+      multiServerProvider = MultiServerProvider(manager, DataAggregationService(manager));
+      binder = _RecordingActiveProfileBinder(
+        activeProfile: activeProfiles,
+        connections: connections,
+        profileConnections: profileConnections,
+        serverManager: manager,
+        multiServerProvider: multiServerProvider,
+      );
+    });
+
+    tearDown(() async {
+      binder.dispose();
+      multiServerProvider.dispose();
+      await activeProfiles.resetForTesting();
+      activeProfiles.dispose();
+      await plexHome.dispose();
+      await db.close();
+    });
+
+    test('attaches manual servers to the active profile outside guest setup', () async {
+      final profile = Profile.local(id: 'local.owner', displayName: 'Owner', createdAt: DateTime(2026, 1, 1));
+      await profiles.upsert(profile);
+      await storage.setActiveProfileId(profile.id);
+      await activeProfiles.initialize();
+
+      final result = await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+      );
+
+      expect(result, (connected: true, cancelled: false, error: null));
+      expect(storage.isGuestModeEnabled(), isFalse);
+      expect(storage.getActiveProfileId(), profile.id);
+      expect((await profiles.list()).map((profile) => profile.id), [profile.id]);
+      expect(binder.rebindCount, 1);
+
+      final profileRows = await profileConnections.listForProfile(profile.id);
+      expect(profileRows, hasLength(1));
+      expect(profileRows.single.connectionId, startsWith(manualPlexIdPrefix));
+      expect(profileRows.single.userIdentifier, startsWith('manual_'));
+
+      final connection = await connections.get(profileRows.single.connectionId);
+      expect(connection, isA<PlexAccountConnection>());
+      final plexConnection = connection! as PlexAccountConnection;
+      expect(plexConnection.isManual, isTrue);
+      expect(plexConnection.servers.single.name, 'Wyvern');
+      expect(plexConnection.servers.single.connections.single.uri, 'http://wyvern:32400');
+    });
+
+    test('creates and activates a local manual profile for guest setup', () async {
+      final result = await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+      );
+
+      expect(result, (connected: true, cancelled: false, error: null));
+      expect(storage.isGuestModeEnabled(), isTrue);
+      expect(binder.rebindCount, 1);
+
+      final storedProfiles = await profiles.list();
+      expect(storedProfiles, hasLength(1));
+      expect(storedProfiles.single.id, startsWith('local.manual_'));
+      expect(storedProfiles.single.displayName, 'Wyvern');
+      expect(storage.getActiveProfileId(), storedProfiles.single.id);
+
+      final profileRows = await profileConnections.listForProfile(storedProfiles.single.id);
+      expect(profileRows, hasLength(1));
+      expect(profileRows.single.connectionId, startsWith(manualPlexIdPrefix));
+      expect(profileRows.single.isDefault, isTrue);
+    });
+
+    test('can create a local manual profile outside guest setup when no profile is active', () async {
+      final result = await ManualServerUtils.addManualServer(
+        url: 'wyvern:32400',
+        displayName: 'Wyvern',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        enableGuestMode: false,
+        createLocalProfile: true,
+      );
+
+      expect(result, (connected: true, cancelled: false, error: null));
+      expect(storage.isGuestModeEnabled(), isFalse);
+      expect(binder.rebindCount, 1);
+
+      final storedProfiles = await profiles.list();
+      expect(storedProfiles, hasLength(1));
+      expect(storedProfiles.single.id, startsWith('local.manual_'));
+      expect(storage.getActiveProfileId(), storedProfiles.single.id);
+
+      final profileRows = await profileConnections.listForProfile(storedProfiles.single.id);
+      expect(profileRows, hasLength(1));
+      expect(profileRows.single.connectionId, startsWith(manualPlexIdPrefix));
+    });
+  });
+}
+
+class _RecordingActiveProfileBinder extends ActiveProfileBinder {
+  _RecordingActiveProfileBinder({
+    required super.activeProfile,
+    required super.connections,
+    required super.profileConnections,
+    required super.serverManager,
+    required super.multiServerProvider,
+  }) : super(pinPrompt: (_, {String? errorMessage}) async => null);
+
+  int rebindCount = 0;
+
+  @override
+  Future<void> rebindActive() async {
+    rebindCount++;
+    activeProfile.markBindingStarted();
+    activeProfile.markBindingFinished(success: true);
+  }
 }
