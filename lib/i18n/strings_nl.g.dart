@@ -943,6 +943,7 @@ class _TranslationsServerSelectionNl extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.';
 	@override String get connectionFailedGuest => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.';
 	@override String get connectionFailedPlex => 'Serververbinding mislukt. Probeer opnieuw in te loggen.';
+	@override String get insecureHttpWarning => 'Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.';
 	@override String get manualServerUrlRequired => 'Voer een serveradres in';
 	@override String get manualServerUrlInvalid => 'Ongeldig serveradresformaat';
 	@override String get manualServerDefaultName => 'Lokale server';
@@ -2495,6 +2496,7 @@ extension on TranslationsNl {
 			'serverSelection.offlineInitGuest' => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.',
 			'serverSelection.connectionFailedGuest' => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.',
 			'serverSelection.connectionFailedPlex' => 'Serververbinding mislukt. Probeer opnieuw in te loggen.',
+			'serverSelection.insecureHttpWarning' => 'Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.',
 			'serverSelection.manualServerUrlRequired' => 'Voer een serveradres in',
 			'serverSelection.manualServerUrlInvalid' => 'Ongeldig serveradresformaat',
 			'serverSelection.manualServerDefaultName' => 'Lokale server',
@@ -2836,9 +2838,9 @@ extension on TranslationsNl {
 			'metadataEdit.screenTitle' => 'Metadata bewerken',
 			'metadataEdit.basicInfo' => 'Basisinformatie',
 			'metadataEdit.artwork' => 'Artwork',
-			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
 			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteertitel',
 			'metadataEdit.originalTitle' => 'Oorspronkelijke titel',

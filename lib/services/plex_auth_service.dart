@@ -9,6 +9,7 @@ import '../models/plex/plex_user_profile.dart';
 import '../models/plex/plex_home.dart';
 import '../models/user_switch_response.dart';
 import '../utils/app_logger.dart';
+import '../utils/log_redaction_manager.dart';
 import '../utils/media_server_timeouts.dart';
 import '../utils/media_server_http_client.dart';
 import '../utils/poll_with_backoff.dart';
@@ -286,6 +287,7 @@ class PlexServer {
   final String name;
   final String clientIdentifier;
   final String accessToken;
+  final String? machineIdentifier;
   final List<PlexConnection> connections;
   final bool owned;
   final String? product;
@@ -297,6 +299,7 @@ class PlexServer {
     required this.name,
     required this.clientIdentifier,
     required this.accessToken,
+    this.machineIdentifier,
     required this.connections,
     required this.owned,
     this.product,
@@ -349,6 +352,7 @@ class PlexServer {
       name: json['name'] as String, // Safe because validated above
       clientIdentifier: json['clientIdentifier'] as String, // Safe because validated above
       accessToken: json['accessToken'] as String, // Safe because validated above
+      machineIdentifier: json['machineIdentifier'] as String?,
       connections: connections,
       owned: json['owned'] as bool? ?? false,
       product: json['product'] as String?,
@@ -384,6 +388,7 @@ class PlexServer {
       'name': name,
       'clientIdentifier': clientIdentifier,
       'accessToken': accessToken,
+      if (machineIdentifier != null) 'machineIdentifier': machineIdentifier,
       'connections': connections.map((c) => c.toJson()).toList(),
       'owned': owned,
       'product': product,
@@ -398,6 +403,7 @@ class PlexServer {
       name: name,
       clientIdentifier: clientIdentifier,
       accessToken: token,
+      machineIdentifier: machineIdentifier,
       connections: connections,
       owned: owned,
       product: product,
@@ -409,6 +415,19 @@ class PlexServer {
 
   /// Check if server is online using the presence field
   bool get isOnline => presence;
+
+  String? get expectedMachineIdentifier {
+    final savedIdentifier = machineIdentifier?.trim();
+    if (savedIdentifier != null && savedIdentifier.isNotEmpty) {
+      return savedIdentifier;
+    }
+
+    if (clientIdentifier.startsWith('manual_')) {
+      return null;
+    }
+
+    return clientIdentifier;
+  }
 
   /// Find the best working connection by testing them
   /// Returns a Stream that emits connections progressively:
@@ -422,6 +441,8 @@ class PlexServer {
     String? clientIdentifier,
     void Function(bool)? onTranscoderCapability,
   }) async* {
+    _registerEndpointUrlsForRedaction(preferredUrl: preferredUri);
+
     if (connections.isEmpty) {
       appLogger.w('No connections available for server discovery');
       return;
@@ -462,12 +483,19 @@ class PlexServer {
     if (preferredUri != null) {
       final cachedCandidate = _candidateForUrl(preferredUri);
       if (cachedCandidate != null) {
+        if (cachedCandidate.url.startsWith('http://')) {
+          appLogger.w(
+            'Testing cached HTTP Plex endpoint; it will only be used if server identity verification succeeds',
+            error: {'uri': preferredUri},
+          );
+        }
         appLogger.d('Testing cached endpoint before running full race', error: {'uri': preferredUri});
         final result = await PlexClient.testConnectionWithLatency(
           cachedCandidate.url,
           accessToken,
           timeout: preferredTimeout,
           clientIdentifier: clientIdentifier,
+          expectedMachineIdentifier: expectedMachineIdentifier,
         );
 
         if (result.success) {
@@ -494,6 +522,7 @@ class PlexServer {
             accessToken,
             timeout: raceTimeout,
             clientIdentifier: clientIdentifier,
+            expectedMachineIdentifier: expectedMachineIdentifier,
           ).then((result) {
             completedTests++;
 
@@ -571,6 +600,7 @@ class PlexServer {
           accessToken,
           attempts: 2,
           clientIdentifier: clientIdentifier,
+          expectedMachineIdentifier: expectedMachineIdentifier,
         );
 
         if (result.success) {
@@ -656,7 +686,7 @@ class PlexServer {
     if (uri == null || uri.scheme.toLowerCase() != 'https') return PlexNetworkClass.unknown;
 
     final host = _normalizedHost(uri.host);
-    if (host.isEmpty || _isLocalOrPrivateHost(host)) return PlexNetworkClass.unknown;
+    if (host.isEmpty || isLocalOrPrivateHost(host)) return PlexNetworkClass.unknown;
 
     // A manually entered HTTPS reverse-proxy hostname behaves like a remote
     // endpoint for failover: LAN candidates often cannot be reached from it.
@@ -730,11 +760,16 @@ class PlexServer {
   }
 
   List<String> prioritizedEndpointUrls({String? preferredFirst}) {
+    _registerEndpointUrlsForRedaction(preferredUrl: preferredFirst);
+
     final urls = <String>[];
     final exclude = <String>{};
     PlexNetworkClass? restrictTo;
 
     if (preferredFirst != null && preferredFirst.isNotEmpty) {
+      if (preferredFirst.startsWith('http://')) {
+        appLogger.w('Keeping HTTP Plex endpoint as preferred', error: {'uri': preferredFirst});
+      }
       urls.add(preferredFirst);
       exclude.add(preferredFirst);
       restrictTo = networkClassForUrl(preferredFirst);
@@ -743,6 +778,15 @@ class PlexServer {
     final candidates = _buildPrioritizedCandidates(excludeUrls: exclude, restrictTo: restrictTo);
     urls.addAll(candidates.map((candidate) => candidate.url));
     return urls;
+  }
+
+  void _registerEndpointUrlsForRedaction({String? preferredUrl}) {
+    LogRedactionManager.registerServerUrl(preferredUrl);
+
+    for (final connection in connections) {
+      LogRedactionManager.registerServerUrl(connection.uri);
+      LogRedactionManager.registerServerUrl(connection.httpDirectUrl);
+    }
   }
 
   Future<_ConnectionCandidate?> _upgradeCandidateToHttpsIfPossible(
@@ -806,6 +850,7 @@ class PlexServer {
       accessToken,
       timeout: MediaServerTimeouts.connectionRace,
       clientIdentifier: clientIdentifier,
+      expectedMachineIdentifier: expectedMachineIdentifier,
     );
 
     if (!result.success) {
@@ -958,7 +1003,7 @@ class PlexServer {
     return bare.toLowerCase();
   }
 
-  static bool _isLocalOrPrivateHost(String host) {
+  static bool isLocalOrPrivateHost(String host) {
     final address = InternetAddress.tryParse(host);
     if (address != null) return _isPrivateOrLocalAddress(address);
 

@@ -943,6 +943,7 @@ class _TranslationsServerSelectionDa extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.';
 	@override String get connectionFailedGuest => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.';
 	@override String get connectionFailedPlex => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.';
+	@override String get insecureHttpWarning => 'Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.';
 	@override String get manualServerUrlRequired => 'Indtast en serveradresse';
 	@override String get manualServerUrlInvalid => 'Ugyldigt serveradresseformat';
 	@override String get manualServerDefaultName => 'Lokal server';
@@ -2495,6 +2496,7 @@ extension on TranslationsDa {
 			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.',
 			'serverSelection.connectionFailedGuest' => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.',
 			'serverSelection.connectionFailedPlex' => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.',
+			'serverSelection.insecureHttpWarning' => 'Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.',
 			'serverSelection.manualServerUrlRequired' => 'Indtast en serveradresse',
 			'serverSelection.manualServerUrlInvalid' => 'Ugyldigt serveradresseformat',
 			'serverSelection.manualServerDefaultName' => 'Lokal server',
@@ -2836,9 +2838,9 @@ extension on TranslationsDa {
 			'metadataEdit.screenTitle' => 'Redigér metadata',
 			'metadataEdit.basicInfo' => 'Grundlæggende info',
 			'metadataEdit.artwork' => 'Grafik',
-			'metadataEdit.advancedSettings' => 'Avancerede indstillinger',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Avancerede indstillinger',
 			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteringstitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',

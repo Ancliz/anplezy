@@ -744,6 +744,7 @@
     "offlineInitGuest": "Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.",
     "connectionFailedGuest": "Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.",
     "connectionFailedPlex": "Serveranslutning misslyckades. Försök logga in igen.",
+    "insecureHttpWarning": "Ansluten till en Plex-server via HTTP. Trafiken kan vara osäker.",
     "manualServerUrlRequired": "Ange en serveradress",
     "manualServerUrlInvalid": "Ogiltigt serveradressformat",
     "manualServerDefaultName": "Lokal server",

@@ -179,13 +179,27 @@ class ConnectionTestResult {
   final bool success;
   final int latencyMs;
   final String? error;
+  final PlexServerIdentity? identity;
 
   /// `transcoderVideo` from the `/` MediaContainer, captured on successful
   /// probes so the connection race doubles as a capability probe. `null`
   /// when the probe didn't succeed or the field was absent.
   final bool? transcoderVideo;
 
-  ConnectionTestResult({required this.success, required this.latencyMs, this.error, this.transcoderVideo});
+  ConnectionTestResult({
+    required this.success,
+    required this.latencyMs,
+    this.error,
+    this.identity,
+    this.transcoderVideo,
+  });
+}
+
+class PlexServerIdentity {
+  final String machineIdentifier;
+  final String version;
+
+  const PlexServerIdentity({required this.machineIdentifier, required this.version});
 }
 
 bool? _parsePlexTranscoderVideoCapability(Object? value) {
@@ -582,6 +596,7 @@ class PlexClient
     String token, {
     Duration timeout = const Duration(seconds: 5),
     String? clientIdentifier,
+    String? expectedMachineIdentifier,
   }) async {
     final stopwatch = Stopwatch()..start();
     MediaServerHttpClient? client;
@@ -589,16 +604,22 @@ class PlexClient
     try {
       client = MediaServerHttpClient(baseUrl: baseUrl, connectTimeout: timeout, receiveTimeout: timeout);
 
-      final headers = <String, String>{};
-      if (token.isNotEmpty) {
-        headers['X-Plex-Token'] = token;
-      }
-      if (clientIdentifier != null) {
-        headers['X-Plex-Client-Identifier'] = clientIdentifier;
-        headers['X-Plex-Product'] = 'Plezy';
-        headers['X-Plex-Device-Name'] = 'Plezy';
+      final identityHeaders = _connectionTestHeaders(clientIdentifier: clientIdentifier);
+      final identityResponse = await client.get('/identity', headers: identityHeaders);
+      final identity = parsePlexServerIdentity(identityResponse.data);
+      final identityMatches = _machineIdentifierMatches(identity, expectedMachineIdentifier);
+
+      if (identityResponse.statusCode != 200 || identity == null || !identityMatches) {
+        stopwatch.stop();
+        return ConnectionTestResult(
+          success: false,
+          latencyMs: stopwatch.elapsedMilliseconds,
+          error: _connectionTestError(identityResponse.statusCode, identity, identityMatches),
+          identity: identity,
+        );
       }
 
+      final headers = _connectionTestHeaders(token: token, clientIdentifier: clientIdentifier);
       final response = await client.get('/', headers: headers);
 
       stopwatch.stop();
@@ -615,6 +636,7 @@ class PlexClient
         success: success,
         latencyMs: stopwatch.elapsedMilliseconds,
         error: success ? null : 'HTTP ${response.statusCode}',
+        identity: identity,
         transcoderVideo: transcoderVideo,
       );
     } on MediaServerHttpException catch (e) {
@@ -639,6 +661,67 @@ class PlexClient
     }
   }
 
+  static Map<String, String> _connectionTestHeaders({String token = '', String? clientIdentifier}) {
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (token.isNotEmpty) {
+      headers['X-Plex-Token'] = token;
+    }
+    if (clientIdentifier != null) {
+      headers['X-Plex-Client-Identifier'] = clientIdentifier;
+      headers['X-Plex-Product'] = 'Plezy';
+      headers['X-Plex-Device-Name'] = 'Plezy';
+    }
+    return headers;
+  }
+
+  static PlexServerIdentity? parsePlexServerIdentity(dynamic data) {
+    if (data is! Map) {
+      return null;
+    }
+
+    final container = data['MediaContainer'];
+    if (container is! Map) {
+      return null;
+    }
+
+    final machineIdentifier = container['machineIdentifier'];
+    if (machineIdentifier is! String || machineIdentifier.isEmpty) {
+      return null;
+    }
+
+    final version = container['version'];
+    if (version is! String || version.isEmpty) {
+      return null;
+    }
+
+    return PlexServerIdentity(machineIdentifier: machineIdentifier, version: version);
+  }
+
+  static bool _machineIdentifierMatches(PlexServerIdentity? identity, String? expectedMachineIdentifier) {
+    if (identity == null) {
+      return false;
+    }
+
+    if (expectedMachineIdentifier == null || expectedMachineIdentifier.isEmpty) {
+      return true;
+    }
+
+    return identity.machineIdentifier.toLowerCase() == expectedMachineIdentifier.toLowerCase();
+  }
+
+  static String _connectionTestError(int? statusCode, PlexServerIdentity? identity, bool identityMatches) {
+    if (statusCode != 200) {
+      return 'HTTP $statusCode';
+    }
+    if (identity == null) {
+      return 'Not a Plex Media Server';
+    }
+    if (!identityMatches) {
+      return 'Server identity mismatch';
+    }
+    return 'Connection failed';
+  }
+
   /// Test connection multiple times and return average latency
   static Future<ConnectionTestResult> testConnectionWithAverageLatency(
     String baseUrl,
@@ -646,6 +729,7 @@ class PlexClient
     int attempts = 3,
     Duration timeout = const Duration(seconds: 5),
     String? clientIdentifier,
+    String? expectedMachineIdentifier,
   }) async {
     final results = <ConnectionTestResult>[];
 
@@ -655,11 +739,18 @@ class PlexClient
         token,
         timeout: timeout,
         clientIdentifier: clientIdentifier,
+        expectedMachineIdentifier: expectedMachineIdentifier,
       );
 
       // If any attempt fails, return failed result immediately
       if (!result.success) {
-        return ConnectionTestResult(success: false, latencyMs: result.latencyMs);
+        return ConnectionTestResult(
+          success: false,
+          latencyMs: result.latencyMs,
+          error: result.error,
+          identity: result.identity,
+          transcoderVideo: result.transcoderVideo,
+        );
       }
 
       results.add(result);
@@ -668,7 +759,13 @@ class PlexClient
     // Calculate average latency from successful attempts
     final avgLatency = results.fold<int>(0, (sum, result) => sum + result.latencyMs) ~/ results.length;
 
-    return ConnectionTestResult(success: true, latencyMs: avgLatency);
+    final first = results.first;
+    return ConnectionTestResult(
+      success: true,
+      latencyMs: avgLatency,
+      identity: first.identity,
+      transcoderVideo: first.transcoderVideo,
+    );
   }
 
   @override

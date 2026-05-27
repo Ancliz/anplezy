@@ -943,6 +943,7 @@ class _TranslationsServerSelectionJa extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。';
 	@override String get connectionFailedGuest => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。';
 	@override String get connectionFailedPlex => 'サーバー接続に失敗しました。再度ログインしてください。';
+	@override String get insecureHttpWarning => 'HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。';
 	@override String get manualServerUrlRequired => 'サーバーアドレスを入力してください';
 	@override String get manualServerUrlInvalid => '無効なサーバーアドレス形式です';
 	@override String get manualServerDefaultName => 'ローカルサーバー';
@@ -2495,6 +2496,7 @@ extension on TranslationsJa {
 			'serverSelection.offlineInitGuest' => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。',
 			'serverSelection.connectionFailedGuest' => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。',
 			'serverSelection.connectionFailedPlex' => 'サーバー接続に失敗しました。再度ログインしてください。',
+			'serverSelection.insecureHttpWarning' => 'HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。',
 			'serverSelection.manualServerUrlRequired' => 'サーバーアドレスを入力してください',
 			'serverSelection.manualServerUrlInvalid' => '無効なサーバーアドレス形式です',
 			'serverSelection.manualServerDefaultName' => 'ローカルサーバー',
@@ -2836,9 +2838,9 @@ extension on TranslationsJa {
 			'metadataEdit.screenTitle' => 'メタデータを編集',
 			'metadataEdit.basicInfo' => '基本情報',
 			'metadataEdit.artwork' => 'アートワーク',
-			'metadataEdit.advancedSettings' => '詳細設定',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => '詳細設定',
 			'metadataEdit.title' => 'タイトル',
 			'metadataEdit.sortTitle' => 'ソートタイトル',
 			'metadataEdit.originalTitle' => '原題',

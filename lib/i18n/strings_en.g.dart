@@ -2189,6 +2189,9 @@ class TranslationsServerSelectionEn {
 	/// en: 'Server connection failed. Please try signing in again.'
 	String get connectionFailedPlex => 'Server connection failed. Please try signing in again.';
 
+	/// en: 'Connected to a Plex server over HTTP. Traffic may be insecure.'
+	String get insecureHttpWarning => 'Connected to a Plex server over HTTP. Traffic may be insecure.';
+
 	/// en: 'Please enter a server address'
 	String get manualServerUrlRequired => 'Please enter a server address';
 
@@ -4869,6 +4872,7 @@ extension on Translations {
 			'serverSelection.offlineInitGuest' => 'Could not initialize offline mode. Please check your manual servers.',
 			'serverSelection.connectionFailedGuest' => 'Couldn\'t connect to your manual servers. Check that they\'re available on this network.',
 			'serverSelection.connectionFailedPlex' => 'Server connection failed. Please try signing in again.',
+			'serverSelection.insecureHttpWarning' => 'Connected to a Plex server over HTTP. Traffic may be insecure.',
 			'serverSelection.manualServerUrlRequired' => 'Please enter a server address',
 			'serverSelection.manualServerUrlInvalid' => 'Invalid server address format',
 			'serverSelection.manualServerDefaultName' => 'Local Server',
@@ -5209,9 +5213,9 @@ extension on Translations {
 			'metadataEdit.editMetadata' => 'Edit...',
 			'metadataEdit.screenTitle' => 'Edit Metadata',
 			'metadataEdit.basicInfo' => 'Basic Info',
-			'metadataEdit.artwork' => 'Artwork',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Advanced Settings',
 			'metadataEdit.title' => 'Title',
 			'metadataEdit.sortTitle' => 'Sort Title',

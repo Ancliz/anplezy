@@ -943,6 +943,7 @@ class _TranslationsServerSelectionPl extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.';
 	@override String get connectionFailedGuest => 'Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.';
 	@override String get connectionFailedPlex => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.';
+	@override String get insecureHttpWarning => 'Połączono z serwerem Plex przez HTTP. Ruch może być niezabezpieczony.';
 	@override String get manualServerUrlRequired => 'Wprowadź adres serwera';
 	@override String get manualServerUrlInvalid => 'Nieprawidłowy format adresu serwera';
 	@override String get manualServerDefaultName => 'Serwer lokalny';
@@ -2495,6 +2496,7 @@ extension on TranslationsPl {
 			'serverSelection.offlineInitGuest' => 'Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.',
 			'serverSelection.connectionFailedGuest' => 'Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.',
 			'serverSelection.connectionFailedPlex' => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.',
+			'serverSelection.insecureHttpWarning' => 'Połączono z serwerem Plex przez HTTP. Ruch może być niezabezpieczony.',
 			'serverSelection.manualServerUrlRequired' => 'Wprowadź adres serwera',
 			'serverSelection.manualServerUrlInvalid' => 'Nieprawidłowy format adresu serwera',
 			'serverSelection.manualServerDefaultName' => 'Serwer lokalny',
@@ -2836,9 +2838,9 @@ extension on TranslationsPl {
 			'metadataEdit.screenTitle' => 'Edytuj metadane',
 			'metadataEdit.basicInfo' => 'Podstawowe informacje',
 			'metadataEdit.artwork' => 'Grafika',
-			'metadataEdit.advancedSettings' => 'Ustawienia zaawansowane',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Ustawienia zaawansowane',
 			'metadataEdit.title' => 'Tytuł',
 			'metadataEdit.sortTitle' => 'Tytuł do sortowania',
 			'metadataEdit.originalTitle' => 'Tytuł oryginalny',

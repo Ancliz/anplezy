@@ -943,6 +943,7 @@ class _TranslationsServerSelectionIt extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.';
 	@override String get connectionFailedGuest => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.';
 	@override String get connectionFailedPlex => 'Connessione al server non riuscita. Prova ad accedere di nuovo.';
+	@override String get insecureHttpWarning => 'Connesso a un server Plex tramite HTTP. Il traffico potrebbe non essere sicuro.';
 	@override String get manualServerUrlRequired => 'Inserisci un indirizzo del server';
 	@override String get manualServerUrlInvalid => 'Formato dell\'indirizzo del server non valido';
 	@override String get manualServerDefaultName => 'Server locale';
@@ -2495,6 +2496,7 @@ extension on TranslationsIt {
 			'serverSelection.offlineInitGuest' => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.',
 			'serverSelection.connectionFailedGuest' => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.',
 			'serverSelection.connectionFailedPlex' => 'Connessione al server non riuscita. Prova ad accedere di nuovo.',
+			'serverSelection.insecureHttpWarning' => 'Connesso a un server Plex tramite HTTP. Il traffico potrebbe non essere sicuro.',
 			'serverSelection.manualServerUrlRequired' => 'Inserisci un indirizzo del server',
 			'serverSelection.manualServerUrlInvalid' => 'Formato dell\'indirizzo del server non valido',
 			'serverSelection.manualServerDefaultName' => 'Server locale',
@@ -2836,9 +2838,9 @@ extension on TranslationsIt {
 			'metadataEdit.screenTitle' => 'Modifica metadati',
 			'metadataEdit.basicInfo' => 'Informazioni di base',
 			'metadataEdit.artwork' => 'Artwork',
-			'metadataEdit.advancedSettings' => 'Impostazioni avanzate',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Impostazioni avanzate',
 			'metadataEdit.title' => 'Titolo',
 			'metadataEdit.sortTitle' => 'Titolo di ordinamento',
 			'metadataEdit.originalTitle' => 'Titolo originale',

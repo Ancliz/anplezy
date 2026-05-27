@@ -261,12 +261,13 @@ void main() {
       final plexConnection = connection! as PlexAccountConnection;
       expect(plexConnection.isManual, isTrue);
       expect(plexConnection.servers.single.name, 'Wyvern');
+      expect(plexConnection.servers.single.machineIdentifier, 'machine-manual');
       expect(plexConnection.servers.single.connections.single.uri, 'http://wyvern:32400');
     });
 
     test('does not persist a manual server before preflight connection succeeds', () async {
       final verifierCalled = Completer<void>();
-      final verifier = Completer<bool>();
+      final verifier = Completer<ManualServerConnectionVerification>();
 
       final resultFuture = ManualServerUtils.addManualServer(
         url: 'wyvern:32400',
@@ -294,7 +295,7 @@ void main() {
       expect(await profileConnections.listAll(), isEmpty);
       expect(binder.rebindCount, 0);
 
-      verifier.complete(true);
+      verifier.complete(_connectionSucceeded);
       expect(await resultFuture, (connected: true, cancelled: false, error: null));
     });
 
@@ -311,7 +312,7 @@ void main() {
         shouldCancelConnection: () => false,
         enableGuestMode: false,
         createLocalProfile: true,
-        connectionVerifier: (_, _) async => false,
+        connectionVerifier: (_, _) async => const ManualServerConnectionVerification(connected: false),
         hostResolver: _hostResolver(),
       );
 
@@ -418,7 +419,7 @@ void main() {
         createLocalProfile: true,
         connectionVerifier: (_, _) async {
           verifierCalls++;
-          return true;
+          return _connectionSucceeded;
         },
         hostResolver: _hostResolver(),
       );
@@ -657,7 +658,9 @@ ManualServerHostResolver _hostResolver([Map<String, Set<String>> resolvedHosts =
   };
 }
 
-Future<bool> _connectionSucceeds(_, _) async => true;
+const _connectionSucceeded = ManualServerConnectionVerification(connected: true, machineIdentifier: 'machine-manual');
+
+Future<ManualServerConnectionVerification> _connectionSucceeds(_, _) async => _connectionSucceeded;
 
 class _RecordingActiveProfileBinder extends ActiveProfileBinder {
   _RecordingActiveProfileBinder({

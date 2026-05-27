@@ -943,6 +943,7 @@ class _TranslationsServerSelectionFr extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.';
 	@override String get connectionFailedGuest => 'Impossible de se connecter à vos serveurs manuels. Vérifiez qu\'ils sont disponibles sur ce réseau.';
 	@override String get connectionFailedPlex => 'Échec de la connexion au serveur. Veuillez vous reconnecter.';
+	@override String get insecureHttpWarning => 'Connecté à un serveur Plex via HTTP. Le trafic peut ne pas être sécurisé.';
 	@override String get manualServerUrlRequired => 'Veuillez saisir une adresse de serveur';
 	@override String get manualServerUrlInvalid => 'Format d\'adresse de serveur invalide';
 	@override String get manualServerDefaultName => 'Serveur local';
@@ -2495,6 +2496,7 @@ extension on TranslationsFr {
 			'serverSelection.offlineInitGuest' => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.',
 			'serverSelection.connectionFailedGuest' => 'Impossible de se connecter à vos serveurs manuels. Vérifiez qu\'ils sont disponibles sur ce réseau.',
 			'serverSelection.connectionFailedPlex' => 'Échec de la connexion au serveur. Veuillez vous reconnecter.',
+			'serverSelection.insecureHttpWarning' => 'Connecté à un serveur Plex via HTTP. Le trafic peut ne pas être sécurisé.',
 			'serverSelection.manualServerUrlRequired' => 'Veuillez saisir une adresse de serveur',
 			'serverSelection.manualServerUrlInvalid' => 'Format d\'adresse de serveur invalide',
 			'serverSelection.manualServerDefaultName' => 'Serveur local',
@@ -2836,9 +2838,9 @@ extension on TranslationsFr {
 			'metadataEdit.screenTitle' => 'Modifier les métadonnées',
 			'metadataEdit.basicInfo' => 'Informations de base',
 			'metadataEdit.artwork' => 'Artwork',
-			'metadataEdit.advancedSettings' => 'Paramètres avancés',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Paramètres avancés',
 			'metadataEdit.title' => 'Titre',
 			'metadataEdit.sortTitle' => 'Titre de tri',
 			'metadataEdit.originalTitle' => 'Titre original',

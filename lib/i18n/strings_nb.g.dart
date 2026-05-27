@@ -943,6 +943,7 @@ class _TranslationsServerSelectionNb extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.';
 	@override String get connectionFailedGuest => 'Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.';
 	@override String get connectionFailedPlex => 'Servertilkobling mislyktes. Prøv å logge inn igjen.';
+	@override String get insecureHttpWarning => 'Koblet til en Plex-server over HTTP. Trafikken kan være usikker.';
 	@override String get manualServerUrlRequired => 'Skriv inn en serveradresse';
 	@override String get manualServerUrlInvalid => 'Ugyldig serveradresseformat';
 	@override String get manualServerDefaultName => 'Lokal server';
@@ -2495,6 +2496,7 @@ extension on TranslationsNb {
 			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.',
 			'serverSelection.connectionFailedGuest' => 'Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.',
 			'serverSelection.connectionFailedPlex' => 'Servertilkobling mislyktes. Prøv å logge inn igjen.',
+			'serverSelection.insecureHttpWarning' => 'Koblet til en Plex-server over HTTP. Trafikken kan være usikker.',
 			'serverSelection.manualServerUrlRequired' => 'Skriv inn en serveradresse',
 			'serverSelection.manualServerUrlInvalid' => 'Ugyldig serveradresseformat',
 			'serverSelection.manualServerDefaultName' => 'Lokal server',
@@ -2836,9 +2838,9 @@ extension on TranslationsNb {
 			'metadataEdit.screenTitle' => 'Rediger metadata',
 			'metadataEdit.basicInfo' => 'Grunnleggende info',
 			'metadataEdit.artwork' => 'Kunstverk',
-			'metadataEdit.advancedSettings' => 'Avanserte innstillinger',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Avanserte innstillinger',
 			'metadataEdit.title' => 'Tittel',
 			'metadataEdit.sortTitle' => 'Sorteringsstittel',
 			'metadataEdit.originalTitle' => 'Originaltittel',

@@ -745,6 +745,7 @@
     "offlineInitGuest": "Could not initialize offline mode. Please check your manual servers.",
     "connectionFailedGuest": "Couldn't connect to your manual servers. Check that they're available on this network.",
     "connectionFailedPlex": "Server connection failed. Please try signing in again.",
+    "insecureHttpWarning": "Connected to a Plex server over HTTP. Traffic may be insecure.",
     "manualServerUrlRequired": "Please enter a server address",
     "manualServerUrlInvalid": "Invalid server address format",
     "manualServerDefaultName": "Local Server",

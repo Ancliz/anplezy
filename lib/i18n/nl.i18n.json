@@ -744,6 +744,7 @@
     "offlineInitGuest": "Kan offline modus niet initialiseren. Controleer je handmatige servers.",
     "connectionFailedGuest": "Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.",
     "connectionFailedPlex": "Serververbinding mislukt. Probeer opnieuw in te loggen.",
+    "insecureHttpWarning": "Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.",
     "manualServerUrlRequired": "Voer een serveradres in",
     "manualServerUrlInvalid": "Ongeldig serveradresformaat",
     "manualServerDefaultName": "Lokale server",

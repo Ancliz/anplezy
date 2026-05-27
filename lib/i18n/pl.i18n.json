@@ -744,6 +744,7 @@
     "offlineInitGuest": "Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.",
     "connectionFailedGuest": "Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.",
     "connectionFailedPlex": "Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.",
+    "insecureHttpWarning": "Połączono z serwerem Plex przez HTTP. Ruch może być niezabezpieczony.",
     "manualServerUrlRequired": "Wprowadź adres serwera",
     "manualServerUrlInvalid": "Nieprawidłowy format adresu serwera",
     "manualServerDefaultName": "Serwer lokalny",

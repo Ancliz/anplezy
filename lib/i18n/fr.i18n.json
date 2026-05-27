@@ -744,6 +744,7 @@
     "offlineInitGuest": "Impossible d'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.",
     "connectionFailedGuest": "Impossible de se connecter à vos serveurs manuels. Vérifiez qu'ils sont disponibles sur ce réseau.",
     "connectionFailedPlex": "Échec de la connexion au serveur. Veuillez vous reconnecter.",
+    "insecureHttpWarning": "Connecté à un serveur Plex via HTTP. Le trafic peut ne pas être sécurisé.",
     "manualServerUrlRequired": "Veuillez saisir une adresse de serveur",
     "manualServerUrlInvalid": "Format d'adresse de serveur invalide",
     "manualServerDefaultName": "Serveur local",

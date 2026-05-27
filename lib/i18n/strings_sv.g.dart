@@ -943,6 +943,7 @@ class _TranslationsServerSelectionSv extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.';
 	@override String get connectionFailedGuest => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.';
 	@override String get connectionFailedPlex => 'Serveranslutning misslyckades. Försök logga in igen.';
+	@override String get insecureHttpWarning => 'Ansluten till en Plex-server via HTTP. Trafiken kan vara osäker.';
 	@override String get manualServerUrlRequired => 'Ange en serveradress';
 	@override String get manualServerUrlInvalid => 'Ogiltigt serveradressformat';
 	@override String get manualServerDefaultName => 'Lokal server';
@@ -2495,6 +2496,7 @@ extension on TranslationsSv {
 			'serverSelection.offlineInitGuest' => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.',
 			'serverSelection.connectionFailedGuest' => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.',
 			'serverSelection.connectionFailedPlex' => 'Serveranslutning misslyckades. Försök logga in igen.',
+			'serverSelection.insecureHttpWarning' => 'Ansluten till en Plex-server via HTTP. Trafiken kan vara osäker.',
 			'serverSelection.manualServerUrlRequired' => 'Ange en serveradress',
 			'serverSelection.manualServerUrlInvalid' => 'Ogiltigt serveradressformat',
 			'serverSelection.manualServerDefaultName' => 'Lokal server',
@@ -2836,9 +2838,9 @@ extension on TranslationsSv {
 			'metadataEdit.screenTitle' => 'Redigera metadata',
 			'metadataEdit.basicInfo' => 'Grundläggande info',
 			'metadataEdit.artwork' => 'Artwork',
-			'metadataEdit.advancedSettings' => 'Avancerade inställningar',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Avancerade inställningar',
 			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteringstitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',

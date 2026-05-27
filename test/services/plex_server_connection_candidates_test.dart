@@ -22,6 +22,47 @@ Map<String, dynamic> _connectionJson({
 
 void main() {
   group('PlexServer connection candidates', () {
+    test('persists server machine identifier for endpoint identity checks', () {
+      final server = PlexServer.fromJson({
+        ..._serverJson(
+          _connectionJson(protocol: 'https', address: 'plex.example.com', port: 443, uri: 'https://plex.example.com'),
+        ),
+        'machineIdentifier': 'machine-1',
+      });
+
+      expect(server.machineIdentifier, 'machine-1');
+      expect(server.expectedMachineIdentifier, 'machine-1');
+      expect(server.toJson()['machineIdentifier'], 'machine-1');
+    });
+
+    test('uses plex.tv server id for account identity checks and learns manual identity later', () {
+      final accountServer = PlexServer.fromJson(
+        _serverJson(
+          _connectionJson(protocol: 'https', address: 'plex.example.com', port: 443, uri: 'https://plex.example.com'),
+        ),
+      );
+      final manualServer = PlexServer(
+        name: 'Manual',
+        clientIdentifier: 'manual_1',
+        accessToken: '',
+        connections: [
+          PlexConnection(
+            protocol: 'http',
+            address: 'wyvern',
+            port: 32400,
+            uri: 'http://wyvern:32400',
+            local: true,
+            relay: false,
+            ipv6: false,
+          ),
+        ],
+        owned: false,
+      );
+
+      expect(accountServer.expectedMachineIdentifier, 'srv-1');
+      expect(manualServer.expectedMachineIdentifier, isNull);
+    });
+
     test('adds HTTP fallback for custom native Plex hostname on port 32400', () {
       final server = PlexServer.fromJson(
         _serverJson(

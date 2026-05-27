@@ -943,6 +943,7 @@ class _TranslationsServerSelectionKo extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.';
 	@override String get connectionFailedGuest => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.';
 	@override String get connectionFailedPlex => '서버 연결에 실패했습니다. 다시 로그인하세요.';
+	@override String get insecureHttpWarning => 'HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.';
 	@override String get manualServerUrlRequired => '서버 주소를 입력하세요';
 	@override String get manualServerUrlInvalid => '잘못된 서버 주소 형식입니다';
 	@override String get manualServerDefaultName => '로컬 서버';
@@ -2495,6 +2496,7 @@ extension on TranslationsKo {
 			'serverSelection.offlineInitGuest' => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.',
 			'serverSelection.connectionFailedGuest' => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.',
 			'serverSelection.connectionFailedPlex' => '서버 연결에 실패했습니다. 다시 로그인하세요.',
+			'serverSelection.insecureHttpWarning' => 'HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.',
 			'serverSelection.manualServerUrlRequired' => '서버 주소를 입력하세요',
 			'serverSelection.manualServerUrlInvalid' => '잘못된 서버 주소 형식입니다',
 			'serverSelection.manualServerDefaultName' => '로컬 서버',
@@ -2836,9 +2838,9 @@ extension on TranslationsKo {
 			'metadataEdit.screenTitle' => '메타데이터 편집',
 			'metadataEdit.basicInfo' => '기본 정보',
 			'metadataEdit.artwork' => '아트워크',
-			'metadataEdit.advancedSettings' => '고급 설정',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => '고급 설정',
 			'metadataEdit.title' => '제목',
 			'metadataEdit.sortTitle' => '정렬 제목',
 			'metadataEdit.originalTitle' => '원제',

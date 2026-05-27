@@ -744,6 +744,7 @@
     "offlineInitGuest": "无法初始化离线模式。请检查你的手动服务器。",
     "connectionFailedGuest": "无法连接到你的手动服务器。请检查它们是否在此网络上可用。",
     "connectionFailedPlex": "服务器连接失败。请重新登录。",
+    "insecureHttpWarning": "已通过 HTTP 连接到 Plex 服务器。流量可能不安全。",
     "manualServerUrlRequired": "请输入服务器地址",
     "manualServerUrlInvalid": "无效的服务器地址格式",
     "manualServerDefaultName": "本地服务器",

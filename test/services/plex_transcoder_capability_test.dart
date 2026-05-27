@@ -44,7 +44,7 @@ void main() {
     });
 
     test('connection probe keeps absent transcoderVideo unknown', () async {
-      final server = await _startRootServer({'friendlyName': 'Plex'});
+      final server = await _startProbeServer({'friendlyName': 'Plex'});
       addTearDown(() async => server.close(force: true));
 
       final result = await PlexClient.testConnectionWithLatency(
@@ -55,11 +55,12 @@ void main() {
       );
 
       expect(result.success, isTrue);
+      expect(result.identity?.machineIdentifier, 'machine-id');
       expect(result.transcoderVideo, isNull);
     });
 
     test('connection probe preserves explicit transcoderVideo false', () async {
-      final server = await _startRootServer({'transcoderVideo': false});
+      final server = await _startProbeServer({'transcoderVideo': false});
       addTearDown(() async => server.close(force: true));
 
       final result = await PlexClient.testConnectionWithLatency(
@@ -70,7 +71,60 @@ void main() {
       );
 
       expect(result.success, isTrue);
+      expect(result.identity?.machineIdentifier, 'machine-id');
       expect(result.transcoderVideo, isFalse);
+    });
+
+    test('connection probe rejects invalid Plex identity shape', () async {
+      final server = await _startProbeServer({'friendlyName': 'Plex'}, identityContainer: {'friendlyName': 'Not Plex'});
+      addTearDown(() async => server.close(force: true));
+
+      final result = await PlexClient.testConnectionWithLatency(
+        _serverBaseUrl(server),
+        'token',
+        timeout: const Duration(seconds: 2),
+        clientIdentifier: 'client-id',
+      );
+
+      expect(result.success, isFalse);
+      expect(result.error, 'Not a Plex Media Server');
+      expect(result.transcoderVideo, isNull);
+    });
+
+    test('connection probe rejects unexpected Plex machine identifier', () async {
+      final server = await _startProbeServer({'friendlyName': 'Plex'});
+      addTearDown(() async => server.close(force: true));
+
+      final result = await PlexClient.testConnectionWithLatency(
+        _serverBaseUrl(server),
+        'token',
+        timeout: const Duration(seconds: 2),
+        clientIdentifier: 'client-id',
+        expectedMachineIdentifier: 'other-machine',
+      );
+
+      expect(result.success, isFalse);
+      expect(result.error, 'Server identity mismatch');
+      expect(result.identity?.machineIdentifier, 'machine-id');
+      expect(result.transcoderVideo, isNull);
+    });
+
+    test('average connection probe preserves identity and transcoder capability', () async {
+      final server = await _startProbeServer({'transcoderVideo': true});
+      addTearDown(() async => server.close(force: true));
+
+      final result = await PlexClient.testConnectionWithAverageLatency(
+        _serverBaseUrl(server),
+        'token',
+        attempts: 2,
+        timeout: const Duration(seconds: 2),
+        clientIdentifier: 'client-id',
+        expectedMachineIdentifier: 'machine-id',
+      );
+
+      expect(result.success, isTrue);
+      expect(result.identity?.machineIdentifier, 'machine-id');
+      expect(result.transcoderVideo, isTrue);
     });
   });
 }
@@ -96,17 +150,23 @@ PlexClient _makeClient(Map<String, dynamic> rootContainer) {
   );
 }
 
-Future<HttpServer> _startRootServer(Map<String, dynamic> rootContainer) async {
+Future<HttpServer> _startProbeServer(
+  Map<String, dynamic> rootContainer, {
+  Map<String, dynamic> identityContainer = const {'machineIdentifier': 'machine-id', 'version': '1.42.0'},
+}) async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.listen((request) async {
-    if (request.uri.path != '/') {
+    if (request.uri.path == '/') {
+      request.response.statusCode = HttpStatus.ok;
+      request.response.headers.contentType = ContentType.json;
+      request.response.write(jsonEncode({'MediaContainer': rootContainer}));
+    } else if (request.uri.path == '/identity') {
+      request.response.statusCode = HttpStatus.ok;
+      request.response.headers.contentType = ContentType.json;
+      request.response.write(jsonEncode({'MediaContainer': identityContainer}));
+    } else {
       request.response.statusCode = HttpStatus.notFound;
-      await request.response.close();
-      return;
     }
-    request.response.statusCode = HttpStatus.ok;
-    request.response.headers.contentType = ContentType.json;
-    request.response.write(jsonEncode({'MediaContainer': rootContainer}));
     await request.response.close();
   });
   return server;

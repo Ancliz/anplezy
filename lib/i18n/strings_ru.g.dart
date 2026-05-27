@@ -943,6 +943,7 @@ class _TranslationsServerSelectionRu extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.';
 	@override String get connectionFailedGuest => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.';
 	@override String get connectionFailedPlex => 'Не удалось подключиться к серверу. Попробуйте снова войти.';
+	@override String get insecureHttpWarning => 'Подключено к серверу Plex по HTTP. Трафик может быть небезопасен.';
 	@override String get manualServerUrlRequired => 'Введите адрес сервера';
 	@override String get manualServerUrlInvalid => 'Неверный формат адреса сервера';
 	@override String get manualServerDefaultName => 'Локальный сервер';
@@ -2495,6 +2496,7 @@ extension on TranslationsRu {
 			'serverSelection.offlineInitGuest' => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.',
 			'serverSelection.connectionFailedGuest' => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.',
 			'serverSelection.connectionFailedPlex' => 'Не удалось подключиться к серверу. Попробуйте снова войти.',
+			'serverSelection.insecureHttpWarning' => 'Подключено к серверу Plex по HTTP. Трафик может быть небезопасен.',
 			'serverSelection.manualServerUrlRequired' => 'Введите адрес сервера',
 			'serverSelection.manualServerUrlInvalid' => 'Неверный формат адреса сервера',
 			'serverSelection.manualServerDefaultName' => 'Локальный сервер',
@@ -2836,9 +2838,9 @@ extension on TranslationsRu {
 			'metadataEdit.screenTitle' => 'Редактировать метаданные',
 			'metadataEdit.basicInfo' => 'Основная информация',
 			'metadataEdit.artwork' => 'Обложка',
-			'metadataEdit.advancedSettings' => 'Дополнительные настройки',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Дополнительные настройки',
 			'metadataEdit.title' => 'Название',
 			'metadataEdit.sortTitle' => 'Название для сортировки',
 			'metadataEdit.originalTitle' => 'Оригинальное название',

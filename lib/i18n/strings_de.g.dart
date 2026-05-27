@@ -943,6 +943,7 @@ class _TranslationsServerSelectionDe extends TranslationsServerSelectionEn {
 	@override String get offlineInitGuest => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.';
 	@override String get connectionFailedGuest => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.';
 	@override String get connectionFailedPlex => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.';
+	@override String get insecureHttpWarning => 'Mit einem Plex-Server über HTTP verbunden. Der Datenverkehr ist möglicherweise unsicher.';
 	@override String get manualServerUrlRequired => 'Bitte gib eine Serveradresse ein';
 	@override String get manualServerUrlInvalid => 'Ungültiges Serveradressformat';
 	@override String get manualServerDefaultName => 'Lokaler Server';
@@ -2495,6 +2496,7 @@ extension on TranslationsDe {
 			'serverSelection.offlineInitGuest' => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.',
 			'serverSelection.connectionFailedGuest' => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.',
 			'serverSelection.connectionFailedPlex' => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.',
+			'serverSelection.insecureHttpWarning' => 'Mit einem Plex-Server über HTTP verbunden. Der Datenverkehr ist möglicherweise unsicher.',
 			'serverSelection.manualServerUrlRequired' => 'Bitte gib eine Serveradresse ein',
 			'serverSelection.manualServerUrlInvalid' => 'Ungültiges Serveradressformat',
 			'serverSelection.manualServerDefaultName' => 'Lokaler Server',
@@ -2836,9 +2838,9 @@ extension on TranslationsDe {
 			'metadataEdit.screenTitle' => 'Metadaten bearbeiten',
 			'metadataEdit.basicInfo' => 'Grundlegende Infos',
 			'metadataEdit.artwork' => 'Artwork',
-			'metadataEdit.advancedSettings' => 'Erweiterte Einstellungen',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.advancedSettings' => 'Erweiterte Einstellungen',
 			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sortiertitel',
 			'metadataEdit.originalTitle' => 'Originaltitel',

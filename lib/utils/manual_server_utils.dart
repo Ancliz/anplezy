@@ -10,13 +10,22 @@ import '../profiles/profile_connection.dart';
 import '../profiles/profile_connection_registry.dart';
 import '../profiles/profile_registry.dart';
 import '../services/plex_auth_service.dart';
+import '../services/plex_client.dart';
 import '../services/storage_service.dart';
 import 'app_logger.dart';
 
 const int plexDefaultPort = 32400;
 
-typedef ManualServerConnectionVerifier = Future<bool> Function(PlexServer server, String clientIdentifier);
+typedef ManualServerConnectionVerifier =
+    Future<ManualServerConnectionVerification> Function(PlexServer server, String clientIdentifier);
 typedef ManualServerHostResolver = Future<Set<String>> Function(String host);
+
+class ManualServerConnectionVerification {
+  const ManualServerConnectionVerification({required this.connected, this.machineIdentifier});
+
+  final bool connected;
+  final String? machineIdentifier;
+}
 
 class ManualServerUtils {
   const ManualServerUtils._();
@@ -120,15 +129,34 @@ class ManualServerUtils {
     return 'manual_${DateTime.now().microsecondsSinceEpoch}';
   }
 
-  static Future<bool> _verifyManualServerConnection(PlexServer server, String clientIdentifier) async {
+  static Future<ManualServerConnectionVerification> _verifyManualServerConnection(
+    PlexServer server,
+    String clientIdentifier,
+  ) async {
     try {
-      await for (final _ in server.findBestWorkingConnection(clientIdentifier: clientIdentifier)) {
-        return true;
+      final candidateUrls = server.prioritizedEndpointUrls();
+      if (candidateUrls.isEmpty) {
+        return const ManualServerConnectionVerification(connected: false);
+      }
+
+      for (final candidateUrl in candidateUrls) {
+        final result = await PlexClient.testConnectionWithLatency(
+          candidateUrl,
+          server.accessToken,
+          clientIdentifier: clientIdentifier,
+          expectedMachineIdentifier: server.expectedMachineIdentifier,
+        );
+        if (result.success && result.identity != null) {
+          return ManualServerConnectionVerification(
+            connected: true,
+            machineIdentifier: result.identity!.machineIdentifier,
+          );
+        }
       }
     } catch (error, stackTrace) {
       appLogger.w('Manual Plex server preflight failed', error: error, stackTrace: stackTrace);
     }
-    return false;
+    return const ManualServerConnectionVerification(connected: false);
   }
 
   static Future<Set<String>> _resolveHostAddresses(String host) async {
@@ -308,15 +336,6 @@ class ManualServerUtils {
       owned: false,
       presence: false,
     );
-    final accountConnection = PlexAccountConnection(
-      id: connectionId,
-      accountToken: '',
-      clientIdentifier: clientIdentifier,
-      accountLabel: serverName,
-      servers: [server],
-      createdAt: now,
-      lastAuthenticatedAt: now,
-    );
     final createdProfile = shouldCreateLocalProfile
         ? Profile.local(
             id: 'local.$manualId',
@@ -354,9 +373,31 @@ class ManualServerUtils {
     if (shouldCancelConnection()) {
       return (connected: false, cancelled: true, error: null);
     }
-    if (!verified) {
+    if (!verified.connected) {
       return (connected: false, cancelled: false, error: t.serverSelection.manualServerConnectionFailed);
     }
+
+    final verifiedServer = PlexServer(
+      name: server.name,
+      clientIdentifier: server.clientIdentifier,
+      accessToken: server.accessToken,
+      machineIdentifier: verified.machineIdentifier,
+      connections: server.connections,
+      owned: server.owned,
+      product: server.product,
+      platform: server.platform,
+      lastSeenAt: server.lastSeenAt,
+      presence: server.presence,
+    );
+    final accountConnection = PlexAccountConnection(
+      id: connectionId,
+      accountToken: '',
+      clientIdentifier: clientIdentifier,
+      accountLabel: serverName,
+      servers: [verifiedServer],
+      createdAt: now,
+      lastAuthenticatedAt: now,
+    );
 
     Future<void> rollback() => _rollbackManualServerAttempt(
       connectionRegistry: connectionRegistry,

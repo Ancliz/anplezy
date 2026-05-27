@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 
 import '../connection/connection.dart';
+import '../i18n/strings.g.dart';
 import '../media/media_server_client.dart';
 import 'jellyfin_client.dart';
 import 'plex_client.dart';
@@ -11,6 +12,7 @@ import '../models/plex/plex_config.dart';
 import '../utils/app_logger.dart';
 import '../utils/media_server_timeouts.dart';
 import '../utils/future_extensions.dart';
+import '../utils/snackbar_helper.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'plex_auth_service.dart';
 import 'storage_service.dart';
@@ -37,6 +39,7 @@ class MultiServerManager {
   final Set<String> _authErrorServers = {};
 
   final Set<String> _manualPlexServerIds = {};
+  final Set<String> _warnedInsecureHttpServerIds = {};
 
   /// Stream controller for server status changes
   final _statusController = StreamController<Map<String, bool>>.broadcast();
@@ -252,6 +255,7 @@ class MultiServerManager {
       baseUrl: baseUrl,
       token: server.accessToken,
       clientIdentifier: clientIdentifier,
+      machineIdentifier: server.machineIdentifier,
     );
 
     final client = await PlexClient.create(
@@ -286,6 +290,32 @@ class MultiServerManager {
     await storage.saveServerEndpoint(server.clientIdentifier, newUrl);
     final newEndpoints = server.prioritizedEndpointUrls(preferredFirst: newUrl);
     await client.updateEndpointPreferences(newEndpoints, switchToFirst: true);
+    _warnIfInsecureHttp(serverId: server.clientIdentifier, serverName: server.name, client: client);
+  }
+
+  void _warnIfInsecureHttp({required String serverId, required String serverName, required PlexClient client}) {
+    final baseUrl = client.config.baseUrl;
+    if (!_shouldWarnForInsecureHttp(baseUrl)) {
+      return;
+    }
+
+    appLogger.w(
+      'Connected to Plex server over HTTP; traffic may be insecure',
+      error: {'server': serverName, 'uri': baseUrl},
+    );
+
+    if (_warnedInsecureHttpServerIds.add(serverId)) {
+      showGlobalWarningSnackBar(t.serverSelection.insecureHttpWarning);
+    }
+  }
+
+  bool _shouldWarnForInsecureHttp(String baseUrl) {
+    final uri = Uri.tryParse(baseUrl);
+    if (uri == null || uri.scheme.toLowerCase() != 'http') {
+      return false;
+    }
+
+    return !PlexServer.isLocalOrPrivateHost(uri.host);
   }
 
   /// Continues draining the connection optimization stream in the background,
@@ -346,6 +376,8 @@ class MultiServerManager {
     _plexServers.remove(serverId);
     _serverStatus.remove(serverId);
     _authErrorServers.remove(serverId);
+    _manualPlexServerIds.remove(serverId);
+    _warnedInsecureHttpServerIds.remove(serverId);
     _statusController.add(Map.from(_serverStatus));
     appLogger.i('Removed server: $serverId');
   }
@@ -404,6 +436,7 @@ class MultiServerManager {
         if (oldClient != null) _closeClient(oldClient);
         _clients[serverId] = client;
         _serverStatus[serverId] = true;
+        _warnIfInsecureHttp(serverId: serverId, serverName: server.name, client: client);
         onServerStatus?.call(serverId, true);
         connected++;
       } catch (e, stackTrace) {
@@ -458,6 +491,7 @@ class MultiServerManager {
         await existing.applyTokenUpdate(server.accessToken);
         _authErrorServers.remove(serverId);
         _serverStatus[serverId] = true;
+        _warnIfInsecureHttp(serverId: serverId, serverName: server.name, client: existing);
         bound.add(serverId);
         return;
       }
@@ -471,6 +505,7 @@ class MultiServerManager {
         _clients[serverId] = client;
         _serverStatus[serverId] = true;
         _authErrorServers.remove(serverId);
+        _warnIfInsecureHttp(serverId: serverId, serverName: server.name, client: client);
         bound.add(serverId);
       } catch (e, stackTrace) {
         appLogger.e('refreshTokensForProfile: failed to connect ${server.name}', error: e, stackTrace: stackTrace);
@@ -497,6 +532,7 @@ class MultiServerManager {
       _serverStatus.remove(id);
       _authErrorServers.remove(id);
       _manualPlexServerIds.remove(id);
+      _warnedInsecureHttpServerIds.remove(id);
       _clientIdByServer.remove(id);
     }
     _statusController.add(Map.from(_serverStatus));
@@ -830,6 +866,7 @@ class MultiServerManager {
       final oldClient = _clients[serverId];
       if (oldClient != null) _closeClient(oldClient);
       _clients[serverId] = client;
+      _warnIfInsecureHttp(serverId: serverId, serverName: server.name, client: client);
       updateServerStatus(serverId, true);
       appLogger.i('Successfully reconnected to ${server.name}');
     } catch (e) {

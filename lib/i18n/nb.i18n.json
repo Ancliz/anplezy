@@ -744,6 +744,7 @@
     "offlineInitGuest": "Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.",
     "connectionFailedGuest": "Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.",
     "connectionFailedPlex": "Servertilkobling mislyktes. Prøv å logge inn igjen.",
+    "insecureHttpWarning": "Koblet til en Plex-server over HTTP. Trafikken kan være usikker.",
     "manualServerUrlRequired": "Skriv inn en serveradresse",
     "manualServerUrlInvalid": "Ugyldig serveradresseformat",
     "manualServerDefaultName": "Lokal server",
