@@ -2198,6 +2198,9 @@ class TranslationsServerSelectionEn {
 	/// en: 'Invalid server address format'
 	String get manualServerUrlInvalid => 'Invalid server address format';
 
+	/// en: 'Guest mode only supports local network server addresses.'
+	String get manualServerLocalNetworkRequired => 'Guest mode only supports local network server addresses.';
+
 	/// en: 'Local Server'
 	String get manualServerDefaultName => 'Local Server';
 
@@ -4875,6 +4878,7 @@ extension on Translations {
 			'serverSelection.insecureHttpWarning' => 'Connected to a Plex server over HTTP. Traffic may be insecure.',
 			'serverSelection.manualServerUrlRequired' => 'Please enter a server address',
 			'serverSelection.manualServerUrlInvalid' => 'Invalid server address format',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Guest mode only supports local network server addresses.',
 			'serverSelection.manualServerDefaultName' => 'Local Server',
 			'serverSelection.manualServerSaveFailed' => 'Failed to save server.',
 			'serverSelection.manualServerAlreadyExists' => 'This server already exists.',
@@ -5212,9 +5216,9 @@ extension on Translations {
 			'externalPlayer.playInExternalPlayer' => 'Play in External Player',
 			'metadataEdit.editMetadata' => 'Edit...',
 			'metadataEdit.screenTitle' => 'Edit Metadata',
-			'metadataEdit.basicInfo' => 'Basic Info',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.basicInfo' => 'Basic Info',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Advanced Settings',
 			'metadataEdit.title' => 'Title',

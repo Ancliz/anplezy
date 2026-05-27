@@ -946,6 +946,7 @@ class _TranslationsServerSelectionJa extends TranslationsServerSelectionEn {
 	@override String get insecureHttpWarning => 'HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。';
 	@override String get manualServerUrlRequired => 'サーバーアドレスを入力してください';
 	@override String get manualServerUrlInvalid => '無効なサーバーアドレス形式です';
+	@override String get manualServerLocalNetworkRequired => 'ゲストモードではローカルネットワーク上のサーバーアドレスのみ使用できます。';
 	@override String get manualServerDefaultName => 'ローカルサーバー';
 	@override String get manualServerSaveFailed => 'サーバーを保存できませんでした。';
 	@override String get manualServerAlreadyExists => 'このサーバーは既に存在します。';
@@ -2499,6 +2500,7 @@ extension on TranslationsJa {
 			'serverSelection.insecureHttpWarning' => 'HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。',
 			'serverSelection.manualServerUrlRequired' => 'サーバーアドレスを入力してください',
 			'serverSelection.manualServerUrlInvalid' => '無効なサーバーアドレス形式です',
+			'serverSelection.manualServerLocalNetworkRequired' => 'ゲストモードではローカルネットワーク上のサーバーアドレスのみ使用できます。',
 			'serverSelection.manualServerDefaultName' => 'ローカルサーバー',
 			'serverSelection.manualServerSaveFailed' => 'サーバーを保存できませんでした。',
 			'serverSelection.manualServerAlreadyExists' => 'このサーバーは既に存在します。',
@@ -2837,9 +2839,9 @@ extension on TranslationsJa {
 			'metadataEdit.editMetadata' => '編集...',
 			'metadataEdit.screenTitle' => 'メタデータを編集',
 			'metadataEdit.basicInfo' => '基本情報',
-			'metadataEdit.artwork' => 'アートワーク',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => 'アートワーク',
 			'metadataEdit.advancedSettings' => '詳細設定',
 			'metadataEdit.title' => 'タイトル',
 			'metadataEdit.sortTitle' => 'ソートタイトル',

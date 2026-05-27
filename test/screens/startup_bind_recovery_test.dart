@@ -129,6 +129,92 @@ void main() {
       expect(manualPlexServerIdsForConnections([firstManualConnection, secondManualConnection]), {'manual-server'});
     });
 
+    test('guest startup keeps only manual Plex servers with local endpoints', () {
+      final localManualConnection = PlexAccountConnection(
+        id: '${manualPlexIdPrefix}local',
+        accountToken: '',
+        clientIdentifier: 'client-manual',
+        accountLabel: 'Manual',
+        servers: [
+          PlexServer(
+            name: 'Manual Server',
+            clientIdentifier: 'manual-server',
+            accessToken: '',
+            connections: [
+              PlexConnection(
+                protocol: 'http',
+                address: 'wyvern',
+                port: 32400,
+                uri: 'http://wyvern:32400',
+                local: true,
+                relay: false,
+                ipv6: false,
+              ),
+              PlexConnection(
+                protocol: 'https',
+                address: 'media.example.com',
+                port: 32400,
+                uri: 'https://media.example.com:32400',
+                local: false,
+                relay: false,
+                ipv6: false,
+              ),
+            ],
+            owned: false,
+          ),
+        ],
+        createdAt: DateTime(2026),
+      );
+      final remoteManualConnection = PlexAccountConnection(
+        id: '${manualPlexIdPrefix}remote',
+        accountToken: '',
+        clientIdentifier: 'client-remote',
+        accountLabel: 'Remote Manual',
+        servers: [
+          PlexServer(
+            name: 'Remote Manual',
+            clientIdentifier: 'remote-server',
+            accessToken: '',
+            connections: [
+              PlexConnection(
+                protocol: 'https',
+                address: 'media.example.com',
+                port: 32400,
+                uri: 'https://media.example.com:32400',
+                local: false,
+                relay: false,
+                ipv6: false,
+              ),
+            ],
+            owned: false,
+          ),
+        ],
+        createdAt: DateTime(2026),
+      );
+      final accountConnection = PlexAccountConnection(
+        id: 'plex.account.one',
+        accountToken: 'token',
+        clientIdentifier: 'client-account',
+        accountLabel: 'Account',
+        servers: const [],
+        createdAt: DateTime(2026),
+      );
+
+      final guestConnections = guestStartupConnectionsFor([
+        localManualConnection,
+        remoteManualConnection,
+        accountConnection,
+      ]);
+
+      expect(guestConnections, hasLength(1));
+      final localOnlyConnection = guestConnections.single as PlexAccountConnection;
+      expect(localOnlyConnection.id, localManualConnection.id);
+      expect(localOnlyConnection.servers.single.clientIdentifier, 'manual-server');
+      expect(localOnlyConnection.servers.single.connections.map((connection) => connection.uri), [
+        'http://wyvern:32400',
+      ]);
+    });
+
     test('retries active profile bind when reconnect has no visible servers', () {
       expect(
         shouldRetryActiveProfileBindAfterReconnect(

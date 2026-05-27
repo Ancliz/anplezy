@@ -356,6 +356,66 @@ void main() {
       expect(profileRows.single.isDefault, isTrue);
     });
 
+    test('rejects non-local addresses when guest setup requires local network servers', () async {
+      var verifierCalls = 0;
+
+      final result = await ManualServerUtils.addManualServer(
+        url: 'media.example.com:32400',
+        displayName: 'Remote',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        requireLocalNetwork: true,
+        connectionVerifier: (_, _) async {
+          verifierCalls++;
+          return _connectionSucceeded;
+        },
+        hostResolver: _hostResolver({
+          'media.example.com': {'203.0.113.10'},
+        }),
+      );
+
+      expect(result.connected, isFalse);
+      expect(result.cancelled, isFalse);
+      expect(result.error, t.serverSelection.manualServerLocalNetworkRequired);
+      expect(verifierCalls, 0);
+      expect(await connections.list(), isEmpty);
+      expect(await profiles.list(), isEmpty);
+      expect(await profileConnections.listAll(), isEmpty);
+    });
+
+    test('allows DNS names that resolve to private addresses when local network is required', () async {
+      final result = await ManualServerUtils.addManualServer(
+        url: 'media.example.com:32400',
+        displayName: 'Local DNS',
+        token: '',
+        connectionRegistry: connections,
+        profileRegistry: profiles,
+        profileConnectionRegistry: profileConnections,
+        activeProfiles: activeProfiles,
+        activeProfileBinder: binder,
+        shouldCancelConnection: () => false,
+        requireLocalNetwork: true,
+        connectionVerifier: _connectionSucceeds,
+        hostResolver: _hostResolver({
+          'media.example.com': {'192.168.1.25'},
+        }),
+      );
+
+      expect(result, (connected: true, cancelled: false, error: null));
+      final storedConnections = await connections.list();
+      expect(storedConnections, hasLength(1));
+      final storedPlexConnection = storedConnections.single as PlexAccountConnection;
+      expect(storedPlexConnection.servers.single.connections.single.address, '192.168.1.25');
+      expect(storedPlexConnection.servers.single.connections.single.uri, 'http://media.example.com:32400');
+      expect(await profiles.list(), hasLength(1));
+      expect(await profileConnections.listAll(), hasLength(1));
+    });
+
     test('can create a local manual profile outside guest setup when no profile is active', () async {
       final result = await ManualServerUtils.addManualServer(
         url: 'wyvern:32400',

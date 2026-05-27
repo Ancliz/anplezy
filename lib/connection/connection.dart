@@ -152,6 +152,22 @@ class PlexAccountConnection extends Connection {
     );
   }
 
+  PlexAccountConnection? toGuestLocalNetworkOnly() {
+    if (!isManual) {
+      return null;
+    }
+
+    final localServers = servers
+        .map((server) => server.toLocalNetworkOnly())
+        .whereType<PlexServer>()
+        .toList(growable: false);
+    if (localServers.isEmpty) {
+      return null;
+    }
+
+    return copyWith(servers: localServers);
+  }
+
   @override
   Map<String, Object?> toConfigJson() {
     return {

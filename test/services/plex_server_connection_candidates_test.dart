@@ -219,5 +219,48 @@ void main() {
       expect(urls.first, preferred);
       expect(urls, contains(localPlexDirect));
     });
+
+    test('keeps private LAN connections and removes remote connections for guest mode', () {
+      const localPlexDirect = 'https://192-168-1-50.example.plex.direct:32400';
+      const remoteUrl = 'https://media.example.com:32400';
+      final server = PlexServer.fromJson(
+        _serverJsonWithConnections([
+          _connectionJson(protocol: 'https', address: '192.168.1.50', port: 32400, uri: localPlexDirect, local: true),
+          _connectionJson(protocol: 'https', address: 'media.example.com', port: 32400, uri: remoteUrl),
+        ]),
+      );
+
+      final localOnly = server.toLocalNetworkOnly();
+
+      expect(localOnly, isNotNull);
+      expect(localOnly!.connections.map((connection) => connection.uri), contains(localPlexDirect));
+      expect(localOnly.connections.map((connection) => connection.uri), isNot(contains(remoteUrl)));
+    });
+
+    test('rejects public-only servers for guest mode', () {
+      final server = PlexServer.fromJson(
+        _serverJson(
+          _connectionJson(
+            protocol: 'https',
+            address: 'media.example.com',
+            port: 32400,
+            uri: 'https://media.example.com:32400',
+          ),
+        ),
+      );
+
+      expect(server.toLocalNetworkOnly(), isNull);
+    });
+
+    test('classifies local hosts and remote HTTP URLs for guest mode', () {
+      expect(PlexServer.isPrivateOrLocalHost('wyvern'), isTrue);
+      expect(PlexServer.isPrivateOrLocalHost('plex.local'), isTrue);
+      expect(PlexServer.isPrivateOrLocalHost('100.90.80.70'), isTrue);
+      expect(PlexServer.isPrivateOrLocalHost('media.example.com'), isFalse);
+      expect(PlexServer.isRemoteHttpUrl('http://192.168.1.50:32400'), isFalse);
+      expect(PlexServer.isRemoteHttpUrl('http://wyvern:32400'), isFalse);
+      expect(PlexServer.isRemoteHttpUrl('http://media.example.com:32400'), isTrue);
+      expect(PlexServer.isRemoteHttpUrl('https://media.example.com:32400'), isFalse);
+    });
   });
 }

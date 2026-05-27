@@ -748,6 +748,7 @@
     "insecureHttpWarning": "Connected to a Plex server over HTTP. Traffic may be insecure.",
     "manualServerUrlRequired": "Please enter a server address",
     "manualServerUrlInvalid": "Invalid server address format",
+    "manualServerLocalNetworkRequired": "Guest mode only supports local network server addresses.",
     "manualServerDefaultName": "Local Server",
     "manualServerSaveFailed": "Failed to save server.",
     "manualServerAlreadyExists": "This server already exists.",

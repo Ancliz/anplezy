@@ -747,6 +747,7 @@
     "insecureHttpWarning": "已通过 HTTP 连接到 Plex 服务器。流量可能不安全。",
     "manualServerUrlRequired": "请输入服务器地址",
     "manualServerUrlInvalid": "无效的服务器地址格式",
+    "manualServerLocalNetworkRequired": "访客模式仅支持本地网络服务器地址。",
     "manualServerDefaultName": "本地服务器",
     "manualServerSaveFailed": "无法保存服务器。",
     "manualServerAlreadyExists": "此服务器已存在。",

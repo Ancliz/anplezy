@@ -310,12 +310,7 @@ class MultiServerManager {
   }
 
   bool _shouldWarnForInsecureHttp(String baseUrl) {
-    final uri = Uri.tryParse(baseUrl);
-    if (uri == null || uri.scheme.toLowerCase() != 'http') {
-      return false;
-    }
-
-    return !PlexServer.isLocalOrPrivateHost(uri.host);
+    return PlexServer.isRemoteHttpUrl(baseUrl);
   }
 
   /// Continues draining the connection optimization stream in the background,

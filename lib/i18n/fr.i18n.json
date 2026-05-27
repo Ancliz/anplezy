@@ -747,6 +747,7 @@
     "insecureHttpWarning": "Connecté à un serveur Plex via HTTP. Le trafic peut ne pas être sécurisé.",
     "manualServerUrlRequired": "Veuillez saisir une adresse de serveur",
     "manualServerUrlInvalid": "Format d'adresse de serveur invalide",
+    "manualServerLocalNetworkRequired": "Le mode invité ne prend en charge que les adresses de serveur du réseau local.",
     "manualServerDefaultName": "Serveur local",
     "manualServerSaveFailed": "Impossible d'enregistrer le serveur.",
     "manualServerAlreadyExists": "Ce serveur existe déjà.",

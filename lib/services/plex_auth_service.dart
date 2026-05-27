@@ -429,6 +429,26 @@ class PlexServer {
     return clientIdentifier;
   }
 
+  PlexServer? toLocalNetworkOnly() {
+    final localConnections = connections.where(_isLocalNetworkConnection).toList(growable: false);
+    if (localConnections.isEmpty) {
+      return null;
+    }
+
+    return PlexServer(
+      name: name,
+      clientIdentifier: clientIdentifier,
+      accessToken: accessToken,
+      machineIdentifier: machineIdentifier,
+      connections: localConnections,
+      owned: owned,
+      product: product,
+      platform: platform,
+      lastSeenAt: lastSeenAt,
+      presence: presence,
+    );
+  }
+
   /// Find the best working connection by testing them
   /// Returns a Stream that emits connections progressively:
   /// 1. First emission: The first connection that responds successfully
@@ -483,7 +503,7 @@ class PlexServer {
     if (preferredUri != null) {
       final cachedCandidate = _candidateForUrl(preferredUri);
       if (cachedCandidate != null) {
-        if (cachedCandidate.url.startsWith('http://')) {
+        if (isRemoteHttpUrl(cachedCandidate.url)) {
           appLogger.w(
             'Testing cached HTTP Plex endpoint; it will only be used if server identity verification succeeds',
             error: {'uri': preferredUri},
@@ -767,7 +787,7 @@ class PlexServer {
     PlexNetworkClass? restrictTo;
 
     if (preferredFirst != null && preferredFirst.isNotEmpty) {
-      if (preferredFirst.startsWith('http://')) {
+      if (isRemoteHttpUrl(preferredFirst)) {
         appLogger.w('Keeping HTTP Plex endpoint as preferred', error: {'uri': preferredFirst});
       }
       urls.add(preferredFirst);
@@ -999,24 +1019,56 @@ class PlexServer {
   }
 
   static String _normalizedHost(String host) {
-    final bare = host.startsWith('[') && host.endsWith(']') ? host.substring(1, host.length - 1) : host;
+    final trimmed = host.trim();
+    final bare = trimmed.startsWith('[') && trimmed.endsWith(']') ? trimmed.substring(1, trimmed.length - 1) : trimmed;
     return bare.toLowerCase();
   }
 
+  static bool isPrivateOrLocalHost(String host) => isLocalOrPrivateHost(host);
+
   static bool isLocalOrPrivateHost(String host) {
-    final address = InternetAddress.tryParse(host);
+    final normalized = _normalizedHost(host);
+    if (normalized.isEmpty) return false;
+
+    final address = InternetAddress.tryParse(normalized);
     if (address != null) return _isPrivateOrLocalAddress(address);
 
-    if (host == 'localhost' || !host.contains('.')) return true;
-    if (host.endsWith('.local') ||
-        host.endsWith('.lan') ||
-        host.endsWith('.home.arpa') ||
-        host.endsWith('.internal') ||
-        host.endsWith('.ts.net')) {
+    if (normalized == 'localhost' || !normalized.contains('.')) return true;
+    if (normalized.endsWith('.local') ||
+        normalized.endsWith('.lan') ||
+        normalized.endsWith('.home.arpa') ||
+        normalized.endsWith('.internal') ||
+        normalized.endsWith('.ts.net')) {
       return true;
     }
 
     return false;
+  }
+
+  static bool isLocalNetworkUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null || uri.host.isEmpty) {
+      return false;
+    }
+
+    return isLocalOrPrivateHost(uri.host);
+  }
+
+  static bool isRemoteHttpUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null || uri.scheme.toLowerCase() != 'http') {
+      return false;
+    }
+
+    return !isLocalNetworkUrl(url);
+  }
+
+  static bool _isLocalNetworkConnection(PlexConnection connection) {
+    if (connection.relay) {
+      return false;
+    }
+
+    return isLocalOrPrivateHost(connection.address) || isLocalNetworkUrl(connection.uri);
   }
 
   static bool _isPrivateOrLocalAddress(InternetAddress address) {

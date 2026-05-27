@@ -186,6 +186,21 @@ class ManualServerUtils {
     return hosts.map(_normalizeDuplicateHost).where((host) => host.isNotEmpty).toSet();
   }
 
+  static Future<String?> _localNetworkAddressForHost(String host, ManualServerHostResolver hostResolver) async {
+    final normalizedHost = _normalizeDuplicateHost(host);
+    if (PlexServer.isPrivateOrLocalHost(normalizedHost)) {
+      return normalizedHost;
+    }
+
+    final resolvedHosts = _normalizeResolvedHosts(await hostResolver(normalizedHost));
+    for (final resolvedHost in resolvedHosts) {
+      if (PlexServer.isPrivateOrLocalHost(resolvedHost)) {
+        return resolvedHost;
+      }
+    }
+    return null;
+  }
+
   static Future<bool> _manualEndpointAlreadyExists({
     required ConnectionRegistry connectionRegistry,
     required PlexConnection candidate,
@@ -295,6 +310,7 @@ class ManualServerUtils {
     required bool Function() shouldCancelConnection,
     bool enableGuestMode = true,
     bool? createLocalProfile,
+    bool requireLocalNetwork = false,
     ManualServerConnectionVerifier? connectionVerifier,
     ManualServerHostResolver? hostResolver,
   }) async {
@@ -305,6 +321,17 @@ class ManualServerUtils {
     final parsed = parseServerUrl(url);
     if (parsed == null) {
       return (connected: false, cancelled: false, error: t.serverSelection.manualServerUrlInvalid);
+    }
+
+    final effectiveHostResolver = hostResolver ?? _resolveHostAddresses;
+    final localNetworkAddress = requireLocalNetwork
+        ? await _localNetworkAddressForHost(parsed.address, effectiveHostResolver)
+        : null;
+    if (requireLocalNetwork && localNetworkAddress == null) {
+      return (connected: false, cancelled: false, error: t.serverSelection.manualServerLocalNetworkRequired);
+    }
+    if (shouldCancelConnection()) {
+      return (connected: false, cancelled: true, error: null);
     }
 
     final storage = await StorageService.getInstance();
@@ -318,15 +345,16 @@ class ManualServerUtils {
     // Guest setup owns a manual server through a new local profile; settings
     // usually adds it as an extra connection on the currently active profile.
     final shouldCreateLocalProfile = createLocalProfile ?? enableGuestMode;
+    final connectionAddress = localNetworkAddress ?? parsed.address;
 
     final connection = PlexConnection(
       protocol: parsed.protocol,
-      address: parsed.address,
+      address: connectionAddress,
       port: parsed.port,
       uri: parsed.uri,
       local: true,
       relay: false,
-      ipv6: parsed.address.contains(':'),
+      ipv6: connectionAddress.contains(':'),
     );
     final server = PlexServer(
       name: serverName,
@@ -360,7 +388,7 @@ class ManualServerUtils {
     final alreadyExists = await _manualEndpointAlreadyExists(
       connectionRegistry: connectionRegistry,
       candidate: connection,
-      hostResolver: hostResolver ?? _resolveHostAddresses,
+      hostResolver: effectiveHostResolver,
     );
     if (shouldCancelConnection()) {
       return (connected: false, cancelled: true, error: null);

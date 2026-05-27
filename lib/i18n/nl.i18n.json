@@ -747,6 +747,7 @@
     "insecureHttpWarning": "Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.",
     "manualServerUrlRequired": "Voer een serveradres in",
     "manualServerUrlInvalid": "Ongeldig serveradresformaat",
+    "manualServerLocalNetworkRequired": "Gastmodus ondersteunt alleen serveradressen op het lokale netwerk.",
     "manualServerDefaultName": "Lokale server",
     "manualServerSaveFailed": "Kon server niet opslaan.",
     "manualServerAlreadyExists": "Deze server bestaat al.",

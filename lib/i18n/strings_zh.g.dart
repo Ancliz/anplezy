@@ -946,6 +946,7 @@ class _TranslationsServerSelectionZh extends TranslationsServerSelectionEn {
 	@override String get insecureHttpWarning => '已通过 HTTP 连接到 Plex 服务器。流量可能不安全。';
 	@override String get manualServerUrlRequired => '请输入服务器地址';
 	@override String get manualServerUrlInvalid => '无效的服务器地址格式';
+	@override String get manualServerLocalNetworkRequired => '访客模式仅支持本地网络服务器地址。';
 	@override String get manualServerDefaultName => '本地服务器';
 	@override String get manualServerSaveFailed => '无法保存服务器。';
 	@override String get manualServerAlreadyExists => '此服务器已存在。';
@@ -2499,6 +2500,7 @@ extension on TranslationsZh {
 			'serverSelection.insecureHttpWarning' => '已通过 HTTP 连接到 Plex 服务器。流量可能不安全。',
 			'serverSelection.manualServerUrlRequired' => '请输入服务器地址',
 			'serverSelection.manualServerUrlInvalid' => '无效的服务器地址格式',
+			'serverSelection.manualServerLocalNetworkRequired' => '访客模式仅支持本地网络服务器地址。',
 			'serverSelection.manualServerDefaultName' => '本地服务器',
 			'serverSelection.manualServerSaveFailed' => '无法保存服务器。',
 			'serverSelection.manualServerAlreadyExists' => '此服务器已存在。',
@@ -2837,9 +2839,9 @@ extension on TranslationsZh {
 			'metadataEdit.editMetadata' => '编辑...',
 			'metadataEdit.screenTitle' => '编辑元数据',
 			'metadataEdit.basicInfo' => '基本信息',
-			'metadataEdit.artwork' => '封面图片',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => '封面图片',
 			'metadataEdit.advancedSettings' => '高级设置',
 			'metadataEdit.title' => '标题',
 			'metadataEdit.sortTitle' => '排序标题',

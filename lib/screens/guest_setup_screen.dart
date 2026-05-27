@@ -69,6 +69,7 @@ class _GuestSetupScreenState extends State<GuestSetupScreen> {
         activeProfiles: activeProfiles,
         activeProfileBinder: activeProfileBinder,
         shouldCancelConnection: () => _shouldCancelConnection,
+        requireLocalNetwork: true,
       );
 
       if (result.cancelled) {

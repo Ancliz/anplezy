@@ -946,6 +946,7 @@ class _TranslationsServerSelectionDa extends TranslationsServerSelectionEn {
 	@override String get insecureHttpWarning => 'Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.';
 	@override String get manualServerUrlRequired => 'Indtast en serveradresse';
 	@override String get manualServerUrlInvalid => 'Ugyldigt serveradresseformat';
+	@override String get manualServerLocalNetworkRequired => 'Gæstetilstand understøtter kun serveradresser på det lokale netværk.';
 	@override String get manualServerDefaultName => 'Lokal server';
 	@override String get manualServerSaveFailed => 'Kunne ikke gemme serveren.';
 	@override String get manualServerAlreadyExists => 'Denne server findes allerede.';
@@ -2499,6 +2500,7 @@ extension on TranslationsDa {
 			'serverSelection.insecureHttpWarning' => 'Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.',
 			'serverSelection.manualServerUrlRequired' => 'Indtast en serveradresse',
 			'serverSelection.manualServerUrlInvalid' => 'Ugyldigt serveradresseformat',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Gæstetilstand understøtter kun serveradresser på det lokale netværk.',
 			'serverSelection.manualServerDefaultName' => 'Lokal server',
 			'serverSelection.manualServerSaveFailed' => 'Kunne ikke gemme serveren.',
 			'serverSelection.manualServerAlreadyExists' => 'Denne server findes allerede.',
@@ -2837,9 +2839,9 @@ extension on TranslationsDa {
 			'metadataEdit.editMetadata' => 'Redigér...',
 			'metadataEdit.screenTitle' => 'Redigér metadata',
 			'metadataEdit.basicInfo' => 'Grundlæggende info',
-			'metadataEdit.artwork' => 'Grafik',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => 'Grafik',
 			'metadataEdit.advancedSettings' => 'Avancerede indstillinger',
 			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteringstitel',

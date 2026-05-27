@@ -747,6 +747,7 @@
     "insecureHttpWarning": "Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.",
     "manualServerUrlRequired": "Indtast en serveradresse",
     "manualServerUrlInvalid": "Ugyldigt serveradresseformat",
+    "manualServerLocalNetworkRequired": "Gæstetilstand understøtter kun serveradresser på det lokale netværk.",
     "manualServerDefaultName": "Lokal server",
     "manualServerSaveFailed": "Kunne ikke gemme serveren.",
     "manualServerAlreadyExists": "Denne server findes allerede.",

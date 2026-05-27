@@ -428,6 +428,23 @@ Set<String> manualPlexServerIdsForConnections(Iterable<Connection> connections) 
   return ids;
 }
 
+@visibleForTesting
+List<Connection> guestStartupConnectionsFor(Iterable<Connection> connections) {
+  final guestConnections = <Connection>[];
+  for (final connection in connections) {
+    switch (connection) {
+      case PlexAccountConnection(:final isManual) when isManual:
+        final localOnly = connection.toGuestLocalNetworkOnly();
+        if (localOnly != null) {
+          guestConnections.add(localOnly);
+        }
+      case _:
+        break;
+    }
+  }
+  return guestConnections;
+}
+
 /// Top-level PIN prompt used by [ActiveProfileBinder] when it runs above the
 /// per-screen widget tree. Routes through [rootNavigatorKey] so the dialog
 /// renders correctly whether the binder fires from the splash, MainScreen,
@@ -1302,16 +1319,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     if (!_isAttemptActive(attemptId)) return;
 
-    final startupConnections = startupIsGuestMode
-        ? allConnections
-              .where(
-                (connection) => switch (connection) {
-                  PlexAccountConnection(:final isManual) => isManual,
-                  _ => false,
-                },
-              )
-              .toList()
-        : allConnections;
+    final startupConnections = startupIsGuestMode ? guestStartupConnectionsFor(allConnections) : allConnections;
 
     if (startupConnections.isEmpty) {
       if (_isAttemptActive(attemptId)) {

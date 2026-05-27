@@ -274,7 +274,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       final manualConnections = (await connectionRegistry.listPlexAccounts())
-          .where((connection) => connection.isManual)
+          .map((connection) => connection.toGuestLocalNetworkOnly())
+          .whereType<PlexAccountConnection>()
           .toList();
 
       if (manualConnections.isEmpty) {

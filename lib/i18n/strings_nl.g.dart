@@ -946,6 +946,7 @@ class _TranslationsServerSelectionNl extends TranslationsServerSelectionEn {
 	@override String get insecureHttpWarning => 'Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.';
 	@override String get manualServerUrlRequired => 'Voer een serveradres in';
 	@override String get manualServerUrlInvalid => 'Ongeldig serveradresformaat';
+	@override String get manualServerLocalNetworkRequired => 'Gastmodus ondersteunt alleen serveradressen op het lokale netwerk.';
 	@override String get manualServerDefaultName => 'Lokale server';
 	@override String get manualServerSaveFailed => 'Kon server niet opslaan.';
 	@override String get manualServerAlreadyExists => 'Deze server bestaat al.';
@@ -2499,6 +2500,7 @@ extension on TranslationsNl {
 			'serverSelection.insecureHttpWarning' => 'Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.',
 			'serverSelection.manualServerUrlRequired' => 'Voer een serveradres in',
 			'serverSelection.manualServerUrlInvalid' => 'Ongeldig serveradresformaat',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Gastmodus ondersteunt alleen serveradressen op het lokale netwerk.',
 			'serverSelection.manualServerDefaultName' => 'Lokale server',
 			'serverSelection.manualServerSaveFailed' => 'Kon server niet opslaan.',
 			'serverSelection.manualServerAlreadyExists' => 'Deze server bestaat al.',
@@ -2837,9 +2839,9 @@ extension on TranslationsNl {
 			'metadataEdit.editMetadata' => 'Bewerken...',
 			'metadataEdit.screenTitle' => 'Metadata bewerken',
 			'metadataEdit.basicInfo' => 'Basisinformatie',
-			'metadataEdit.artwork' => 'Artwork',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
 			'metadataEdit.title' => 'Titel',
 			'metadataEdit.sortTitle' => 'Sorteertitel',

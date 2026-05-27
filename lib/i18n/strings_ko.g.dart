@@ -946,6 +946,7 @@ class _TranslationsServerSelectionKo extends TranslationsServerSelectionEn {
 	@override String get insecureHttpWarning => 'HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.';
 	@override String get manualServerUrlRequired => '서버 주소를 입력하세요';
 	@override String get manualServerUrlInvalid => '잘못된 서버 주소 형식입니다';
+	@override String get manualServerLocalNetworkRequired => '게스트 모드는 로컬 네트워크 서버 주소만 지원합니다.';
 	@override String get manualServerDefaultName => '로컬 서버';
 	@override String get manualServerSaveFailed => '서버를 저장할 수 없습니다.';
 	@override String get manualServerAlreadyExists => '이 서버는 이미 존재합니다.';
@@ -2499,6 +2500,7 @@ extension on TranslationsKo {
 			'serverSelection.insecureHttpWarning' => 'HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.',
 			'serverSelection.manualServerUrlRequired' => '서버 주소를 입력하세요',
 			'serverSelection.manualServerUrlInvalid' => '잘못된 서버 주소 형식입니다',
+			'serverSelection.manualServerLocalNetworkRequired' => '게스트 모드는 로컬 네트워크 서버 주소만 지원합니다.',
 			'serverSelection.manualServerDefaultName' => '로컬 서버',
 			'serverSelection.manualServerSaveFailed' => '서버를 저장할 수 없습니다.',
 			'serverSelection.manualServerAlreadyExists' => '이 서버는 이미 존재합니다.',
@@ -2837,9 +2839,9 @@ extension on TranslationsKo {
 			'metadataEdit.editMetadata' => '편집...',
 			'metadataEdit.screenTitle' => '메타데이터 편집',
 			'metadataEdit.basicInfo' => '기본 정보',
-			'metadataEdit.artwork' => '아트워크',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => '아트워크',
 			'metadataEdit.advancedSettings' => '고급 설정',
 			'metadataEdit.title' => '제목',
 			'metadataEdit.sortTitle' => '정렬 제목',

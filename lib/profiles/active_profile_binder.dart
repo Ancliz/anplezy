@@ -298,6 +298,12 @@ class ActiveProfileBinder {
       switch (byId[pc.connectionId]) {
         case PlexAccountConnection(:final isManual) when guestMode && !isManual:
           break;
+        case final PlexAccountConnection connection when guestMode && connection.isManual:
+          final localOnly = connection.toGuestLocalNetworkOnly();
+          if (localOnly != null) {
+            expected.addAll(localOnly.servers.map((server) => server.clientIdentifier));
+          }
+          break;
         case PlexAccountConnection(:final servers):
           expected.addAll(servers.map((server) => server.clientIdentifier));
         case JellyfinConnection() when guestMode:
@@ -444,6 +450,15 @@ class ActiveProfileBinder {
       switch (conn) {
         case PlexAccountConnection() when guestMode && !conn.isManual:
           appLogger.d('ActiveProfileBinder: skipping non-manual Plex connection ${conn.id} in guest mode');
+          break;
+        case PlexAccountConnection() when guestMode && conn.isManual:
+          final localOnly = conn.toGuestLocalNetworkOnly();
+          if (localOnly == null) {
+            appLogger.d('ActiveProfileBinder: skipping manual Plex connection ${conn.id} without local endpoints');
+            break;
+          }
+          expected.addAll(localOnly.servers.map((server) => server.clientIdentifier));
+          futures.add(_bindLocalPlexConnection(profile: profile, conn: localOnly, pc: pc));
           break;
         case PlexAccountConnection():
           expected.addAll(conn.servers.map((server) => server.clientIdentifier));

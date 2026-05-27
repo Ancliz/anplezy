@@ -199,6 +199,75 @@ void main() {
     expect(multiServerProvider.expectedServerIds, ['srv-1']);
   });
 
+  test('guest mode binds only local endpoints from manual Plex connections', () async {
+    binder.dispose();
+    multiServerProvider.dispose();
+
+    final capturingManager = _CapturingMultiServerManager();
+    manager = capturingManager;
+    multiServerProvider = MultiServerProvider(manager, DataAggregationService(manager));
+    binder = ActiveProfileBinder(
+      activeProfile: activeProfile,
+      connections: connections,
+      profileConnections: profileConnections,
+      serverManager: manager,
+      multiServerProvider: multiServerProvider,
+      pinPrompt: (_, {String? errorMessage}) async => null,
+      shouldDeferInitialBind: (_) async => false,
+    );
+
+    final profile = await createActiveLocalProfile('local-manual');
+    final manualConnection = PlexAccountConnection(
+      id: '${manualPlexIdPrefix}one',
+      accountToken: '',
+      clientIdentifier: 'client-manual',
+      accountLabel: 'Manual',
+      servers: [
+        PlexServer(
+          name: 'Manual Server',
+          clientIdentifier: 'manual-server',
+          accessToken: '',
+          connections: [
+            PlexConnection(
+              protocol: 'http',
+              address: 'wyvern',
+              port: 32400,
+              uri: 'http://wyvern:32400',
+              local: true,
+              relay: false,
+              ipv6: false,
+            ),
+            PlexConnection(
+              protocol: 'https',
+              address: 'media.example.com',
+              port: 32400,
+              uri: 'https://media.example.com:32400',
+              local: false,
+              relay: false,
+              ipv6: false,
+            ),
+          ],
+          owned: false,
+        ),
+      ],
+      createdAt: DateTime(2026, 1, 1),
+    );
+    await connections.upsert(manualConnection);
+    await profileConnections.upsert(
+      ProfileConnection(profileId: profile.id, connectionId: manualConnection.id, userIdentifier: 'manual-server'),
+    );
+    await storage.setGuestModeEnabled(true);
+
+    await binder.rebindActive();
+
+    expect(activeProfile.lastBindingSucceeded, isTrue);
+    expect(capturingManager.refreshCalls, 1);
+    expect(capturingManager.lastConnection?.servers.single.connections.map((connection) => connection.uri), [
+      'http://wyvern:32400',
+    ]);
+    expect(multiServerProvider.expectedServerIds, ['manual-server']);
+  });
+
   test('binds Plex and Jellyfin join rows in parallel', () async {
     binder.dispose();
     multiServerProvider.dispose();

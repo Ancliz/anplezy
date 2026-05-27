@@ -747,6 +747,7 @@
     "insecureHttpWarning": "Подключено к серверу Plex по HTTP. Трафик может быть небезопасен.",
     "manualServerUrlRequired": "Введите адрес сервера",
     "manualServerUrlInvalid": "Неверный формат адреса сервера",
+    "manualServerLocalNetworkRequired": "Гостевой режим поддерживает только адреса серверов в локальной сети.",
     "manualServerDefaultName": "Локальный сервер",
     "manualServerSaveFailed": "Не удалось сохранить сервер.",
     "manualServerAlreadyExists": "Этот сервер уже существует.",
