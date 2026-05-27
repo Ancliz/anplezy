@@ -939,6 +939,19 @@ class _TranslationsServerSelectionPl extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Nie udało się połączyć z żadnym serwerem. Sprawdź sieć.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nie znaleziono serwerów dla ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Nie udało się załadować serwerów: ${error}';
+	@override String get offlineInitPlex => 'Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.';
+	@override String get offlineInitGuest => 'Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.';
+	@override String get connectionFailedGuest => 'Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.';
+	@override String get connectionFailedPlex => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.';
+	@override String get insecureHttpWarning => 'Połączono z serwerem Plex przez HTTP. Ruch może być niezabezpieczony.';
+	@override String get manualServerUrlRequired => 'Wprowadź adres serwera';
+	@override String get manualServerUrlInvalid => 'Nieprawidłowy format adresu serwera';
+	@override String get manualServerLocalNetworkRequired => 'Tryb gościa obsługuje tylko adresy serwerów w sieci lokalnej.';
+	@override String get manualServerDefaultName => 'Serwer lokalny';
+	@override String get manualServerSaveFailed => 'Nie udało się zapisać serwera.';
+	@override String get manualServerAlreadyExists => 'Ten serwer już istnieje.';
+	@override String get manualServerConnectionFailed => 'Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.';
+	@override String get manualServerGenericFailure => 'Połączenie nie powiodło się.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsPl {
 			'serverSelection.allServerConnectionsFailed' => 'Nie udało się połączyć z żadnym serwerem. Sprawdź sieć.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nie znaleziono serwerów dla ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Nie udało się załadować serwerów: ${error}',
+			'serverSelection.offlineInitPlex' => 'Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.',
+			'serverSelection.offlineInitGuest' => 'Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.',
+			'serverSelection.connectionFailedGuest' => 'Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.',
+			'serverSelection.connectionFailedPlex' => 'Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.',
+			'serverSelection.insecureHttpWarning' => 'Połączono z serwerem Plex przez HTTP. Ruch może być niezabezpieczony.',
+			'serverSelection.manualServerUrlRequired' => 'Wprowadź adres serwera',
+			'serverSelection.manualServerUrlInvalid' => 'Nieprawidłowy format adresu serwera',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Tryb gościa obsługuje tylko adresy serwerów w sieci lokalnej.',
+			'serverSelection.manualServerDefaultName' => 'Serwer lokalny',
+			'serverSelection.manualServerSaveFailed' => 'Nie udało się zapisać serwera.',
+			'serverSelection.manualServerAlreadyExists' => 'Ten serwer już istnieje.',
+			'serverSelection.manualServerConnectionFailed' => 'Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.',
+			'serverSelection.manualServerGenericFailure' => 'Połączenie nie powiodło się.',
 			'hubDetail.title' => 'Tytuł',
 			'hubDetail.releaseYear' => 'Rok premiery',
 			'hubDetail.dateAdded' => 'Data dodania',
@@ -2814,6 +2840,8 @@ extension on TranslationsPl {
 			'externalPlayer.playInExternalPlayer' => 'Odtwórz w zewnętrznym odtwarzaczu',
 			'metadataEdit.editMetadata' => 'Edytuj...',
 			'metadataEdit.screenTitle' => 'Edytuj metadane',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Podstawowe informacje',
 			'metadataEdit.artwork' => 'Grafika',
 			'metadataEdit.advancedSettings' => 'Ustawienia zaawansowane',
@@ -2827,8 +2855,6 @@ extension on TranslationsPl {
 			'metadataEdit.summary' => 'Opis',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Tło',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Kwadratowy obraz',
 			'metadataEdit.selectPoster' => 'Wybierz plakat',

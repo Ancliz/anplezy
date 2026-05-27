@@ -939,6 +939,19 @@ class _TranslationsServerSelectionRu extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Не удалось подключиться ни к одному серверу. Проверьте сеть.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Серверы не найдены для ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Не удалось загрузить серверы: ${error}';
+	@override String get offlineInitPlex => 'Не удалось инициализировать офлайн-режим. Попробуйте снова войти.';
+	@override String get offlineInitGuest => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.';
+	@override String get connectionFailedGuest => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.';
+	@override String get connectionFailedPlex => 'Не удалось подключиться к серверу. Попробуйте снова войти.';
+	@override String get insecureHttpWarning => 'Подключено к серверу Plex по HTTP. Трафик может быть небезопасен.';
+	@override String get manualServerUrlRequired => 'Введите адрес сервера';
+	@override String get manualServerUrlInvalid => 'Неверный формат адреса сервера';
+	@override String get manualServerLocalNetworkRequired => 'Гостевой режим поддерживает только адреса серверов в локальной сети.';
+	@override String get manualServerDefaultName => 'Локальный сервер';
+	@override String get manualServerSaveFailed => 'Не удалось сохранить сервер.';
+	@override String get manualServerAlreadyExists => 'Этот сервер уже существует.';
+	@override String get manualServerConnectionFailed => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.';
+	@override String get manualServerGenericFailure => 'Ошибка подключения.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsRu {
 			'serverSelection.allServerConnectionsFailed' => 'Не удалось подключиться ни к одному серверу. Проверьте сеть.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Серверы не найдены для ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Не удалось загрузить серверы: ${error}',
+			'serverSelection.offlineInitPlex' => 'Не удалось инициализировать офлайн-режим. Попробуйте снова войти.',
+			'serverSelection.offlineInitGuest' => 'Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.',
+			'serverSelection.connectionFailedGuest' => 'Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.',
+			'serverSelection.connectionFailedPlex' => 'Не удалось подключиться к серверу. Попробуйте снова войти.',
+			'serverSelection.insecureHttpWarning' => 'Подключено к серверу Plex по HTTP. Трафик может быть небезопасен.',
+			'serverSelection.manualServerUrlRequired' => 'Введите адрес сервера',
+			'serverSelection.manualServerUrlInvalid' => 'Неверный формат адреса сервера',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Гостевой режим поддерживает только адреса серверов в локальной сети.',
+			'serverSelection.manualServerDefaultName' => 'Локальный сервер',
+			'serverSelection.manualServerSaveFailed' => 'Не удалось сохранить сервер.',
+			'serverSelection.manualServerAlreadyExists' => 'Этот сервер уже существует.',
+			'serverSelection.manualServerConnectionFailed' => 'Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.',
+			'serverSelection.manualServerGenericFailure' => 'Ошибка подключения.',
 			'hubDetail.title' => 'Название',
 			'hubDetail.releaseYear' => 'Год выпуска',
 			'hubDetail.dateAdded' => 'Дата добавления',
@@ -2814,6 +2840,8 @@ extension on TranslationsRu {
 			'externalPlayer.playInExternalPlayer' => 'Воспроизвести во внешнем плеере',
 			'metadataEdit.editMetadata' => 'Редактировать...',
 			'metadataEdit.screenTitle' => 'Редактировать метаданные',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Основная информация',
 			'metadataEdit.artwork' => 'Обложка',
 			'metadataEdit.advancedSettings' => 'Дополнительные настройки',
@@ -2827,8 +2855,6 @@ extension on TranslationsRu {
 			'metadataEdit.summary' => 'Описание',
 			'metadataEdit.poster' => 'Постер',
 			'metadataEdit.background' => 'Фон',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Логотип',
 			'metadataEdit.squareArt' => 'Квадратное изображение',
 			'metadataEdit.selectPoster' => 'Выбрать постер',

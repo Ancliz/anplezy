@@ -939,6 +939,19 @@ class _TranslationsServerSelectionDa extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kunne ikke oprette forbindelse til nogen servere. Tjek dit netværk.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Ingen servere fundet for ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kunne ikke indlæse servere: ${error}';
+	@override String get offlineInitPlex => 'Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.';
+	@override String get offlineInitGuest => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.';
+	@override String get connectionFailedGuest => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.';
+	@override String get connectionFailedPlex => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.';
+	@override String get insecureHttpWarning => 'Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.';
+	@override String get manualServerUrlRequired => 'Indtast en serveradresse';
+	@override String get manualServerUrlInvalid => 'Ugyldigt serveradresseformat';
+	@override String get manualServerLocalNetworkRequired => 'Gæstetilstand understøtter kun serveradresser på det lokale netværk.';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunne ikke gemme serveren.';
+	@override String get manualServerAlreadyExists => 'Denne server findes allerede.';
+	@override String get manualServerConnectionFailed => 'Kunne ikke oprette forbindelse til serveren. Tjek adressen, og prøv igen.';
+	@override String get manualServerGenericFailure => 'Forbindelse mislykkedes.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsDa {
 			'serverSelection.allServerConnectionsFailed' => 'Kunne ikke oprette forbindelse til nogen servere. Tjek dit netværk.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Ingen servere fundet for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kunne ikke indlæse servere: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kunne ikke initialisere offline-tilstand. Prøv at logge ind igen.',
+			'serverSelection.offlineInitGuest' => 'Kunne ikke initialisere offline-tilstand. Tjek dine manuelle servere.',
+			'serverSelection.connectionFailedGuest' => 'Kunne ikke oprette forbindelse til dine manuelle servere. Tjek, at de er tilgængelige på dette netværk.',
+			'serverSelection.connectionFailedPlex' => 'Serverforbindelse mislykkedes. Prøv at logge ind igen.',
+			'serverSelection.insecureHttpWarning' => 'Forbundet til en Plex-server via HTTP. Trafikken kan være usikker.',
+			'serverSelection.manualServerUrlRequired' => 'Indtast en serveradresse',
+			'serverSelection.manualServerUrlInvalid' => 'Ugyldigt serveradresseformat',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Gæstetilstand understøtter kun serveradresser på det lokale netværk.',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunne ikke gemme serveren.',
+			'serverSelection.manualServerAlreadyExists' => 'Denne server findes allerede.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunne ikke oprette forbindelse til serveren. Tjek adressen, og prøv igen.',
+			'serverSelection.manualServerGenericFailure' => 'Forbindelse mislykkedes.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Udgivelsesår',
 			'hubDetail.dateAdded' => 'Tilføjelsesdato',
@@ -2814,6 +2840,8 @@ extension on TranslationsDa {
 			'externalPlayer.playInExternalPlayer' => 'Afspil i ekstern afspiller',
 			'metadataEdit.editMetadata' => 'Redigér...',
 			'metadataEdit.screenTitle' => 'Redigér metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Grundlæggende info',
 			'metadataEdit.artwork' => 'Grafik',
 			'metadataEdit.advancedSettings' => 'Avancerede indstillinger',
@@ -2827,8 +2855,6 @@ extension on TranslationsDa {
 			'metadataEdit.summary' => 'Resumé',
 			'metadataEdit.poster' => 'Plakat',
 			'metadataEdit.background' => 'Baggrund',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Kvadratisk billede',
 			'metadataEdit.selectPoster' => 'Vælg plakat',

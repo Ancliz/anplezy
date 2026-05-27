@@ -939,6 +939,19 @@ class _TranslationsServerSelectionFr extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Connexion impossible à tous les serveurs. Vérifiez votre réseau.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Aucun serveur trouvé pour ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Échec du chargement des serveurs: ${error}';
+	@override String get offlineInitPlex => 'Impossible d\'initialiser le mode hors ligne. Veuillez vous reconnecter.';
+	@override String get offlineInitGuest => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.';
+	@override String get connectionFailedGuest => 'Impossible de se connecter à vos serveurs manuels. Vérifiez qu\'ils sont disponibles sur ce réseau.';
+	@override String get connectionFailedPlex => 'Échec de la connexion au serveur. Veuillez vous reconnecter.';
+	@override String get insecureHttpWarning => 'Connecté à un serveur Plex via HTTP. Le trafic peut ne pas être sécurisé.';
+	@override String get manualServerUrlRequired => 'Veuillez saisir une adresse de serveur';
+	@override String get manualServerUrlInvalid => 'Format d\'adresse de serveur invalide';
+	@override String get manualServerLocalNetworkRequired => 'Le mode invité ne prend en charge que les adresses de serveur du réseau local.';
+	@override String get manualServerDefaultName => 'Serveur local';
+	@override String get manualServerSaveFailed => 'Impossible d\'enregistrer le serveur.';
+	@override String get manualServerAlreadyExists => 'Ce serveur existe déjà.';
+	@override String get manualServerConnectionFailed => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.';
+	@override String get manualServerGenericFailure => 'Échec de la connexion.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsFr {
 			'serverSelection.allServerConnectionsFailed' => 'Connexion impossible à tous les serveurs. Vérifiez votre réseau.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Aucun serveur trouvé pour ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Échec du chargement des serveurs: ${error}',
+			'serverSelection.offlineInitPlex' => 'Impossible d\'initialiser le mode hors ligne. Veuillez vous reconnecter.',
+			'serverSelection.offlineInitGuest' => 'Impossible d\'initialiser le mode hors ligne. Veuillez vérifier vos serveurs manuels.',
+			'serverSelection.connectionFailedGuest' => 'Impossible de se connecter à vos serveurs manuels. Vérifiez qu\'ils sont disponibles sur ce réseau.',
+			'serverSelection.connectionFailedPlex' => 'Échec de la connexion au serveur. Veuillez vous reconnecter.',
+			'serverSelection.insecureHttpWarning' => 'Connecté à un serveur Plex via HTTP. Le trafic peut ne pas être sécurisé.',
+			'serverSelection.manualServerUrlRequired' => 'Veuillez saisir une adresse de serveur',
+			'serverSelection.manualServerUrlInvalid' => 'Format d\'adresse de serveur invalide',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Le mode invité ne prend en charge que les adresses de serveur du réseau local.',
+			'serverSelection.manualServerDefaultName' => 'Serveur local',
+			'serverSelection.manualServerSaveFailed' => 'Impossible d\'enregistrer le serveur.',
+			'serverSelection.manualServerAlreadyExists' => 'Ce serveur existe déjà.',
+			'serverSelection.manualServerConnectionFailed' => 'Impossible de se connecter au serveur. Vérifiez l\'adresse et réessayez.',
+			'serverSelection.manualServerGenericFailure' => 'Échec de la connexion.',
 			'hubDetail.title' => 'Titre',
 			'hubDetail.releaseYear' => 'Année de sortie',
 			'hubDetail.dateAdded' => 'Date d\'ajout',
@@ -2814,6 +2840,8 @@ extension on TranslationsFr {
 			'externalPlayer.playInExternalPlayer' => 'Lire dans un lecteur externe',
 			'metadataEdit.editMetadata' => 'Modifier...',
 			'metadataEdit.screenTitle' => 'Modifier les métadonnées',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Informations de base',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Paramètres avancés',
@@ -2827,8 +2855,6 @@ extension on TranslationsFr {
 			'metadataEdit.summary' => 'Résumé',
 			'metadataEdit.poster' => 'Affiche',
 			'metadataEdit.background' => 'Arrière-plan',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Image carrée',
 			'metadataEdit.selectPoster' => 'Sélectionner l\'affiche',

@@ -1,31 +1,41 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
 import '../mixins/controller_disposer_mixin.dart';
 import '../profiles/active_profile_provider.dart';
+import '../profiles/active_profile_binder.dart';
 import '../profiles/plex_home_service.dart';
 import '../profiles/profile.dart';
+import '../profiles/profile_connection_registry.dart';
+import '../profiles/profile_registry.dart';
 import '../services/plex_auth_service.dart';
 import '../services/settings_service.dart';
 import '../services/storage_service.dart';
+import '../providers/download_provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
+import '../utils/offline_mode_utils.dart';
 import '../utils/platform_detector.dart';
+import '../utils/snackbar_helper.dart';
 import '../focus/focusable_button.dart';
 import '../focus/focusable_text_field.dart';
 import '../focus/key_event_utils.dart';
 import '../media/media_backend.dart';
 import '../utils/navigation_transitions.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/backend_badge.dart';
 import '../widgets/dialog_action_button.dart';
 import 'auth/plex_pin_auth_flow.dart';
+import 'guest_setup_screen.dart';
 import 'main_screen.dart';
 import 'profile/profile_switch_screen.dart';
 import 'settings/add_jellyfin_screen.dart';
+import 'settings/server_management_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -36,6 +46,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool _isAuthenticating = false;
+  bool _isGuestConnectionLoading = false;
   String? _errorMessage;
   // Reuse a one-shot service for the debug-token verify path; the Plex
   // PIN/QR flow inside [PlexPinAuthFlow] owns its own service instance.
@@ -73,7 +84,7 @@ class _AuthScreenState extends State<AuthScreen> {
     ActiveProfileProvider activeProfiles,
     PlexAccountConnection accountConn,
   ) async {
-    await activeProfiles.initialize();
+    await activeProfiles.reloadFromStorage();
     final profile = initialPlexHomeProfileFromCache(plexHome, accountConn);
     if (profile == null) {
       await activeProfiles.clearActiveProfile();
@@ -106,6 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       final servers = await svc.fetchServers(plexToken);
       final storage = await StorageService.getInstance();
+      await storage.setGuestModeEnabled(false);
 
       if (servers.isEmpty) {
         await storage.clearCredentials();
@@ -176,9 +188,59 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  void _showGuestConfigurationSnackBar({
+    required String message,
+    required NavigatorState navigator,
+    required ColorScheme colorScheme,
+  }) {
+    final messenger = rootScaffoldMessengerKey.currentState;
+    if (messenger == null) return;
+    messenger.removeCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(color: colorScheme.onError)),
+        backgroundColor: colorScheme.error,
+        duration: const Duration(days: 1),
+        action: SnackBarAction(
+          label: t.common.configure,
+          textColor: colorScheme.onError,
+          disabledTextColor: colorScheme.onError,
+          onPressed: () {
+            messenger.hideCurrentSnackBar();
+            navigator.push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _enterGuestOfflineMode(DownloadProvider downloadProvider) async {
+    final offlineReady = await OfflineModeUtils.initialize(downloadProvider, logContext: 'guest mode');
+    if (!mounted) return false;
+
+    if (!offlineReady) {
+      final navigator = Navigator.of(context);
+      final colorScheme = Theme.of(context).colorScheme;
+      unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
+      _showGuestConfigurationSnackBar(
+        message: t.serverSelection.offlineInitGuest,
+        navigator: navigator,
+        colorScheme: colorScheme,
+      );
+      return false;
+    }
+
+    unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
+    return true;
+  }
+
   void _handleDebugTap() {
     if (!kDebugMode) return;
     _showDebugTokenDialog();
+  }
+
+  void _openServerManagementScreen() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
   }
 
   Future<void> _connectToJellyfin() async {
@@ -188,6 +250,114 @@ class _AuthScreenState extends State<AuthScreen> {
     // straight to the main screen. [MainScreen] reads the active client
     // from the server provider, so no client argument is needed here.
     unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen())));
+  }
+
+  Future<void> _handleContinueWithoutPlex() async {
+    if (!mounted) return;
+    rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
+
+    final connectionRegistry = context.read<ConnectionRegistry>();
+    final profileRegistry = context.read<ProfileRegistry>();
+    final profileConnectionRegistry = context.read<ProfileConnectionRegistry>();
+    final activeProfiles = context.read<ActiveProfileProvider>();
+    final activeProfileBinder = context.read<ActiveProfileBinder>();
+    final downloadProvider = context.read<DownloadProvider>();
+    final storage = await StorageService.getInstance();
+    await storage.setGuestModeEnabled(true);
+    if (!mounted) return;
+
+    setState(() {
+      _isAuthenticating = true;
+      _isGuestConnectionLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final manualConnections = (await connectionRegistry.listPlexAccounts())
+          .map((connection) => connection.toGuestLocalNetworkOnly())
+          .whereType<PlexAccountConnection>()
+          .toList();
+
+      if (manualConnections.isEmpty) {
+        if (!mounted) return;
+        setState(() => _isAuthenticating = false);
+        _openGuestSetup();
+        return;
+      }
+
+      var activatedManualProfile = false;
+      for (final connection in manualConnections) {
+        final result = await _activateManualConnection(
+          connection: connection,
+          profileRegistry: profileRegistry,
+          profileConnectionRegistry: profileConnectionRegistry,
+          activeProfiles: activeProfiles,
+          activeProfileBinder: activeProfileBinder,
+        );
+        activatedManualProfile = activatedManualProfile || result.activated;
+        if (result.connected) {
+          if (mounted) {
+            unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen())));
+          }
+          return;
+        }
+      }
+
+      if (activatedManualProfile) {
+        await _enterGuestOfflineMode(downloadProvider);
+        return;
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _isAuthenticating = false;
+        _isGuestConnectionLoading = false;
+      });
+      _openGuestSetup();
+    } catch (e, st) {
+      appLogger.w('Failed to continue with saved manual Plex servers', error: e, stackTrace: st);
+      if (!mounted) return;
+      setState(() {
+        _isAuthenticating = false;
+        _isGuestConnectionLoading = false;
+      });
+      _openGuestSetup();
+    }
+  }
+
+  Future<({bool activated, bool connected})> _activateManualConnection({
+    required PlexAccountConnection connection,
+    required ProfileRegistry profileRegistry,
+    required ProfileConnectionRegistry profileConnectionRegistry,
+    required ActiveProfileProvider activeProfiles,
+    required ActiveProfileBinder activeProfileBinder,
+  }) async {
+    final links = await profileConnectionRegistry.listForConnection(connection.id);
+    if (links.isEmpty) {
+      appLogger.w('Manual Plex connection ${connection.id} has no profile link');
+      return (activated: false, connected: false);
+    }
+
+    await activeProfiles.reloadFromStorage();
+    for (final link in links) {
+      final profile = await profileRegistry.get(link.profileId);
+      if (profile == null) {
+        appLogger.w('Manual Plex profile ${link.profileId} missing for ${connection.id}');
+        continue;
+      }
+      final hydratedProfile = activeProfiles.profiles.firstWhere((p) => p.id == profile.id, orElse: () => profile);
+      final activated = await activeProfiles.activate(hydratedProfile);
+      if (!activated) continue;
+      await activeProfileBinder.rebindActive();
+      final connected = await activeProfiles.awaitBindingSettle();
+      return (activated: true, connected: connected);
+    }
+
+    return (activated: false, connected: false);
+  }
+
+  void _openGuestSetup() {
+    unawaited(Navigator.push(context, fadeRoute(const GuestSetupScreen())));
   }
 
   void _showDebugTokenDialog() {
@@ -270,13 +440,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Widget _buildAuthBody() {
     if (_isAuthenticating) {
+      final message = _isGuestConnectionLoading ? t.common.connectingToServers : t.auth.waitingForAuth;
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Center(child: CircularProgressIndicator()),
           const SizedBox(height: 16),
           Text(
-            t.auth.waitingForAuth,
+            message,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey),
           ),
@@ -397,6 +568,28 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
         ],
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: busy ? null : _openServerManagementScreen,
+              icon: const AppIcon(Symbols.storage_rounded),
+              tooltip: t.common.configure,
+              visualDensity: VisualDensity.compact,
+              iconSize: 18,
+            ),
+            const SizedBox(width: 4),
+            FocusableButton(
+              onPressed: busy ? null : _handleContinueWithoutPlex,
+              child: TextButton(
+                onPressed: busy ? null : _handleContinueWithoutPlex,
+                child: const Text('Continue without Plex Login'),
+              ),
+            ),
+          ],
+        ),
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
           Text(

@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "どのサーバーにも接続できませんでした。ネットワークを確認してください。",
     "noServersFoundForAccount": "${username} (${email})のサーバーが見つかりません",
-    "failedToLoadServers": "サーバーの読み込みに失敗しました: ${error}"
+    "failedToLoadServers": "サーバーの読み込みに失敗しました: ${error}",
+    "offlineInitPlex": "オフラインモードを初期化できませんでした。再度ログインしてください。",
+    "offlineInitGuest": "オフラインモードを初期化できませんでした。手動サーバーを確認してください。",
+    "connectionFailedGuest": "手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。",
+    "connectionFailedPlex": "サーバー接続に失敗しました。再度ログインしてください。",
+    "insecureHttpWarning": "HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。",
+    "manualServerUrlRequired": "サーバーアドレスを入力してください",
+    "manualServerUrlInvalid": "無効なサーバーアドレス形式です",
+    "manualServerLocalNetworkRequired": "ゲストモードではローカルネットワーク上のサーバーアドレスのみ使用できます。",
+    "manualServerDefaultName": "ローカルサーバー",
+    "manualServerSaveFailed": "サーバーを保存できませんでした。",
+    "manualServerAlreadyExists": "このサーバーは既に存在します。",
+    "manualServerConnectionFailed": "サーバーに接続できませんでした。アドレスを確認して再試行してください。",
+    "manualServerGenericFailure": "接続に失敗しました。"
   },
   "hubDetail": {
     "title": "タイトル",

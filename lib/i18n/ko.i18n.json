@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "서버에 연결할 수 없습니다. 네트워크를 확인하세요.",
     "noServersFoundForAccount": "${username} (${email})의 서버를 찾을 수 없습니다.",
-    "failedToLoadServers": "서버를 로드할 수 없습니다: ${error}"
+    "failedToLoadServers": "서버를 로드할 수 없습니다: ${error}",
+    "offlineInitPlex": "오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.",
+    "offlineInitGuest": "오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.",
+    "connectionFailedGuest": "수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.",
+    "connectionFailedPlex": "서버 연결에 실패했습니다. 다시 로그인하세요.",
+    "insecureHttpWarning": "HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.",
+    "manualServerUrlRequired": "서버 주소를 입력하세요",
+    "manualServerUrlInvalid": "잘못된 서버 주소 형식입니다",
+    "manualServerLocalNetworkRequired": "게스트 모드는 로컬 네트워크 서버 주소만 지원합니다.",
+    "manualServerDefaultName": "로컬 서버",
+    "manualServerSaveFailed": "서버를 저장할 수 없습니다.",
+    "manualServerAlreadyExists": "이 서버는 이미 존재합니다.",
+    "manualServerConnectionFailed": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
+    "manualServerGenericFailure": "연결에 실패했습니다."
   },
   "hubDetail": {
     "title": "제목",

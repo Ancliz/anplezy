@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "无法连接到任何服务器。请检查网络。",
     "noServersFoundForAccount": "未找到 ${username} (${email}) 的服务器",
-    "failedToLoadServers": "无法加载服务器: ${error}"
+    "failedToLoadServers": "无法加载服务器: ${error}",
+    "offlineInitPlex": "无法初始化离线模式。请重新登录。",
+    "offlineInitGuest": "无法初始化离线模式。请检查你的手动服务器。",
+    "connectionFailedGuest": "无法连接到你的手动服务器。请检查它们是否在此网络上可用。",
+    "connectionFailedPlex": "服务器连接失败。请重新登录。",
+    "insecureHttpWarning": "已通过 HTTP 连接到 Plex 服务器。流量可能不安全。",
+    "manualServerUrlRequired": "请输入服务器地址",
+    "manualServerUrlInvalid": "无效的服务器地址格式",
+    "manualServerLocalNetworkRequired": "访客模式仅支持本地网络服务器地址。",
+    "manualServerDefaultName": "本地服务器",
+    "manualServerSaveFailed": "无法保存服务器。",
+    "manualServerAlreadyExists": "此服务器已存在。",
+    "manualServerConnectionFailed": "无法连接到服务器。请检查地址并重试。",
+    "manualServerGenericFailure": "连接失败。"
   },
   "hubDetail": {
     "title": "标题",

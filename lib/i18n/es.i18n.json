@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "No se pudo conectar a ningún servidor. Revisa tu red.",
     "noServersFoundForAccount": "No se encontraron servidores para ${username} (${email})",
-    "failedToLoadServers": "Error al cargar servidores: ${error}"
+    "failedToLoadServers": "Error al cargar servidores: ${error}",
+    "offlineInitPlex": "No se pudo inicializar el modo sin conexión. Intenta iniciar sesión de nuevo.",
+    "offlineInitGuest": "No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.",
+    "connectionFailedGuest": "No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.",
+    "connectionFailedPlex": "Error de conexión con el servidor. Intenta iniciar sesión de nuevo.",
+    "insecureHttpWarning": "Conectado a un servidor Plex por HTTP. El tráfico puede no ser seguro.",
+    "manualServerUrlRequired": "Introduce una dirección del servidor",
+    "manualServerUrlInvalid": "Formato de dirección del servidor no válido",
+    "manualServerLocalNetworkRequired": "El modo invitado solo admite direcciones de servidores de la red local.",
+    "manualServerDefaultName": "Servidor local",
+    "manualServerSaveFailed": "No se pudo guardar el servidor.",
+    "manualServerAlreadyExists": "Este servidor ya existe.",
+    "manualServerConnectionFailed": "No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.",
+    "manualServerGenericFailure": "Error de conexión."
   },
   "hubDetail": {
     "title": "Título",

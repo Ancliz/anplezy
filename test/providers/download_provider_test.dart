@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:drift/native.dart';
@@ -46,6 +47,50 @@ class _ScopedTestClient implements MediaServerClient, ScopedMediaServerClient {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FetchCountingClient implements MediaServerClient {
+  _FetchCountingClient({required this.serverId, this.fetchedTitlePrefix});
+
+  @override
+  final String serverId;
+
+  final String? fetchedTitlePrefix;
+
+  int fetchCount = 0;
+
+  @override
+  MediaBackend get backend => MediaBackend.plex;
+
+  @override
+  Future<MediaItem?> fetchItem(String id) async {
+    fetchCount++;
+    final titlePrefix = fetchedTitlePrefix;
+    if (titlePrefix == null) {
+      throw StateError('test: fetchItem should be skipped');
+    }
+    return MediaItem(
+      id: id,
+      backend: MediaBackend.plex,
+      kind: MediaKind.movie,
+      title: '$titlePrefix $id',
+      serverId: serverId,
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+Map<String, dynamic> _plexMetadataEnvelope({required String ratingKey, required String title, String type = 'movie'}) {
+  return {
+    'MediaContainer': {
+      'size': 1,
+      'Metadata': [
+        {'ratingKey': ratingKey, 'key': '/library/metadata/$ratingKey', 'title': title, 'type': type},
+      ],
+    },
+  };
 }
 
 void main() {
@@ -122,6 +167,45 @@ void main() {
       expect(() => p.syncRules.clear(), throwsUnsupportedError);
 
       p.dispose();
+    });
+
+    test('startup load does not wait for stalled download recovery with no persisted downloads', () async {
+      final stalledRecovery = Completer<void>();
+      final stalledManager = DownloadManagerService(database: db, storageService: DownloadStorageService.instance);
+      stalledManager.recoveryFuture = stalledRecovery.future;
+
+      final p = DownloadProvider(
+        downloadManager: stalledManager,
+        database: db,
+        recoveryWaitTimeout: const Duration(days: 1),
+      );
+
+      await p.ensureInitialized().timeout(const Duration(milliseconds: 100));
+
+      expect(stalledRecovery.isCompleted, isFalse);
+      p.dispose();
+      stalledManager.dispose();
+    });
+
+    test('startup load times out stalled download recovery when persisted downloads exist', () async {
+      await db.insertDownload(
+        serverId: 'srv',
+        ratingKey: 'movie-1',
+        globalKey: 'srv:movie-1',
+        type: 'movie',
+        status: DownloadStatus.downloading.index,
+      );
+      final stalledRecovery = Completer<void>();
+      final stalledManager = DownloadManagerService(database: db, storageService: DownloadStorageService.instance);
+      stalledManager.recoveryFuture = stalledRecovery.future;
+
+      final p = DownloadProvider(downloadManager: stalledManager, database: db, recoveryWaitTimeout: Duration.zero);
+
+      await p.ensureInitialized();
+
+      expect(stalledRecovery.isCompleted, isFalse);
+      p.dispose();
+      stalledManager.dispose();
     });
   });
 
@@ -719,6 +803,122 @@ void main() {
       await p.refreshMetadataFromCache();
 
       expect(p.getMetadata('jf-machine:ep-1')?.isWatched, isTrue);
+
+      p.dispose();
+    });
+
+    test('refreshMetadataFromCache skips live repair for opted-out servers', () async {
+      await db.insertDownload(
+        serverId: 'manual-server',
+        ratingKey: 'movie-1',
+        globalKey: 'manual-server:movie-1',
+        type: 'movie',
+        status: DownloadStatus.completed.index,
+      );
+      final client = _FetchCountingClient(serverId: 'manual-server');
+      downloadManager.setClientResolver((serverId, {clientScopeId}) => serverId == 'manual-server' ? client : null);
+
+      final p = DownloadProvider.forTesting(downloadManager: downloadManager, database: db);
+      await p.ensureInitialized();
+      p.debugSeedState(
+        downloads: {
+          'manual-server:movie-1': const DownloadProgress(
+            globalKey: 'manual-server:movie-1',
+            status: DownloadStatus.completed,
+          ),
+        },
+      );
+
+      await p.refreshMetadataFromCache(skipLiveFetchForServerIds: {'manual-server'});
+
+      expect(client.fetchCount, 0);
+      expect(p.getMetadata('manual-server:movie-1'), isNull);
+
+      p.dispose();
+    });
+
+    test('refreshMetadataFromCache still repairs account servers when manual servers are skipped', () async {
+      await db.insertDownload(
+        serverId: 'manual-server',
+        ratingKey: 'movie-1',
+        globalKey: 'manual-server:movie-1',
+        type: 'movie',
+        status: DownloadStatus.completed.index,
+      );
+      await db.insertDownload(
+        serverId: 'account-server',
+        ratingKey: 'movie-2',
+        globalKey: 'account-server:movie-2',
+        type: 'movie',
+        status: DownloadStatus.completed.index,
+      );
+      final manualClient = _FetchCountingClient(serverId: 'manual-server');
+      final accountClient = _FetchCountingClient(serverId: 'account-server', fetchedTitlePrefix: 'Account fetched');
+      downloadManager.setClientResolver((serverId, {clientScopeId}) {
+        return switch (serverId) {
+          'manual-server' => manualClient,
+          'account-server' => accountClient,
+          _ => null,
+        };
+      });
+
+      final p = DownloadProvider.forTesting(downloadManager: downloadManager, database: db);
+      await p.ensureInitialized();
+      p.debugSeedState(
+        downloads: {
+          'manual-server:movie-1': const DownloadProgress(
+            globalKey: 'manual-server:movie-1',
+            status: DownloadStatus.completed,
+          ),
+          'account-server:movie-2': const DownloadProgress(
+            globalKey: 'account-server:movie-2',
+            status: DownloadStatus.completed,
+          ),
+        },
+      );
+
+      await p.refreshMetadataFromCache(skipLiveFetchForServerIds: {'manual-server'});
+
+      expect(manualClient.fetchCount, 0);
+      expect(accountClient.fetchCount, 1);
+      expect(p.getMetadata('manual-server:movie-1'), isNull);
+      expect(p.getMetadata('account-server:movie-2')?.title, 'Account fetched movie-2');
+
+      p.dispose();
+    });
+
+    test('refreshMetadataFromCache hydrates cached manual metadata without live repair', () async {
+      await db.insertDownload(
+        serverId: 'manual-server',
+        ratingKey: 'movie-1',
+        globalKey: 'manual-server:movie-1',
+        type: 'movie',
+        status: DownloadStatus.completed.index,
+      );
+      await PlexApiCache.instance.put(
+        'manual-server',
+        '/library/metadata/movie-1',
+        _plexMetadataEnvelope(ratingKey: 'movie-1', title: 'Cached Manual Movie'),
+      );
+      await PlexApiCache.instance.pinForOffline('manual-server', 'movie-1');
+      final client = _FetchCountingClient(serverId: 'manual-server');
+      downloadManager.setClientResolver((serverId, {clientScopeId}) => serverId == 'manual-server' ? client : null);
+
+      final p = DownloadProvider.forTesting(downloadManager: downloadManager, database: db);
+      await p.ensureInitialized();
+      p.debugSeedState(
+        downloads: {
+          'manual-server:movie-1': const DownloadProgress(
+            globalKey: 'manual-server:movie-1',
+            status: DownloadStatus.completed,
+          ),
+        },
+      );
+
+      await p.refreshMetadataFromCache(skipLiveFetchForServerIds: {'manual-server'});
+
+      expect(client.fetchCount, 0);
+      expect(p.getMetadata('manual-server:movie-1')?.title, 'Cached Manual Movie');
 
       p.dispose();
     });

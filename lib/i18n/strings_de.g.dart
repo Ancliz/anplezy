@@ -939,6 +939,19 @@ class _TranslationsServerSelectionDe extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Keine Verbindung zu Servern möglich. Prüfe dein Netzwerk.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Keine Server gefunden für ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Server konnten nicht geladen werden: ${error}';
+	@override String get offlineInitPlex => 'Offline-Modus konnte nicht initialisiert werden. Bitte versuche, dich erneut anzumelden.';
+	@override String get offlineInitGuest => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.';
+	@override String get connectionFailedGuest => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.';
+	@override String get connectionFailedPlex => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.';
+	@override String get insecureHttpWarning => 'Mit einem Plex-Server über HTTP verbunden. Der Datenverkehr ist möglicherweise unsicher.';
+	@override String get manualServerUrlRequired => 'Bitte gib eine Serveradresse ein';
+	@override String get manualServerUrlInvalid => 'Ungültiges Serveradressformat';
+	@override String get manualServerLocalNetworkRequired => 'Der Gastmodus unterstützt nur Serveradressen im lokalen Netzwerk.';
+	@override String get manualServerDefaultName => 'Lokaler Server';
+	@override String get manualServerSaveFailed => 'Server konnte nicht gespeichert werden.';
+	@override String get manualServerAlreadyExists => 'Dieser Server existiert bereits.';
+	@override String get manualServerConnectionFailed => 'Verbindung zum Server fehlgeschlagen. Bitte überprüfe die Adresse und versuche es erneut.';
+	@override String get manualServerGenericFailure => 'Verbindung fehlgeschlagen.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsDe {
 			'serverSelection.allServerConnectionsFailed' => 'Keine Verbindung zu Servern möglich. Prüfe dein Netzwerk.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Keine Server gefunden für ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Server konnten nicht geladen werden: ${error}',
+			'serverSelection.offlineInitPlex' => 'Offline-Modus konnte nicht initialisiert werden. Bitte versuche, dich erneut anzumelden.',
+			'serverSelection.offlineInitGuest' => 'Offline-Modus konnte nicht initialisiert werden. Bitte überprüfe deine manuellen Server.',
+			'serverSelection.connectionFailedGuest' => 'Verbindung zu deinen manuellen Servern fehlgeschlagen. Prüfe, ob sie in diesem Netzwerk verfügbar sind.',
+			'serverSelection.connectionFailedPlex' => 'Serververbindung fehlgeschlagen. Bitte melde dich erneut an.',
+			'serverSelection.insecureHttpWarning' => 'Mit einem Plex-Server über HTTP verbunden. Der Datenverkehr ist möglicherweise unsicher.',
+			'serverSelection.manualServerUrlRequired' => 'Bitte gib eine Serveradresse ein',
+			'serverSelection.manualServerUrlInvalid' => 'Ungültiges Serveradressformat',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Der Gastmodus unterstützt nur Serveradressen im lokalen Netzwerk.',
+			'serverSelection.manualServerDefaultName' => 'Lokaler Server',
+			'serverSelection.manualServerSaveFailed' => 'Server konnte nicht gespeichert werden.',
+			'serverSelection.manualServerAlreadyExists' => 'Dieser Server existiert bereits.',
+			'serverSelection.manualServerConnectionFailed' => 'Verbindung zum Server fehlgeschlagen. Bitte überprüfe die Adresse und versuche es erneut.',
+			'serverSelection.manualServerGenericFailure' => 'Verbindung fehlgeschlagen.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Erscheinungsjahr',
 			'hubDetail.dateAdded' => 'Hinzugefügt am',
@@ -2814,6 +2840,8 @@ extension on TranslationsDe {
 			'externalPlayer.playInExternalPlayer' => 'In externem Player abspielen',
 			'metadataEdit.editMetadata' => 'Bearbeiten...',
 			'metadataEdit.screenTitle' => 'Metadaten bearbeiten',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Grundlegende Infos',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Erweiterte Einstellungen',
@@ -2827,8 +2855,6 @@ extension on TranslationsDe {
 			'metadataEdit.summary' => 'Zusammenfassung',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Hintergrund',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Quadratisches Bild',
 			'metadataEdit.selectPoster' => 'Poster auswählen',

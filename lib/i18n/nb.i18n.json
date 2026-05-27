@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Kunne ikke koble til noen servere. Sjekk nettverket ditt.",
     "noServersFoundForAccount": "Ingen servere funnet for ${username} (${email})",
-    "failedToLoadServers": "Kunne ikke laste servere: ${error}"
+    "failedToLoadServers": "Kunne ikke laste servere: ${error}",
+    "offlineInitPlex": "Kunne ikke initialisere frakoblet modus. Prøv å logge inn igjen.",
+    "offlineInitGuest": "Kunne ikke initialisere frakoblet modus. Kontroller de manuelle serverne dine.",
+    "connectionFailedGuest": "Kunne ikke koble til de manuelle serverne dine. Sjekk at de er tilgjengelige på dette nettverket.",
+    "connectionFailedPlex": "Servertilkobling mislyktes. Prøv å logge inn igjen.",
+    "insecureHttpWarning": "Koblet til en Plex-server over HTTP. Trafikken kan være usikker.",
+    "manualServerUrlRequired": "Skriv inn en serveradresse",
+    "manualServerUrlInvalid": "Ugyldig serveradresseformat",
+    "manualServerLocalNetworkRequired": "Gjestemodus støtter bare serveradresser på det lokale nettverket.",
+    "manualServerDefaultName": "Lokal server",
+    "manualServerSaveFailed": "Kunne ikke lagre serveren.",
+    "manualServerAlreadyExists": "Denne serveren finnes allerede.",
+    "manualServerConnectionFailed": "Kunne ikke koble til serveren. Sjekk adressen og prøv igjen.",
+    "manualServerGenericFailure": "Tilkobling mislyktes."
   },
   "hubDetail": {
     "title": "Tittel",

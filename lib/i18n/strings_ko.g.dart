@@ -939,6 +939,19 @@ class _TranslationsServerSelectionKo extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => '서버에 연결할 수 없습니다. 네트워크를 확인하세요.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '${username} (${email})의 서버를 찾을 수 없습니다.';
 	@override String failedToLoadServers({required Object error}) => '서버를 로드할 수 없습니다: ${error}';
+	@override String get offlineInitPlex => '오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.';
+	@override String get offlineInitGuest => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.';
+	@override String get connectionFailedGuest => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.';
+	@override String get connectionFailedPlex => '서버 연결에 실패했습니다. 다시 로그인하세요.';
+	@override String get insecureHttpWarning => 'HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.';
+	@override String get manualServerUrlRequired => '서버 주소를 입력하세요';
+	@override String get manualServerUrlInvalid => '잘못된 서버 주소 형식입니다';
+	@override String get manualServerLocalNetworkRequired => '게스트 모드는 로컬 네트워크 서버 주소만 지원합니다.';
+	@override String get manualServerDefaultName => '로컬 서버';
+	@override String get manualServerSaveFailed => '서버를 저장할 수 없습니다.';
+	@override String get manualServerAlreadyExists => '이 서버는 이미 존재합니다.';
+	@override String get manualServerConnectionFailed => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.';
+	@override String get manualServerGenericFailure => '연결에 실패했습니다.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsKo {
 			'serverSelection.allServerConnectionsFailed' => '서버에 연결할 수 없습니다. 네트워크를 확인하세요.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '${username} (${email})의 서버를 찾을 수 없습니다.',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => '서버를 로드할 수 없습니다: ${error}',
+			'serverSelection.offlineInitPlex' => '오프라인 모드를 초기화할 수 없습니다. 다시 로그인하세요.',
+			'serverSelection.offlineInitGuest' => '오프라인 모드를 초기화할 수 없습니다. 수동 서버를 확인하세요.',
+			'serverSelection.connectionFailedGuest' => '수동 서버에 연결할 수 없습니다. 이 네트워크에서 사용할 수 있는지 확인하세요.',
+			'serverSelection.connectionFailedPlex' => '서버 연결에 실패했습니다. 다시 로그인하세요.',
+			'serverSelection.insecureHttpWarning' => 'HTTP로 Plex 서버에 연결했습니다. 트래픽이 안전하지 않을 수 있습니다.',
+			'serverSelection.manualServerUrlRequired' => '서버 주소를 입력하세요',
+			'serverSelection.manualServerUrlInvalid' => '잘못된 서버 주소 형식입니다',
+			'serverSelection.manualServerLocalNetworkRequired' => '게스트 모드는 로컬 네트워크 서버 주소만 지원합니다.',
+			'serverSelection.manualServerDefaultName' => '로컬 서버',
+			'serverSelection.manualServerSaveFailed' => '서버를 저장할 수 없습니다.',
+			'serverSelection.manualServerAlreadyExists' => '이 서버는 이미 존재합니다.',
+			'serverSelection.manualServerConnectionFailed' => '서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.',
+			'serverSelection.manualServerGenericFailure' => '연결에 실패했습니다.',
 			'hubDetail.title' => '제목',
 			'hubDetail.releaseYear' => '출시 연도',
 			'hubDetail.dateAdded' => '추가 날짜',
@@ -2814,6 +2840,8 @@ extension on TranslationsKo {
 			'externalPlayer.playInExternalPlayer' => '외부 플레이어에서 재생',
 			'metadataEdit.editMetadata' => '편집...',
 			'metadataEdit.screenTitle' => '메타데이터 편집',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => '기본 정보',
 			'metadataEdit.artwork' => '아트워크',
 			'metadataEdit.advancedSettings' => '고급 설정',
@@ -2827,8 +2855,6 @@ extension on TranslationsKo {
 			'metadataEdit.summary' => '줄거리',
 			'metadataEdit.poster' => '포스터',
 			'metadataEdit.background' => '배경',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => '로고',
 			'metadataEdit.squareArt' => '정사각형 아트',
 			'metadataEdit.selectPoster' => '포스터 선택',

@@ -939,6 +939,19 @@ class _TranslationsServerSelectionJa extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'どのサーバーにも接続できませんでした。ネットワークを確認してください。';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '${username} (${email})のサーバーが見つかりません';
 	@override String failedToLoadServers({required Object error}) => 'サーバーの読み込みに失敗しました: ${error}';
+	@override String get offlineInitPlex => 'オフラインモードを初期化できませんでした。再度ログインしてください。';
+	@override String get offlineInitGuest => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。';
+	@override String get connectionFailedGuest => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。';
+	@override String get connectionFailedPlex => 'サーバー接続に失敗しました。再度ログインしてください。';
+	@override String get insecureHttpWarning => 'HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。';
+	@override String get manualServerUrlRequired => 'サーバーアドレスを入力してください';
+	@override String get manualServerUrlInvalid => '無効なサーバーアドレス形式です';
+	@override String get manualServerLocalNetworkRequired => 'ゲストモードではローカルネットワーク上のサーバーアドレスのみ使用できます。';
+	@override String get manualServerDefaultName => 'ローカルサーバー';
+	@override String get manualServerSaveFailed => 'サーバーを保存できませんでした。';
+	@override String get manualServerAlreadyExists => 'このサーバーは既に存在します。';
+	@override String get manualServerConnectionFailed => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。';
+	@override String get manualServerGenericFailure => '接続に失敗しました。';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsJa {
 			'serverSelection.allServerConnectionsFailed' => 'どのサーバーにも接続できませんでした。ネットワークを確認してください。',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '${username} (${email})のサーバーが見つかりません',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'サーバーの読み込みに失敗しました: ${error}',
+			'serverSelection.offlineInitPlex' => 'オフラインモードを初期化できませんでした。再度ログインしてください。',
+			'serverSelection.offlineInitGuest' => 'オフラインモードを初期化できませんでした。手動サーバーを確認してください。',
+			'serverSelection.connectionFailedGuest' => '手動サーバーに接続できませんでした。このネットワークで利用可能か確認してください。',
+			'serverSelection.connectionFailedPlex' => 'サーバー接続に失敗しました。再度ログインしてください。',
+			'serverSelection.insecureHttpWarning' => 'HTTP 経由で Plex サーバーに接続しました。通信は安全でない可能性があります。',
+			'serverSelection.manualServerUrlRequired' => 'サーバーアドレスを入力してください',
+			'serverSelection.manualServerUrlInvalid' => '無効なサーバーアドレス形式です',
+			'serverSelection.manualServerLocalNetworkRequired' => 'ゲストモードではローカルネットワーク上のサーバーアドレスのみ使用できます。',
+			'serverSelection.manualServerDefaultName' => 'ローカルサーバー',
+			'serverSelection.manualServerSaveFailed' => 'サーバーを保存できませんでした。',
+			'serverSelection.manualServerAlreadyExists' => 'このサーバーは既に存在します。',
+			'serverSelection.manualServerConnectionFailed' => 'サーバーに接続できませんでした。アドレスを確認して再試行してください。',
+			'serverSelection.manualServerGenericFailure' => '接続に失敗しました。',
 			'hubDetail.title' => 'タイトル',
 			'hubDetail.releaseYear' => '公開年',
 			'hubDetail.dateAdded' => '追加日',
@@ -2814,6 +2840,8 @@ extension on TranslationsJa {
 			'externalPlayer.playInExternalPlayer' => '外部プレーヤーで再生',
 			'metadataEdit.editMetadata' => '編集...',
 			'metadataEdit.screenTitle' => 'メタデータを編集',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => '基本情報',
 			'metadataEdit.artwork' => 'アートワーク',
 			'metadataEdit.advancedSettings' => '詳細設定',
@@ -2827,8 +2855,6 @@ extension on TranslationsJa {
 			'metadataEdit.summary' => 'あらすじ',
 			'metadataEdit.poster' => 'ポスター',
 			'metadataEdit.background' => '背景',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'ロゴ',
 			'metadataEdit.squareArt' => '正方形アート',
 			'metadataEdit.selectPoster' => 'ポスターを選択',

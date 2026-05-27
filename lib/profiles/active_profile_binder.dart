@@ -8,6 +8,7 @@ import '../exceptions/media_server_exceptions.dart';
 import '../providers/multi_server_provider.dart';
 import '../services/multi_server_manager.dart';
 import '../services/plex_auth_service.dart';
+import '../services/storage_service.dart';
 import '../utils/app_logger.dart';
 import 'active_profile_provider.dart';
 import 'plex_home_switch.dart';
@@ -64,6 +65,7 @@ class ActiveProfileBinder {
   final ShouldDeferInitialBind? shouldDeferInitialBind;
 
   PlexAuthService? _plexAuth;
+  StorageService? _storage;
 
   bool _started = false;
   bool _isSwitching = false;
@@ -278,8 +280,9 @@ class ActiveProfileBinder {
 
   Future<Set<String>> _expectedServerIdsForProfile(Profile profile) async {
     final expected = <String>{};
+    final guestMode = await _guestModeEnabled();
     final parentId = profile.parentConnectionId;
-    if (profile.isPlexHome && parentId != null) {
+    if (!guestMode && profile.isPlexHome && parentId != null) {
       final account = await connections.getPlexAccount(parentId);
       if (account != null) {
         expected.addAll(account.servers.map((server) => server.clientIdentifier));
@@ -293,8 +296,18 @@ class ActiveProfileBinder {
     for (final pc in pcs) {
       if (parentId != null && pc.connectionId == parentId) continue;
       switch (byId[pc.connectionId]) {
+        case PlexAccountConnection(:final isManual) when guestMode && !isManual:
+          break;
+        case final PlexAccountConnection connection when guestMode && connection.isManual:
+          final localOnly = connection.toGuestLocalNetworkOnly();
+          if (localOnly != null) {
+            expected.addAll(localOnly.servers.map((server) => server.clientIdentifier));
+          }
+          break;
         case PlexAccountConnection(:final servers):
           expected.addAll(servers.map((server) => server.clientIdentifier));
+        case JellyfinConnection() when guestMode:
+          break;
         case JellyfinConnection(:final serverMachineId):
           expected.add(serverMachineId);
         case null:
@@ -426,6 +439,7 @@ class ActiveProfileBinder {
     final visible = <String>{};
     final expected = <String>{};
     final futures = <Future<_ProfileBindResult>>[];
+    final guestMode = await _guestModeEnabled();
     for (final pc in pcs) {
       if (parentId != null && pc.connectionId == parentId) continue;
       final conn = byId[pc.connectionId];
@@ -434,12 +448,29 @@ class ActiveProfileBinder {
         continue;
       }
       switch (conn) {
+        case PlexAccountConnection() when guestMode && !conn.isManual:
+          appLogger.d('ActiveProfileBinder: skipping non-manual Plex connection ${conn.id} in guest mode');
+          break;
+        case PlexAccountConnection() when guestMode && conn.isManual:
+          final localOnly = conn.toGuestLocalNetworkOnly();
+          if (localOnly == null) {
+            appLogger.d('ActiveProfileBinder: skipping manual Plex connection ${conn.id} without local endpoints');
+            break;
+          }
+          expected.addAll(localOnly.servers.map((server) => server.clientIdentifier));
+          futures.add(_bindLocalPlexConnection(profile: profile, conn: localOnly, pc: pc));
+          break;
         case PlexAccountConnection():
           expected.addAll(conn.servers.map((server) => server.clientIdentifier));
           futures.add(_bindLocalPlexConnection(profile: profile, conn: conn, pc: pc));
+          break;
+        case JellyfinConnection() when guestMode:
+          appLogger.d('ActiveProfileBinder: skipping Jellyfin connection ${conn.id} in guest mode');
+          break;
         case JellyfinConnection():
           expected.add(conn.serverMachineId);
           futures.add(_bindJellyfin(conn));
+          break;
       }
     }
     final results = await Future.wait(futures);
@@ -455,6 +486,14 @@ class ActiveProfileBinder {
     required PlexAccountConnection conn,
     required ProfileConnection pc,
   }) async {
+    if (conn.isManual) {
+      final ids = await _connectFromServers(conn, pc.userToken ?? '', conn.servers, profile.displayName);
+      if (ids.visibleServerIds.isNotEmpty) {
+        await profileConnections.markUsed(profile.id, conn.id);
+      }
+      return ids;
+    }
+
     final auth = await _ensureAuth();
     String? userToken = pc.userToken;
     List<PlexServer>? servers;
@@ -620,6 +659,11 @@ class ActiveProfileBinder {
 
   Future<PlexAuthService> _ensureAuth() async {
     return _plexAuth ??= await PlexAuthService.create();
+  }
+
+  Future<bool> _guestModeEnabled() async {
+    final storage = _storage ??= await StorageService.getInstance();
+    return storage.isGuestModeEnabled();
   }
 
   Future<bool> _shouldDeferInitialBind(Profile profile) async {

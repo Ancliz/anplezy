@@ -40,6 +40,7 @@
     "addTo": "Add to...",
     "createNew": "Create new",
     "connect": "Connect",
+    "configure": "Configure",
     "disconnect": "Disconnect",
     "play": "Play",
     "pause": "Pause",
@@ -740,7 +741,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Couldn't connect to any servers. Check your network.",
     "noServersFoundForAccount": "No servers found for ${username} (${email})",
-    "failedToLoadServers": "Failed to load servers: ${error}"
+    "failedToLoadServers": "Failed to load servers: ${error}",
+    "offlineInitPlex": "Could not initialize offline mode. Please try signing in again.",
+    "offlineInitGuest": "Could not initialize offline mode. Please check your manual servers.",
+    "connectionFailedGuest": "Couldn't connect to your manual servers. Check that they're available on this network.",
+    "connectionFailedPlex": "Server connection failed. Please try signing in again.",
+    "insecureHttpWarning": "Connected to a Plex server over HTTP. Traffic may be insecure.",
+    "manualServerUrlRequired": "Please enter a server address",
+    "manualServerUrlInvalid": "Invalid server address format",
+    "manualServerLocalNetworkRequired": "Guest mode only supports local network server addresses.",
+    "manualServerDefaultName": "Local Server",
+    "manualServerSaveFailed": "Failed to save server.",
+    "manualServerAlreadyExists": "This server already exists.",
+    "manualServerConnectionFailed": "Could not connect to server. Please check the address and try again.",
+    "manualServerGenericFailure": "Connection failed."
   },
   "hubDetail": {
     "title": "Title",

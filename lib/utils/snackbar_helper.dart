@@ -10,7 +10,7 @@ final rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 final mainScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 /// Types of snackbars available in the app
-enum SnackBarType { info, success, error }
+enum SnackBarType { info, warning, success, error }
 
 /// Utility functions for showing snackbars throughout the application
 
@@ -19,6 +19,7 @@ void showSnackBar(BuildContext context, String message, {SnackBarType type = Sna
 
   final (backgroundColor, defaultDuration) = switch (type) {
     SnackBarType.info => (null, AppDurations.snackBarDefault),
+    SnackBarType.warning => (Colors.amber, AppDurations.snackBarLong),
     SnackBarType.success => (Colors.green, AppDurations.snackBarDefault),
     SnackBarType.error => (Colors.red, AppDurations.snackBarLong),
   };
@@ -40,6 +41,13 @@ void showErrorSnackBar(BuildContext context, String message) {
 void showGlobalErrorSnackBar(String message) {
   rootScaffoldMessengerKey.currentState?.showSnackBar(
     SnackBar(content: Text(message), backgroundColor: Colors.red, duration: AppDurations.snackBarLong),
+  );
+}
+
+/// Shows a warning snackbar using the root ScaffoldMessenger (survives navigation).
+void showGlobalWarningSnackBar(String message) {
+  rootScaffoldMessengerKey.currentState?.showSnackBar(
+    SnackBar(content: Text(message), backgroundColor: Colors.amber, duration: AppDurations.snackBarLong),
   );
 }
 

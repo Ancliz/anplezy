@@ -939,6 +939,19 @@ class _TranslationsServerSelectionEs extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'No se pudo conectar a ningún servidor. Revisa tu red.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Error al cargar servidores: ${error}';
+	@override String get offlineInitPlex => 'No se pudo inicializar el modo sin conexión. Intenta iniciar sesión de nuevo.';
+	@override String get offlineInitGuest => 'No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.';
+	@override String get connectionFailedGuest => 'No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.';
+	@override String get connectionFailedPlex => 'Error de conexión con el servidor. Intenta iniciar sesión de nuevo.';
+	@override String get insecureHttpWarning => 'Conectado a un servidor Plex por HTTP. El tráfico puede no ser seguro.';
+	@override String get manualServerUrlRequired => 'Introduce una dirección del servidor';
+	@override String get manualServerUrlInvalid => 'Formato de dirección del servidor no válido';
+	@override String get manualServerLocalNetworkRequired => 'El modo invitado solo admite direcciones de servidores de la red local.';
+	@override String get manualServerDefaultName => 'Servidor local';
+	@override String get manualServerSaveFailed => 'No se pudo guardar el servidor.';
+	@override String get manualServerAlreadyExists => 'Este servidor ya existe.';
+	@override String get manualServerConnectionFailed => 'No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.';
+	@override String get manualServerGenericFailure => 'Error de conexión.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsEs {
 			'serverSelection.allServerConnectionsFailed' => 'No se pudo conectar a ningún servidor. Revisa tu red.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Error al cargar servidores: ${error}',
+			'serverSelection.offlineInitPlex' => 'No se pudo inicializar el modo sin conexión. Intenta iniciar sesión de nuevo.',
+			'serverSelection.offlineInitGuest' => 'No se pudo inicializar el modo sin conexión. Comprueba tus servidores manuales.',
+			'serverSelection.connectionFailedGuest' => 'No se pudo conectar con tus servidores manuales. Comprueba que estén disponibles en esta red.',
+			'serverSelection.connectionFailedPlex' => 'Error de conexión con el servidor. Intenta iniciar sesión de nuevo.',
+			'serverSelection.insecureHttpWarning' => 'Conectado a un servidor Plex por HTTP. El tráfico puede no ser seguro.',
+			'serverSelection.manualServerUrlRequired' => 'Introduce una dirección del servidor',
+			'serverSelection.manualServerUrlInvalid' => 'Formato de dirección del servidor no válido',
+			'serverSelection.manualServerLocalNetworkRequired' => 'El modo invitado solo admite direcciones de servidores de la red local.',
+			'serverSelection.manualServerDefaultName' => 'Servidor local',
+			'serverSelection.manualServerSaveFailed' => 'No se pudo guardar el servidor.',
+			'serverSelection.manualServerAlreadyExists' => 'Este servidor ya existe.',
+			'serverSelection.manualServerConnectionFailed' => 'No se pudo conectar al servidor. Comprueba la dirección e inténtalo de nuevo.',
+			'serverSelection.manualServerGenericFailure' => 'Error de conexión.',
 			'hubDetail.title' => 'Título',
 			'hubDetail.releaseYear' => 'Año de lanzamiento',
 			'hubDetail.dateAdded' => 'Añadido el',
@@ -2814,6 +2840,8 @@ extension on TranslationsEs {
 			'externalPlayer.playInExternalPlayer' => 'Reproducir en reproductor externo',
 			'metadataEdit.editMetadata' => 'Editar...',
 			'metadataEdit.screenTitle' => 'Editar metadatos',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Información básica',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
@@ -2827,8 +2855,6 @@ extension on TranslationsEs {
 			'metadataEdit.summary' => 'Resumen',
 			'metadataEdit.poster' => 'Póster',
 			'metadataEdit.background' => 'Fondo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Imagen cuadrada',
 			'metadataEdit.selectPoster' => 'Seleccionar póster',

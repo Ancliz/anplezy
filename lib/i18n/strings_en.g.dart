@@ -221,6 +221,9 @@ class TranslationsCommonEn {
 	/// en: 'Connect'
 	String get connect => 'Connect';
 
+	/// en: 'Configure'
+	String get configure => 'Configure';
+
 	/// en: 'Disconnect'
 	String get disconnect => 'Disconnect';
 
@@ -2173,6 +2176,45 @@ class TranslationsServerSelectionEn {
 
 	/// en: 'Failed to load servers: ${error}'
 	String failedToLoadServers({required Object error}) => 'Failed to load servers: ${error}';
+
+	/// en: 'Could not initialize offline mode. Please try signing in again.'
+	String get offlineInitPlex => 'Could not initialize offline mode. Please try signing in again.';
+
+	/// en: 'Could not initialize offline mode. Please check your manual servers.'
+	String get offlineInitGuest => 'Could not initialize offline mode. Please check your manual servers.';
+
+	/// en: 'Couldn't connect to your manual servers. Check that they're available on this network.'
+	String get connectionFailedGuest => 'Couldn\'t connect to your manual servers. Check that they\'re available on this network.';
+
+	/// en: 'Server connection failed. Please try signing in again.'
+	String get connectionFailedPlex => 'Server connection failed. Please try signing in again.';
+
+	/// en: 'Connected to a Plex server over HTTP. Traffic may be insecure.'
+	String get insecureHttpWarning => 'Connected to a Plex server over HTTP. Traffic may be insecure.';
+
+	/// en: 'Please enter a server address'
+	String get manualServerUrlRequired => 'Please enter a server address';
+
+	/// en: 'Invalid server address format'
+	String get manualServerUrlInvalid => 'Invalid server address format';
+
+	/// en: 'Guest mode only supports local network server addresses.'
+	String get manualServerLocalNetworkRequired => 'Guest mode only supports local network server addresses.';
+
+	/// en: 'Local Server'
+	String get manualServerDefaultName => 'Local Server';
+
+	/// en: 'Failed to save server.'
+	String get manualServerSaveFailed => 'Failed to save server.';
+
+	/// en: 'This server already exists.'
+	String get manualServerAlreadyExists => 'This server already exists.';
+
+	/// en: 'Could not connect to server. Please check the address and try again.'
+	String get manualServerConnectionFailed => 'Could not connect to server. Please check the address and try again.';
+
+	/// en: 'Connection failed.'
+	String get manualServerGenericFailure => 'Connection failed.';
 }
 
 // Path: hubDetail
@@ -4187,6 +4229,7 @@ extension on Translations {
 			'common.addTo' => 'Add to...',
 			'common.createNew' => 'Create new',
 			'common.connect' => 'Connect',
+			'common.configure' => 'Configure',
 			'common.disconnect' => 'Disconnect',
 			'common.play' => 'Play',
 			'common.pause' => 'Pause',
@@ -4662,9 +4705,9 @@ extension on Translations {
 			'profiles.delete' => 'Delete',
 			'profiles.signOut' => 'Sign out',
 			'profiles.signOutPlexTitle' => 'Sign out of Plex?',
-			'profiles.signOutPlexMessage' => ({required Object displayName}) => 'Remove ${displayName} and all Plex Home users? Sign back in anytime.',
 			_ => null,
 		} ?? switch (path) {
+			'profiles.signOutPlexMessage' => ({required Object displayName}) => 'Remove ${displayName} and all Plex Home users? Sign back in anytime.',
 			'profiles.signedOutPlex' => 'Signed out of Plex.',
 			'profiles.signOutFailed' => 'Sign out failed.',
 			'profiles.sectionTitle' => 'Profiles',
@@ -4832,6 +4875,19 @@ extension on Translations {
 			'serverSelection.allServerConnectionsFailed' => 'Couldn\'t connect to any servers. Check your network.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No servers found for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Failed to load servers: ${error}',
+			'serverSelection.offlineInitPlex' => 'Could not initialize offline mode. Please try signing in again.',
+			'serverSelection.offlineInitGuest' => 'Could not initialize offline mode. Please check your manual servers.',
+			'serverSelection.connectionFailedGuest' => 'Couldn\'t connect to your manual servers. Check that they\'re available on this network.',
+			'serverSelection.connectionFailedPlex' => 'Server connection failed. Please try signing in again.',
+			'serverSelection.insecureHttpWarning' => 'Connected to a Plex server over HTTP. Traffic may be insecure.',
+			'serverSelection.manualServerUrlRequired' => 'Please enter a server address',
+			'serverSelection.manualServerUrlInvalid' => 'Invalid server address format',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Guest mode only supports local network server addresses.',
+			'serverSelection.manualServerDefaultName' => 'Local Server',
+			'serverSelection.manualServerSaveFailed' => 'Failed to save server.',
+			'serverSelection.manualServerAlreadyExists' => 'This server already exists.',
+			'serverSelection.manualServerConnectionFailed' => 'Could not connect to server. Please check the address and try again.',
+			'serverSelection.manualServerGenericFailure' => 'Connection failed.',
 			'hubDetail.title' => 'Title',
 			'hubDetail.releaseYear' => 'Release Year',
 			'hubDetail.dateAdded' => 'Date Added',
@@ -5163,6 +5219,8 @@ extension on Translations {
 			'externalPlayer.appNotInstalled' => ({required Object name}) => '${name} is not installed',
 			'externalPlayer.playInExternalPlayer' => 'Play in External Player',
 			'metadataEdit.editMetadata' => 'Edit...',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.screenTitle' => 'Edit Metadata',
 			'metadataEdit.basicInfo' => 'Basic Info',
 			'metadataEdit.artwork' => 'Artwork',
@@ -5177,8 +5235,6 @@ extension on Translations {
 			'metadataEdit.summary' => 'Summary',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Background',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Square Art',
 			'metadataEdit.selectPoster' => 'Select Poster',

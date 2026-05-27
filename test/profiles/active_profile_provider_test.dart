@@ -9,8 +9,10 @@ import 'package:plezy/models/plex/plex_home_user.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/profiles/plex_home_service.dart';
 import 'package:plezy/profiles/profile.dart';
+import 'package:plezy/profiles/profile_connection.dart';
 import 'package:plezy/profiles/profile_connection_registry.dart';
 import 'package:plezy/profiles/profile_registry.dart';
+import 'package:plezy/services/plex_auth_service.dart';
 import 'package:plezy/services/storage_service.dart';
 
 import '../test_helpers/prefs.dart';
@@ -40,10 +42,40 @@ PlexAccountConnection _account(String id) {
   );
 }
 
+PlexAccountConnection _manualAccount(String manualId) {
+  return PlexAccountConnection(
+    id: '$manualPlexIdPrefix$manualId',
+    accountToken: '',
+    clientIdentifier: 'client-$manualId',
+    accountLabel: 'Manual Plex',
+    servers: [
+      PlexServer(
+        name: 'Manual Plex',
+        clientIdentifier: manualId,
+        accessToken: '',
+        connections: [
+          PlexConnection(
+            protocol: 'http',
+            address: 'wyvern',
+            port: 32400,
+            uri: 'http://wyvern:32400',
+            local: true,
+            relay: false,
+            ipv6: false,
+          ),
+        ],
+        owned: false,
+      ),
+    ],
+    createdAt: DateTime(2026, 1, 1),
+  );
+}
+
 void main() {
   late AppDatabase db;
   late ProfileRegistry registry;
   late ConnectionRegistry connections;
+  late ProfileConnectionRegistry profileConnections;
   late PlexHomeService plexHome;
   late ActiveProfileProvider provider;
   late StorageService storage;
@@ -54,11 +86,12 @@ void main() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     registry = ProfileRegistry(db);
     connections = ConnectionRegistry(db);
+    profileConnections = ProfileConnectionRegistry(db);
     storage = await StorageService.getInstance();
     fetchedHomeUsers = const [];
     plexHome = PlexHomeService(
       connections: connections,
-      profileConnections: ProfileConnectionRegistry(db),
+      profileConnections: profileConnections,
       storage: storage,
       plexHomeUserFetcher: (_) async => fetchedHomeUsers,
     );
@@ -66,6 +99,7 @@ void main() {
       registry: registry,
       plexHome: plexHome,
       connections: connections,
+      profileConnections: profileConnections,
       storage: storage,
     );
   });
@@ -120,6 +154,35 @@ void main() {
       expect(provider.profiles.map((p) => p.id), contains(profileId));
       expect(provider.activeId, profileId);
       expect(provider.active?.displayName, 'Migrated User');
+    });
+
+    test('guest mode exposes only local profiles linked to manual Plex connections', () async {
+      final account = _account('plex.account');
+      final user = _homeUser('home-user-1', name: 'Account User');
+      await connections.upsert(account);
+      await storage.savePlexHomeUsersCache(account.id, [user.toJson()]);
+
+      final manualConnection = _manualAccount('manual-1');
+      final manualProfile = Profile.local(
+        id: 'local.manual-1',
+        displayName: 'Manual Plex',
+        createdAt: DateTime(2026, 1, 1),
+      );
+      await connections.upsert(manualConnection);
+      await registry.upsert(manualProfile);
+      await profileConnections.upsert(
+        ProfileConnection(profileId: manualProfile.id, connectionId: manualConnection.id, userIdentifier: 'manual-1'),
+      );
+
+      await storage.setGuestModeEnabled(true);
+      await storage.setActiveProfileId(plexHomeProfileId(accountConnectionId: account.id, homeUserUuid: user.uuid));
+
+      await provider.initialize();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(provider.profiles.map((profile) => profile.id), [manualProfile.id]);
+      expect(provider.active, isNull);
+      expect(storage.getActiveProfileId(), isNull);
     });
 
     test('initialize clears storage when stored id is stale', () async {

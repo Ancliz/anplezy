@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Impossibile connettersi ai server. Controlla la rete.",
     "noServersFoundForAccount": "Nessun server trovato per ${username} (${email})",
-    "failedToLoadServers": "Impossibile caricare i server: ${error}"
+    "failedToLoadServers": "Impossibile caricare i server: ${error}",
+    "offlineInitPlex": "Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.",
+    "offlineInitGuest": "Impossibile inizializzare la modalità offline. Controlla i server manuali.",
+    "connectionFailedGuest": "Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.",
+    "connectionFailedPlex": "Connessione al server non riuscita. Prova ad accedere di nuovo.",
+    "insecureHttpWarning": "Connesso a un server Plex tramite HTTP. Il traffico potrebbe non essere sicuro.",
+    "manualServerUrlRequired": "Inserisci un indirizzo del server",
+    "manualServerUrlInvalid": "Formato dell'indirizzo del server non valido",
+    "manualServerLocalNetworkRequired": "La modalità ospite supporta solo indirizzi di server della rete locale.",
+    "manualServerDefaultName": "Server locale",
+    "manualServerSaveFailed": "Impossibile salvare il server.",
+    "manualServerAlreadyExists": "Questo server esiste già.",
+    "manualServerConnectionFailed": "Impossibile connettersi al server. Controlla l'indirizzo e riprova.",
+    "manualServerGenericFailure": "Connessione non riuscita."
   },
   "hubDetail": {
     "title": "Titolo",

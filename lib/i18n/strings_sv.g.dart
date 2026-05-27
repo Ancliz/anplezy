@@ -939,6 +939,19 @@ class _TranslationsServerSelectionSv extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kunde inte ansluta till några servrar. Kontrollera nätverket.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Inga servrar hittades för ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Misslyckades att ladda servrar: ${error}';
+	@override String get offlineInitPlex => 'Kunde inte initiera offlineläge. Försök logga in igen.';
+	@override String get offlineInitGuest => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.';
+	@override String get connectionFailedGuest => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.';
+	@override String get connectionFailedPlex => 'Serveranslutning misslyckades. Försök logga in igen.';
+	@override String get insecureHttpWarning => 'Ansluten till en Plex-server via HTTP. Trafiken kan vara osäker.';
+	@override String get manualServerUrlRequired => 'Ange en serveradress';
+	@override String get manualServerUrlInvalid => 'Ogiltigt serveradressformat';
+	@override String get manualServerLocalNetworkRequired => 'Gästläge stöder endast serveradresser på det lokala nätverket.';
+	@override String get manualServerDefaultName => 'Lokal server';
+	@override String get manualServerSaveFailed => 'Kunde inte spara servern.';
+	@override String get manualServerAlreadyExists => 'Den här servern finns redan.';
+	@override String get manualServerConnectionFailed => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.';
+	@override String get manualServerGenericFailure => 'Anslutning misslyckades.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsSv {
 			'serverSelection.allServerConnectionsFailed' => 'Kunde inte ansluta till några servrar. Kontrollera nätverket.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Inga servrar hittades för ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Misslyckades att ladda servrar: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kunde inte initiera offlineläge. Försök logga in igen.',
+			'serverSelection.offlineInitGuest' => 'Kunde inte initiera offlineläge. Kontrollera dina manuella servrar.',
+			'serverSelection.connectionFailedGuest' => 'Kunde inte ansluta till dina manuella servrar. Kontrollera att de är tillgängliga på det här nätverket.',
+			'serverSelection.connectionFailedPlex' => 'Serveranslutning misslyckades. Försök logga in igen.',
+			'serverSelection.insecureHttpWarning' => 'Ansluten till en Plex-server via HTTP. Trafiken kan vara osäker.',
+			'serverSelection.manualServerUrlRequired' => 'Ange en serveradress',
+			'serverSelection.manualServerUrlInvalid' => 'Ogiltigt serveradressformat',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Gästläge stöder endast serveradresser på det lokala nätverket.',
+			'serverSelection.manualServerDefaultName' => 'Lokal server',
+			'serverSelection.manualServerSaveFailed' => 'Kunde inte spara servern.',
+			'serverSelection.manualServerAlreadyExists' => 'Den här servern finns redan.',
+			'serverSelection.manualServerConnectionFailed' => 'Kunde inte ansluta till servern. Kontrollera adressen och försök igen.',
+			'serverSelection.manualServerGenericFailure' => 'Anslutning misslyckades.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Utgivningsår',
 			'hubDetail.dateAdded' => 'Datum tillagd',
@@ -2814,6 +2840,8 @@ extension on TranslationsSv {
 			'externalPlayer.playInExternalPlayer' => 'Spela i extern spelare',
 			'metadataEdit.editMetadata' => 'Redigera...',
 			'metadataEdit.screenTitle' => 'Redigera metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Grundläggande info',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Avancerade inställningar',
@@ -2827,8 +2855,6 @@ extension on TranslationsSv {
 			'metadataEdit.summary' => 'Sammanfattning',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Bakgrund',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logotyp',
 			'metadataEdit.squareArt' => 'Kvadratisk bild',
 			'metadataEdit.selectPoster' => 'Välj poster',

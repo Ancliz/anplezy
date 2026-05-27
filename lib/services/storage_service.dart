@@ -17,6 +17,7 @@ class StorageService extends BaseSharedPreferencesService {
   static const String _keyServersList = 'servers_list';
   static const String _keyServerOrder = 'server_order';
   static const String _keyActiveProfileId = 'active_app_profile_id';
+  static const String _keyGuestMode = 'guest_mode_enabled';
 
   // Key prefixes for per-id storage
   static const String _prefixServerEndpoint = 'server_endpoint_';
@@ -333,6 +334,12 @@ class StorageService extends BaseSharedPreferencesService {
 
   Future<void> clearActiveProfileId() async {
     await prefs.remove(_keyActiveProfileId);
+  }
+
+  bool isGuestModeEnabled() => prefs.getBool(_keyGuestMode) ?? false;
+
+  Future<void> setGuestModeEnabled(bool enabled) async {
+    await prefs.setBool(_keyGuestMode, enabled);
   }
 
   // Per-connection Plex Home users cache. Plex Home profiles are not

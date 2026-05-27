@@ -52,9 +52,12 @@ class _RelatedMetadataDownloadContext {
 
 /// Provider for managing download state and operations.
 class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin {
+  static const _defaultRecoveryWaitTimeout = Duration(seconds: 5);
+
   final DownloadManagerService _downloadManager;
   final AppDatabase _database;
   final SyncRuleExecutor _syncRuleExecutor;
+  final Duration recoveryWaitTimeout;
   StreamSubscription<DownloadProgress>? _progressSubscription;
   StreamSubscription<DeletionProgress>? _deletionProgressSubscription;
   StreamSubscription<WatchStateEvent>? _watchStateSubscription;
@@ -93,8 +96,11 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
 
   OfflineModeSource? _offlineSource;
 
-  DownloadProvider({required this._downloadManager, required this._database})
-    : _syncRuleExecutor = SyncRuleExecutor(database: _database) {
+  DownloadProvider({
+    required this._downloadManager,
+    required this._database,
+    this.recoveryWaitTimeout = _defaultRecoveryWaitTimeout,
+  }) : _syncRuleExecutor = SyncRuleExecutor(database: _database) {
     // Listen to progress updates from the download manager
     _progressSubscription = _downloadManager.progressStream.listen(_onProgressUpdate);
 
@@ -119,6 +125,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     required this._downloadManager,
     required this._database,
     this._activeProfileId = 'test-profile',
+    this.recoveryWaitTimeout = _defaultRecoveryWaitTimeout,
   }) : _syncRuleExecutor = SyncRuleExecutor(database: _database) {
     _progressSubscription = _downloadManager.progressStream.listen(_onProgressUpdate);
     _deletionProgressSubscription = _downloadManager.deletionProgressStream.listen(_onDeletionProgressUpdate);
@@ -137,6 +144,19 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
 
   /// Ensures persisted downloads have been loaded from disk.
   Future<void> ensureInitialized() => _initFuture;
+
+  Future<void> _waitForDownloadRecovery() async {
+    // Recovery keeps interrupted native downloads from racing the DB read
+    // below, but native downloader recovery is best-effort startup repair.
+    // If the plugin stalls, don't block cached downloads, metadata refresh,
+    // or splash navigation forever.
+    await _downloadManager.recoveryFuture.timeout(
+      recoveryWaitTimeout,
+      onTimeout: () {
+        appLogger.w('Download recovery timed out; loading cached download state while recovery continues');
+      },
+    );
+  }
 
   /// Switch the visible sync-rule scope to [profileId]. Physical downloads are
   /// intentionally not reloaded because they are shared across profiles.
@@ -272,9 +292,16 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
   /// Load all persisted downloads and metadata from the database/cache
   Future<void> _loadPersistedDownloads() async {
     try {
-      // Wait for recovery to finish before loading state so that
-      // interrupted "downloading" rows have been transitioned to "queued"
-      await _downloadManager.recoveryFuture;
+      // Read once before waiting for native recovery. If there are no
+      // persisted rows, recovery has nothing to protect and should not hold
+      // up startup.
+      var downloads = await _downloadManager.getAllDownloads();
+      if (downloads.isNotEmpty) {
+        // Wait for recovery to finish before loading state so interrupted
+        // "downloading" rows have been transitioned to "queued".
+        await _waitForDownloadRecovery();
+        downloads = await _downloadManager.getAllDownloads();
+      }
 
       // Clear existing data to prevent stale entries after deletions
       _downloads.clear();
@@ -289,9 +316,6 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
 
       // Initialize artwork directory path for synchronous access
       await storageService.getArtworkDirectory();
-
-      // Load all downloads from database
-      final downloads = await _downloadManager.getAllDownloads();
 
       // Bulk-load all pinned metadata across both backends in a single pass
       // instead of per-item DB calls.
@@ -1443,7 +1467,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
   ///
   /// This is more lightweight than full refresh() - only updates metadata
   /// without reloading download progress from database.
-  Future<void> refreshMetadataFromCache() async {
+  Future<void> refreshMetadataFromCache({Set<String> skipLiveFetchForServerIds = const {}}) async {
     // The initial load runs in the constructor and may still be in flight
     // when callers (e.g. `onServersConnected`) trigger this. Wait for it so
     // `_downloads` is populated before we walk it — otherwise an early call
@@ -1473,7 +1497,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
             await _downloadManager.lookupMetadata(parsed.serverId, parsed.ratingKey, preferActiveScope: true);
         if (cached != null) {
           cacheHits++;
-        } else if (_downloads.containsKey(globalKey)) {
+        } else if (_downloads.containsKey(globalKey) && !skipLiveFetchForServerIds.contains(parsed.serverId)) {
           // Cache miss for an item we know is downloaded — pull from the
           // live server. Repairs profiles where the per-backend cache row
           // was never written or got cleared, the case that produces

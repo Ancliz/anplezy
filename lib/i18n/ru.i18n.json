@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Не удалось подключиться ни к одному серверу. Проверьте сеть.",
     "noServersFoundForAccount": "Серверы не найдены для ${username} (${email})",
-    "failedToLoadServers": "Не удалось загрузить серверы: ${error}"
+    "failedToLoadServers": "Не удалось загрузить серверы: ${error}",
+    "offlineInitPlex": "Не удалось инициализировать офлайн-режим. Попробуйте снова войти.",
+    "offlineInitGuest": "Не удалось инициализировать офлайн-режим. Проверьте вручную добавленные серверы.",
+    "connectionFailedGuest": "Не удалось подключиться к вручную добавленным серверам. Убедитесь, что они доступны в этой сети.",
+    "connectionFailedPlex": "Не удалось подключиться к серверу. Попробуйте снова войти.",
+    "insecureHttpWarning": "Подключено к серверу Plex по HTTP. Трафик может быть небезопасен.",
+    "manualServerUrlRequired": "Введите адрес сервера",
+    "manualServerUrlInvalid": "Неверный формат адреса сервера",
+    "manualServerLocalNetworkRequired": "Гостевой режим поддерживает только адреса серверов в локальной сети.",
+    "manualServerDefaultName": "Локальный сервер",
+    "manualServerSaveFailed": "Не удалось сохранить сервер.",
+    "manualServerAlreadyExists": "Этот сервер уже существует.",
+    "manualServerConnectionFailed": "Не удалось подключиться к серверу. Проверьте адрес и попробуйте снова.",
+    "manualServerGenericFailure": "Ошибка подключения."
   },
   "hubDetail": {
     "title": "Название",

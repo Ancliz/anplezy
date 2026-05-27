@@ -939,6 +939,19 @@ class _TranslationsServerSelectionNl extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Kon met geen enkele server verbinden. Controleer je netwerk.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Geen servers gevonden voor ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Kon servers niet laden: ${error}';
+	@override String get offlineInitPlex => 'Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.';
+	@override String get offlineInitGuest => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.';
+	@override String get connectionFailedGuest => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.';
+	@override String get connectionFailedPlex => 'Serververbinding mislukt. Probeer opnieuw in te loggen.';
+	@override String get insecureHttpWarning => 'Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.';
+	@override String get manualServerUrlRequired => 'Voer een serveradres in';
+	@override String get manualServerUrlInvalid => 'Ongeldig serveradresformaat';
+	@override String get manualServerLocalNetworkRequired => 'Gastmodus ondersteunt alleen serveradressen op het lokale netwerk.';
+	@override String get manualServerDefaultName => 'Lokale server';
+	@override String get manualServerSaveFailed => 'Kon server niet opslaan.';
+	@override String get manualServerAlreadyExists => 'Deze server bestaat al.';
+	@override String get manualServerConnectionFailed => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.';
+	@override String get manualServerGenericFailure => 'Verbinding mislukt.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsNl {
 			'serverSelection.allServerConnectionsFailed' => 'Kon met geen enkele server verbinden. Controleer je netwerk.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Geen servers gevonden voor ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Kon servers niet laden: ${error}',
+			'serverSelection.offlineInitPlex' => 'Kan offline modus niet initialiseren. Probeer opnieuw in te loggen.',
+			'serverSelection.offlineInitGuest' => 'Kan offline modus niet initialiseren. Controleer je handmatige servers.',
+			'serverSelection.connectionFailedGuest' => 'Kan geen verbinding maken met je handmatige servers. Controleer of ze beschikbaar zijn op dit netwerk.',
+			'serverSelection.connectionFailedPlex' => 'Serververbinding mislukt. Probeer opnieuw in te loggen.',
+			'serverSelection.insecureHttpWarning' => 'Verbonden met een Plex-server via HTTP. Het verkeer is mogelijk onveilig.',
+			'serverSelection.manualServerUrlRequired' => 'Voer een serveradres in',
+			'serverSelection.manualServerUrlInvalid' => 'Ongeldig serveradresformaat',
+			'serverSelection.manualServerLocalNetworkRequired' => 'Gastmodus ondersteunt alleen serveradressen op het lokale netwerk.',
+			'serverSelection.manualServerDefaultName' => 'Lokale server',
+			'serverSelection.manualServerSaveFailed' => 'Kon server niet opslaan.',
+			'serverSelection.manualServerAlreadyExists' => 'Deze server bestaat al.',
+			'serverSelection.manualServerConnectionFailed' => 'Kan geen verbinding maken met de server. Controleer het adres en probeer opnieuw.',
+			'serverSelection.manualServerGenericFailure' => 'Verbinding mislukt.',
 			'hubDetail.title' => 'Titel',
 			'hubDetail.releaseYear' => 'Uitgavejaar',
 			'hubDetail.dateAdded' => 'Datum toegevoegd',
@@ -2814,6 +2840,8 @@ extension on TranslationsNl {
 			'externalPlayer.playInExternalPlayer' => 'Afspelen in externe speler',
 			'metadataEdit.editMetadata' => 'Bewerken...',
 			'metadataEdit.screenTitle' => 'Metadata bewerken',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Basisinformatie',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
@@ -2827,8 +2855,6 @@ extension on TranslationsNl {
 			'metadataEdit.summary' => 'Samenvatting',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Achtergrond',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Vierkante afbeelding',
 			'metadataEdit.selectPoster' => 'Poster selecteren',

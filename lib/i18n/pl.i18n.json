@@ -740,7 +740,20 @@
   "serverSelection": {
     "allServerConnectionsFailed": "Nie udało się połączyć z żadnym serwerem. Sprawdź sieć.",
     "noServersFoundForAccount": "Nie znaleziono serwerów dla ${username} (${email})",
-    "failedToLoadServers": "Nie udało się załadować serwerów: ${error}"
+    "failedToLoadServers": "Nie udało się załadować serwerów: ${error}",
+    "offlineInitPlex": "Nie można zainicjować trybu offline. Spróbuj zalogować się ponownie.",
+    "offlineInitGuest": "Nie można zainicjować trybu offline. Sprawdź ręcznie dodane serwery.",
+    "connectionFailedGuest": "Nie można połączyć się z ręcznie dodanymi serwerami. Sprawdź, czy są dostępne w tej sieci.",
+    "connectionFailedPlex": "Połączenie z serwerem nie powiodło się. Spróbuj zalogować się ponownie.",
+    "insecureHttpWarning": "Połączono z serwerem Plex przez HTTP. Ruch może być niezabezpieczony.",
+    "manualServerUrlRequired": "Wprowadź adres serwera",
+    "manualServerUrlInvalid": "Nieprawidłowy format adresu serwera",
+    "manualServerLocalNetworkRequired": "Tryb gościa obsługuje tylko adresy serwerów w sieci lokalnej.",
+    "manualServerDefaultName": "Serwer lokalny",
+    "manualServerSaveFailed": "Nie udało się zapisać serwera.",
+    "manualServerAlreadyExists": "Ten serwer już istnieje.",
+    "manualServerConnectionFailed": "Nie można połączyć się z serwerem. Sprawdź adres i spróbuj ponownie.",
+    "manualServerGenericFailure": "Połączenie nie powiodło się."
   },
   "hubDetail": {
     "title": "Tytuł",

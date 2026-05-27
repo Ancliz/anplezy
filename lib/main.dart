@@ -7,6 +7,7 @@ import 'package:shared_preferences_foundation/shared_preferences_foundation.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,6 +26,7 @@ import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/profile/pin_entry_dialog.dart';
 import 'screens/profile/profile_switch_screen.dart';
+import 'screens/settings/server_management_screen.dart';
 import 'services/storage_service.dart';
 import 'services/macos_window_service.dart';
 import 'services/native_window_service.dart';
@@ -70,6 +72,7 @@ import 'screens/video_player_screen.dart';
 import 'utils/app_logger.dart';
 import 'utils/managed_http_client.dart';
 import 'utils/media_server_http_client.dart';
+import 'utils/offline_mode_utils.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
 import 'i18n/strings.g.dart';
@@ -78,6 +81,7 @@ import 'focus/key_event_utils.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'utils/navigation_transitions.dart';
 import 'utils/log_redaction_manager.dart';
+import 'widgets/app_icon.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 const bool _enableSentry = bool.fromEnvironment('ENABLE_SENTRY', defaultValue: false);
@@ -410,6 +414,37 @@ bool shouldEnterOfflineModeAfterStartupBind({required bool bindingSucceeded, req
   return !bindingSucceeded && !hasOnlineServers;
 }
 
+@visibleForTesting
+Set<String> manualPlexServerIdsForConnections(Iterable<Connection> connections) {
+  final ids = <String>{};
+  for (final connection in connections) {
+    switch (connection) {
+      case PlexAccountConnection(:final isManual, :final servers) when isManual:
+        ids.addAll(servers.map((server) => server.clientIdentifier));
+      case _:
+        break;
+    }
+  }
+  return ids;
+}
+
+@visibleForTesting
+List<Connection> guestStartupConnectionsFor(Iterable<Connection> connections) {
+  final guestConnections = <Connection>[];
+  for (final connection in connections) {
+    switch (connection) {
+      case PlexAccountConnection(:final isManual) when isManual:
+        final localOnly = connection.toGuestLocalNetworkOnly();
+        if (localOnly != null) {
+          guestConnections.add(localOnly);
+        }
+      case _:
+        break;
+    }
+  }
+  return guestConnections;
+}
+
 /// Top-level PIN prompt used by [ActiveProfileBinder] when it runs above the
 /// per-screen widget tree. Routes through [rootNavigatorKey] so the dialog
 /// renders correctly whether the binder fires from the splash, MainScreen,
@@ -700,6 +735,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               registry: context.read<ProfileRegistry>(),
               plexHome: context.read<PlexHomeService>(),
               connections: context.read<ConnectionRegistry>(),
+              profileConnections: context.read<ProfileConnectionRegistry>(),
             );
             unawaited(provider.initialize());
             return provider;
@@ -1059,9 +1095,13 @@ class SetupScreen extends StatefulWidget {
   State<SetupScreen> createState() => _SetupScreenState();
 }
 
+enum StartupFailure { offlineInit, noServerConnections, connectionFailed }
+
 class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   String _statusMessage = '';
   bool _enteringOffline = false;
+  bool _isManagingServers = false;
+  int _startupAttemptId = 0;
 
   // Per-server connection status: serverId -> (name, connected?)
   final Map<String, (String name, bool? connected)> _serverStatus = {};
@@ -1069,39 +1109,148 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
+    _startStartupAttempt();
+  }
+
+  bool _isAttemptActive(int attemptId) => mounted && !_isManagingServers && attemptId == _startupAttemptId;
+
+  void _startStartupAttempt() {
+    if (!mounted) return;
+    final attemptId = ++_startupAttemptId;
+    final statusSub = _statusSub;
+    if (statusSub != null) {
+      unawaited(statusSub.cancel());
+    }
+    _statusSub = null;
+    setState(() {
+      _statusMessage = '';
+      _enteringOffline = false;
+      _serverStatus.clear();
+    });
+    unawaited(_loadSavedCredentials(attemptId));
   }
 
   void _setStatus(String message) {
     setStateIfMounted(() => _statusMessage = message);
   }
 
-  Future<void> _enterOfflineMode() async {
-    if (_enteringOffline) return;
-    _enteringOffline = true;
-    _setStatus(t.common.startingOfflineMode);
-    await context.read<DownloadProvider>().ensureInitialized();
+  Future<void> _openSplashServerManagement() async {
     if (!mounted) return;
-    unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
+    final navigator = Navigator.of(context);
+    final statusSub = _statusSub;
+    if (statusSub != null) {
+      unawaited(statusSub.cancel());
+    }
+    _statusSub = null;
+    setState(() {
+      _isManagingServers = true;
+      _startupAttemptId++;
+      _enteringOffline = false;
+      _statusMessage = '';
+      _serverStatus.clear();
+    });
+
+    await navigator.push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
+
+    if (!mounted) return;
+    setState(() => _isManagingServers = false);
+    _startStartupAttempt();
   }
 
-  Future<void> _loadSavedCredentials() async {
+  ({String plex, String guest}) _messagesForFailure(StartupFailure failure) {
+    return switch (failure) {
+      StartupFailure.offlineInit => (
+        plex: t.serverSelection.offlineInitPlex,
+        guest: t.serverSelection.offlineInitGuest,
+      ),
+      StartupFailure.noServerConnections => (
+        plex: t.serverSelection.allServerConnectionsFailed,
+        guest: t.serverSelection.connectionFailedGuest,
+      ),
+      StartupFailure.connectionFailed => (
+        plex: t.serverSelection.connectionFailedPlex,
+        guest: t.serverSelection.connectionFailedGuest,
+      ),
+    };
+  }
+
+  void _returnToAuthWithFailure({required bool isGuestMode, required StartupFailure failure}) {
+    if (!mounted) return;
+
+    final messages = _messagesForFailure(failure);
+    final colorScheme = Theme.of(context).colorScheme;
+    final navigator = Navigator.of(context);
+    final messenger = rootScaffoldMessengerKey.currentState;
+
+    unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
+
+    if (messenger == null) return;
+    messenger.removeCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(isGuestMode ? messages.guest : messages.plex, style: TextStyle(color: colorScheme.onError)),
+        backgroundColor: colorScheme.error,
+        duration: isGuestMode ? const Duration(days: 1) : const Duration(seconds: 5),
+        action: isGuestMode
+            ? SnackBarAction(
+                label: t.common.configure,
+                textColor: colorScheme.onError,
+                disabledTextColor: colorScheme.onError,
+                onPressed: () {
+                  messenger.hideCurrentSnackBar();
+                  navigator.push(MaterialPageRoute(builder: (_) => const ServerManagementScreen()));
+                },
+              )
+            : null,
+      ),
+    );
+  }
+
+  Future<void> _enterOfflineMode({
+    required bool isGuestMode,
+    required int attemptId,
+    StartupFailure failure = StartupFailure.offlineInit,
+  }) async {
+    if (!_isAttemptActive(attemptId)) return;
+    if (_enteringOffline) return;
+    final downloadProvider = context.read<DownloadProvider>();
+    final navigator = Navigator.of(context);
+    _enteringOffline = true;
+    _setStatus(t.common.startingOfflineMode);
+    final offlineReady = await OfflineModeUtils.initialize(downloadProvider, logContext: 'startup');
+    if (!_isAttemptActive(attemptId)) return;
+    if (!offlineReady) {
+      _enteringOffline = false;
+      _returnToAuthWithFailure(isGuestMode: isGuestMode, failure: failure);
+      return;
+    }
+    unawaited(navigator.pushReplacement(fadeRoute(const MainScreen(isOfflineMode: true))));
+  }
+
+  Future<void> _loadSavedCredentials(int attemptId) async {
+    if (!_isAttemptActive(attemptId)) return;
+    final navigator = Navigator.of(context);
+    final connectionRegistry = context.read<ConnectionRegistry>();
+    final profileRegistry = context.read<ProfileRegistry>();
+    final activeProfile = context.read<ActiveProfileProvider>();
+    final binder = context.read<ActiveProfileBinder>();
+    final downloadProvider = context.read<DownloadProvider>();
+    final serverManager = context.read<MultiServerProvider>().serverManager;
     _setStatus(t.common.checkingNetwork);
 
     final storage = await StorageService.getInstance();
+    if (!_isAttemptActive(attemptId)) return;
     final registry = ServerRegistry(storage);
+    final startupIsGuestMode = storage.isGuestModeEnabled();
 
     // Idempotent: brings legacy SharedPreferences state (plexToken,
     // currentUserUUID, homeUsersCache) into the new ConnectionRegistry +
     // ProfileRegistry tables. No-op on subsequent launches.
     if (mounted) {
       try {
-        final connRegistry = context.read<ConnectionRegistry>();
-        final profileRegistry = context.read<ProfileRegistry>();
-        final activeProfiles = context.read<ActiveProfileProvider>();
         final bootstrap = ConnectionBootstrap(
           storage: storage,
-          connectionRegistry: connRegistry,
+          connectionRegistry: connectionRegistry,
           serverRegistry: registry,
           profileRegistry: profileRegistry,
         );
@@ -1110,7 +1259,8 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
         // migration. Reload after bootstrap so copied Plex Home users and the
         // selected active profile are visible before setup decides binding is
         // already settled and navigates to MainScreen.
-        await activeProfiles.reloadFromStorage();
+        await activeProfile.reloadFromStorage();
+        if (!_isAttemptActive(attemptId)) return;
       } catch (e, st) {
         appLogger.w('Boot-time migration failed', error: e, stackTrace: st);
       }
@@ -1131,18 +1281,19 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       hasNetwork = true;
     }
 
+    if (!_isAttemptActive(attemptId)) return;
+
     unawaited(
       Sentry.addBreadcrumb(Breadcrumb(message: 'Network check done: hasNetwork=$hasNetwork', category: 'setup')),
     );
 
     _setStatus(t.common.loadingServers);
 
-    if (!mounted) return;
+    if (!_isAttemptActive(attemptId)) return;
 
     // Snapshot ConnectionRegistry before we cross any awaits — Provider lookups
     // through `context` after async gaps trip the use_build_context_synchronously
     // lint, and reading early is safe because the registry is a singleton.
-    final connectionRegistry = context.read<ConnectionRegistry>();
     final List<Connection> allConnections;
     try {
       allConnections = await connectionRegistry.list();
@@ -1153,30 +1304,43 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       // regression doesn't go silent.
       appLogger.e('Setup: failed to load connections; returning to auth', error: e, stackTrace: st);
       unawaited(Sentry.captureException(e, stackTrace: st));
-      if (mounted) {
-        unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+      if (_isAttemptActive(attemptId)) {
+        unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
       }
       return;
     }
 
     if (allConnections.isEmpty) {
-      if (mounted) {
-        unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+      if (_isAttemptActive(attemptId)) {
+        unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
       }
       return;
     }
 
-    if (!mounted) return;
+    if (!_isAttemptActive(attemptId)) return;
 
-    // No network — skip connection attempts and go straight to offline mode
-    if (!hasNetwork) {
-      await _enterOfflineMode();
+    final startupConnections = startupIsGuestMode ? guestStartupConnectionsFor(allConnections) : allConnections;
+
+    if (startupConnections.isEmpty) {
+      if (_isAttemptActive(attemptId)) {
+        _returnToAuthWithFailure(isGuestMode: startupIsGuestMode, failure: StartupFailure.noServerConnections);
+      }
       return;
     }
 
-    if (mounted) {
+    // No network — skip connection attempts and go straight to offline mode
+    if (!hasNetwork) {
+      await _enterOfflineMode(
+        isGuestMode: startupIsGuestMode,
+        attemptId: attemptId,
+        failure: StartupFailure.offlineInit,
+      );
+      return;
+    }
+
+    if (_isAttemptActive(attemptId)) {
       setState(() {
-        for (final conn in allConnections) {
+        for (final conn in startupConnections) {
           if (conn is PlexAccountConnection) {
             for (final s in conn.servers) {
               _serverStatus[s.clientIdentifier] = (s.name, null);
@@ -1188,8 +1352,11 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       });
     }
 
-    final plexCount = allConnections.whereType<PlexAccountConnection>().fold<int>(0, (n, c) => n + c.servers.length);
-    final jellyfinCount = allConnections.whereType<JellyfinConnection>().length;
+    final plexCount = startupConnections.whereType<PlexAccountConnection>().fold<int>(
+      0,
+      (n, c) => n + c.servers.length,
+    );
+    final jellyfinCount = startupConnections.whereType<JellyfinConnection>().length;
     unawaited(
       Sentry.addBreadcrumb(
         Breadcrumb(
@@ -1200,29 +1367,22 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     );
     _setStatus(t.common.connectingToServers);
 
-    // Snapshot Provider refs before further awaits.
-    final activeProfile = context.read<ActiveProfileProvider>();
-    // The Provider is `lazy: false` so the binder is constructed already, but
-    // SetupScreen starts it only after the offline fast path has been ruled out.
-    final binder = context.read<ActiveProfileBinder>();
-    final downloadProvider = context.read<DownloadProvider>();
-
     // Wait for the active profile to load from disk so the binder has a
     // profile to bind. `initialize` is fire-and-forget at provider creation,
     // so awaiting here pulls control through the same future and triggers
     // the listener-driven rebind synchronously.
     await activeProfile.reloadFromStorage();
-    if (!mounted) return;
+    if (!_isAttemptActive(attemptId)) return;
 
     if (activeProfile.active == null && activeProfile.profiles.isEmpty) {
       appLogger.w('Setup: stored connections exist but no profiles resolved after bootstrap; returning to auth');
-      unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+      unawaited(navigator.pushReplacement(fadeRoute(const AuthScreen())));
       return;
     }
 
     // Wire the per-server status listener before either branch so the splash
     // checkmarks fill in even while the user is choosing a profile.
-    _bindServerStatusListener(activeProfile, _serverManagerFromContext);
+    _bindServerStatusListener(activeProfile, serverManager);
 
     // Start only after network/offline startup has been decided and the
     // active profile snapshot is hydrated. This prevents an eager binder
@@ -1236,7 +1396,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     // `awaitBindingSettle` after activation, so by the time it pops, the
     // chosen profile's bind is settled.
     final settings = await SettingsService.getInstance();
-    if (!mounted) return;
+    if (!_isAttemptActive(attemptId)) return;
     final hasNoActive = activeProfile.active == null && activeProfile.profiles.isNotEmpty;
     final requireOnOpen =
         settings.read(SettingsService.requireProfileSelectionOnOpen) && activeProfile.hasMultipleProfiles;
@@ -1244,10 +1404,8 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     var bindingSucceeded = activeProfile.lastBindingSucceeded;
     if (shouldPrompt) {
-      await Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const ProfileSwitchScreen(requireSelection: true)));
-      if (!mounted) return;
+      await navigator.push(MaterialPageRoute(builder: (_) => const ProfileSwitchScreen(requireSelection: true)));
+      if (!_isAttemptActive(attemptId)) return;
       bindingSucceeded = activeProfile.active != null && activeProfile.lastBindingSucceeded;
     } else {
       // Now wait for the binder to settle. This is the Plex/Jellyfin server
@@ -1256,15 +1414,19 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       // or fail). Eliminates the "Failed to load discover content: No servers
       // available" race the old eager-navigate flow caused.
       bindingSucceeded = await activeProfile.awaitBindingSettle();
-      if (!mounted) return;
+      if (!_isAttemptActive(attemptId)) return;
     }
 
     if (shouldEnterOfflineModeAfterStartupBind(
       bindingSucceeded: bindingSucceeded,
-      hasOnlineServers: _serverManagerFromContext().onlineServerIds.isNotEmpty,
+      hasOnlineServers: serverManager.onlineServerIds.isNotEmpty,
     )) {
       appLogger.w('Setup: no servers online after startup bind; starting offline mode');
-      await _enterOfflineMode();
+      await _enterOfflineMode(
+        isGuestMode: startupIsGuestMode,
+        attemptId: attemptId,
+        failure: bindingSucceeded ? StartupFailure.noServerConnections : StartupFailure.connectionFailed,
+      );
       return;
     }
 
@@ -1272,10 +1434,20 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     // are resolvable (the Connections row + live JellyfinClient are in
     // place). Without this the downloads list and sync-rule titles render
     // empty until something forces a later refresh.
-    await downloadProvider.refreshMetadataFromCache();
-    if (!mounted) return;
+    //
+    // This is a best-effort UI repair step, but the live repair fallback can
+    // hang against tokenless manual Plex servers. Still await the refresh so
+    // cached metadata is hydrated before navigation; only skip live network
+    // repair for manual Plex server ids.
+    final manualPlexServerIds = manualPlexServerIdsForConnections(startupConnections);
+    if (manualPlexServerIds.isNotEmpty) {
+      appLogger.i('Setup: skipping live metadata repair for ${manualPlexServerIds.length} manual Plex server(s)');
+    }
+    await downloadProvider.refreshMetadataFromCache(skipLiveFetchForServerIds: manualPlexServerIds);
 
-    unawaited(Navigator.pushReplacement(context, fadeRoute(MainScreen(initialPromptHandled: shouldPrompt))));
+    if (!_isAttemptActive(attemptId)) return;
+
+    unawaited(navigator.pushReplacement(fadeRoute(MainScreen(initialPromptHandled: shouldPrompt))));
   }
 
   /// Wire per-server status updates from [MultiServerManager] into the
@@ -1284,11 +1456,14 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   /// state goes away.
   StreamSubscription<Map<String, bool>>? _statusSub;
 
-  void _bindServerStatusListener(ActiveProfileProvider _, MultiServerManager Function() resolveManager) {
-    _statusSub?.cancel();
-    final manager = resolveManager();
+  void _bindServerStatusListener(ActiveProfileProvider _, MultiServerManager manager) {
+    final statusSub = _statusSub;
+    if (statusSub != null) {
+      unawaited(statusSub.cancel());
+    }
     _statusSub = manager.statusStream.listen((status) {
       if (!mounted) return;
+      if (_isManagingServers) return;
       setState(() {
         for (final entry in status.entries) {
           final existing = _serverStatus[entry.key];
@@ -1299,8 +1474,6 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       });
     });
   }
-
-  MultiServerManager _serverManagerFromContext() => context.read<MultiServerProvider>().serverManager;
 
   @override
   void dispose() {
@@ -1374,7 +1547,20 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
             left: 0,
             right: 0,
             bottom: MediaQuery.sizeOf(context).height * 0.5 - 170,
-            child: _buildStatusText(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: _openSplashServerManagement,
+                  icon: const AppIcon(Symbols.storage_rounded),
+                  tooltip: t.common.configure,
+                  visualDensity: VisualDensity.compact,
+                  iconSize: 18,
+                ),
+                Flexible(child: _buildStatusText(context)),
+              ],
+            ),
           ),
           Positioned(
             left: 0,

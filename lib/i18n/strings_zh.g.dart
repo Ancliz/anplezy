@@ -939,6 +939,19 @@ class _TranslationsServerSelectionZh extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => '无法连接到任何服务器。请检查网络。';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => '未找到 ${username} (${email}) 的服务器';
 	@override String failedToLoadServers({required Object error}) => '无法加载服务器: ${error}';
+	@override String get offlineInitPlex => '无法初始化离线模式。请重新登录。';
+	@override String get offlineInitGuest => '无法初始化离线模式。请检查你的手动服务器。';
+	@override String get connectionFailedGuest => '无法连接到你的手动服务器。请检查它们是否在此网络上可用。';
+	@override String get connectionFailedPlex => '服务器连接失败。请重新登录。';
+	@override String get insecureHttpWarning => '已通过 HTTP 连接到 Plex 服务器。流量可能不安全。';
+	@override String get manualServerUrlRequired => '请输入服务器地址';
+	@override String get manualServerUrlInvalid => '无效的服务器地址格式';
+	@override String get manualServerLocalNetworkRequired => '访客模式仅支持本地网络服务器地址。';
+	@override String get manualServerDefaultName => '本地服务器';
+	@override String get manualServerSaveFailed => '无法保存服务器。';
+	@override String get manualServerAlreadyExists => '此服务器已存在。';
+	@override String get manualServerConnectionFailed => '无法连接到服务器。请检查地址并重试。';
+	@override String get manualServerGenericFailure => '连接失败。';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsZh {
 			'serverSelection.allServerConnectionsFailed' => '无法连接到任何服务器。请检查网络。',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => '未找到 ${username} (${email}) 的服务器',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => '无法加载服务器: ${error}',
+			'serverSelection.offlineInitPlex' => '无法初始化离线模式。请重新登录。',
+			'serverSelection.offlineInitGuest' => '无法初始化离线模式。请检查你的手动服务器。',
+			'serverSelection.connectionFailedGuest' => '无法连接到你的手动服务器。请检查它们是否在此网络上可用。',
+			'serverSelection.connectionFailedPlex' => '服务器连接失败。请重新登录。',
+			'serverSelection.insecureHttpWarning' => '已通过 HTTP 连接到 Plex 服务器。流量可能不安全。',
+			'serverSelection.manualServerUrlRequired' => '请输入服务器地址',
+			'serverSelection.manualServerUrlInvalid' => '无效的服务器地址格式',
+			'serverSelection.manualServerLocalNetworkRequired' => '访客模式仅支持本地网络服务器地址。',
+			'serverSelection.manualServerDefaultName' => '本地服务器',
+			'serverSelection.manualServerSaveFailed' => '无法保存服务器。',
+			'serverSelection.manualServerAlreadyExists' => '此服务器已存在。',
+			'serverSelection.manualServerConnectionFailed' => '无法连接到服务器。请检查地址并重试。',
+			'serverSelection.manualServerGenericFailure' => '连接失败。',
 			'hubDetail.title' => '标题',
 			'hubDetail.releaseYear' => '发行年份',
 			'hubDetail.dateAdded' => '添加日期',
@@ -2814,6 +2840,8 @@ extension on TranslationsZh {
 			'externalPlayer.playInExternalPlayer' => '在外部播放器中播放',
 			'metadataEdit.editMetadata' => '编辑...',
 			'metadataEdit.screenTitle' => '编辑元数据',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => '基本信息',
 			'metadataEdit.artwork' => '封面图片',
 			'metadataEdit.advancedSettings' => '高级设置',
@@ -2827,8 +2855,6 @@ extension on TranslationsZh {
 			'metadataEdit.summary' => '简介',
 			'metadataEdit.poster' => '海报',
 			'metadataEdit.background' => '背景',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => '标志',
 			'metadataEdit.squareArt' => '方形图片',
 			'metadataEdit.selectPoster' => '选择海报',

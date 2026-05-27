@@ -26,6 +26,8 @@ enum ConnectionKind {
   };
 }
 
+const manualPlexIdPrefix = 'plex.manual.';
+
 /// Health snapshot for a connection. Updated by the orchestrator each time a
 /// session is established or refreshed.
 enum ConnectionStatus { unknown, online, offline, authError, disabled }
@@ -112,6 +114,8 @@ class PlexAccountConnection extends Connection {
   @override
   ConnectionKind get kind => ConnectionKind.plex;
 
+  bool get isManual => id.startsWith(manualPlexIdPrefix);
+
   @override
   String get displayName => activeProfile != null && activeProfile!.title.isNotEmpty
       ? '${activeProfile!.title} · $accountLabel'
@@ -146,6 +150,22 @@ class PlexAccountConnection extends Connection {
       createdAt: createdAt ?? this.createdAt,
       lastAuthenticatedAt: lastAuthenticatedAt ?? this.lastAuthenticatedAt,
     );
+  }
+
+  PlexAccountConnection? toGuestLocalNetworkOnly() {
+    if (!isManual) {
+      return null;
+    }
+
+    final localServers = servers
+        .map((server) => server.toLocalNetworkOnly())
+        .whereType<PlexServer>()
+        .toList(growable: false);
+    if (localServers.isEmpty) {
+      return null;
+    }
+
+    return copyWith(servers: localServers);
   }
 
   @override

@@ -939,6 +939,19 @@ class _TranslationsServerSelectionIt extends TranslationsServerSelectionEn {
 	@override String get allServerConnectionsFailed => 'Impossibile connettersi ai server. Controlla la rete.';
 	@override String noServersFoundForAccount({required Object username, required Object email}) => 'Nessun server trovato per ${username} (${email})';
 	@override String failedToLoadServers({required Object error}) => 'Impossibile caricare i server: ${error}';
+	@override String get offlineInitPlex => 'Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.';
+	@override String get offlineInitGuest => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.';
+	@override String get connectionFailedGuest => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.';
+	@override String get connectionFailedPlex => 'Connessione al server non riuscita. Prova ad accedere di nuovo.';
+	@override String get insecureHttpWarning => 'Connesso a un server Plex tramite HTTP. Il traffico potrebbe non essere sicuro.';
+	@override String get manualServerUrlRequired => 'Inserisci un indirizzo del server';
+	@override String get manualServerUrlInvalid => 'Formato dell\'indirizzo del server non valido';
+	@override String get manualServerLocalNetworkRequired => 'La modalità ospite supporta solo indirizzi di server della rete locale.';
+	@override String get manualServerDefaultName => 'Server locale';
+	@override String get manualServerSaveFailed => 'Impossibile salvare il server.';
+	@override String get manualServerAlreadyExists => 'Questo server esiste già.';
+	@override String get manualServerConnectionFailed => 'Impossibile connettersi al server. Controlla l\'indirizzo e riprova.';
+	@override String get manualServerGenericFailure => 'Connessione non riuscita.';
 }
 
 // Path: hubDetail
@@ -2482,6 +2495,19 @@ extension on TranslationsIt {
 			'serverSelection.allServerConnectionsFailed' => 'Impossibile connettersi ai server. Controlla la rete.',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nessun server trovato per ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Impossibile caricare i server: ${error}',
+			'serverSelection.offlineInitPlex' => 'Impossibile inizializzare la modalità offline. Prova ad accedere di nuovo.',
+			'serverSelection.offlineInitGuest' => 'Impossibile inizializzare la modalità offline. Controlla i server manuali.',
+			'serverSelection.connectionFailedGuest' => 'Impossibile connettersi ai server manuali. Verifica che siano disponibili su questa rete.',
+			'serverSelection.connectionFailedPlex' => 'Connessione al server non riuscita. Prova ad accedere di nuovo.',
+			'serverSelection.insecureHttpWarning' => 'Connesso a un server Plex tramite HTTP. Il traffico potrebbe non essere sicuro.',
+			'serverSelection.manualServerUrlRequired' => 'Inserisci un indirizzo del server',
+			'serverSelection.manualServerUrlInvalid' => 'Formato dell\'indirizzo del server non valido',
+			'serverSelection.manualServerLocalNetworkRequired' => 'La modalità ospite supporta solo indirizzi di server della rete locale.',
+			'serverSelection.manualServerDefaultName' => 'Server locale',
+			'serverSelection.manualServerSaveFailed' => 'Impossibile salvare il server.',
+			'serverSelection.manualServerAlreadyExists' => 'Questo server esiste già.',
+			'serverSelection.manualServerConnectionFailed' => 'Impossibile connettersi al server. Controlla l\'indirizzo e riprova.',
+			'serverSelection.manualServerGenericFailure' => 'Connessione non riuscita.',
 			'hubDetail.title' => 'Titolo',
 			'hubDetail.releaseYear' => 'Anno rilascio',
 			'hubDetail.dateAdded' => 'Data aggiunta',
@@ -2814,6 +2840,8 @@ extension on TranslationsIt {
 			'externalPlayer.playInExternalPlayer' => 'Riproduci in lettore esterno',
 			'metadataEdit.editMetadata' => 'Modifica...',
 			'metadataEdit.screenTitle' => 'Modifica metadati',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.basicInfo' => 'Informazioni di base',
 			'metadataEdit.artwork' => 'Artwork',
 			'metadataEdit.advancedSettings' => 'Impostazioni avanzate',
@@ -2827,8 +2855,6 @@ extension on TranslationsIt {
 			'metadataEdit.summary' => 'Trama',
 			'metadataEdit.poster' => 'Poster',
 			'metadataEdit.background' => 'Sfondo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Immagine quadrata',
 			'metadataEdit.selectPoster' => 'Seleziona poster',
